@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-shell-extensions">
+
+  <schema path="/org/gnome/shell/extensions/gnote-integration/" id="org.gnome.shell.extensions.gnote-integration">
+
+    <key type="s" name="dbus-name">
+        <default>'org.gnome.Gnote'</default>
+    </key>
+
+    <key type="i" name="max-displayed-notes">
+        <default>30</default>
+    </key>
+
+    <key type="i" name="max-snippet-length">
+        <default>300</default>
+    </key>
+
+    <key type="i" name="note-title-size">
+        <default>22</default>
+    </key>
+
+    <key type="i" name="note-contents-size">
+        <default>17</default>
+    </key>
+
+    <key type="i" name="title-size">
+        <default>17</default>
+    </key>
+
+    <key type="i" name="snippet-size">
+        <default>14</default>
+    </key>
+
+    <key type="i" name="date-size">
+        <default>12</default>
+    </key>
+
+    <key type="i" name="pinned-notes-renderer">
+        <default>0</default>
+    </key>
+
+    <key type="i" name="all-notes-renderer">
+        <default>1</default>
+    </key>
+
+    <key type="i" name="search-notes-renderer">
+        <default>1</default>
+    </key>
+
+    <key type="i" name="width-percents">
+        <default>50</default>
+    </key>
+
+    <key type="i" name="height-percents">
+        <default>100</default>
+    </key>
+
+    <key type="b" name="enable-animations">
+        <default>true</default>
+    </key>
+
+    <key type="b" name="enable-shortcuts">
+        <default>true</default>
+    </key>
+
+    <key type="as" name="show-dialog-shortcut">
+        <default><![CDATA[['<Super>G']]]></default>
+    </key>
+
+    <key type="as" name="show-menu-shortcut">
+        <default><![CDATA[['<Super><Shift>G']]]></default>
+    </key>
+
+    <key type="as" name="show-desktop-notes-shortcut">
+        <default><![CDATA[['<Super><Alt>G']]]></default>
+    </key>
+
+    <key type="b" name="enable-desktop-notes">
+        <default>true</default>
+    </key>
+
+    <key type="i" name="desktop-note-title-size">
+        <default>15</default>
+    </key>
+
+    <key type="i" name="desktop-note-content-size">
+        <default>13</default>
+    </key>
+
+    <key type="as" name="enabled-desktop-notes">
+        <default>[]</default>
+    </key>
+
+    <key type="s" name="desktop-notes-properties">
+        <default>'{}'</default>
+    </key>
+
+    <key type="as" name="desktop-notes-colors">
+        <default>[
+            'rgba(0, 0, 0, 0.8)',
+            'rgba(255, 0, 0, 0.5)',
+            'rgba(0, 255, 0, 0.5)',
+            'rgba(0, 0, 255, 0.5)',
+            'rgba(64, 64, 64, 0.7)'
+        ]</default>
+    </key>
+
+    <key type="i" name="desktop-notes-max-pages">
+        <default>5</default>
+    </key>
+
+  </schema>
+</schemalist>

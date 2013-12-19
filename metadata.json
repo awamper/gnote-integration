@@ -1,0 +1,11 @@
+{
+  "description": "Integration Gnote/Tomboy with gnome-shell.", 
+  "name": "Gnote/Tomboy Integration",
+  "shell-version": [
+    "3.8"
+  ],
+  "url": "https://github.com/awamper/gnote-integration",
+  "uuid": "gnote_integration@awamper.gmail.com",
+  "settings-schema": "org.gnome.shell.extensions.gnote-integration",
+  "version": 0
+}
