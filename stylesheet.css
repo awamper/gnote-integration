@@ -408,7 +408,7 @@
 .desktop-note-color-chooser-box {
     padding: 5px;
     background-color: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 1);
 }
 
 .desktop-note-color-box {
@@ -426,7 +426,7 @@
 .desktop-note-page-chooser-box {
     padding: 5px;
     background-color: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 1);
 }
 
 .desktop-note-page-chooser-button {
