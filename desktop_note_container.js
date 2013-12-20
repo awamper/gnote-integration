@@ -42,6 +42,7 @@ const DesktopNoteContainer = new Lang.Class({
 
         this._init_note_title();
         this._init_note_content();
+        this._init_note_update_date();
         this._init_note_toolbar();
 
         this._is_modal = false;
@@ -68,6 +69,7 @@ const DesktopNoteContainer = new Lang.Class({
         this.actor.add(this._note_title, {
             row: 0,
             col: 0,
+            col_span: 2,
             x_expand: false,
             y_expand: false,
             x_fill: true,
@@ -147,6 +149,7 @@ const DesktopNoteContainer = new Lang.Class({
         this.actor.add(this._note_box, {
             row: 1,
             col: 0,
+            col_span: 2,
             x_expand: true,
             y_expand: true,
             x_fill: true,
@@ -154,11 +157,27 @@ const DesktopNoteContainer = new Lang.Class({
         });
     },
 
+    _init_note_update_date: function() {
+        this._note_update_date = new St.Label({
+            style_class: 'desktop-note-date',
+            text: Utils.get_date_string(this._note.update_date)
+        });
+        this.actor.add(this._note_update_date, {
+            row: 2,
+            col: 0,
+            x_expand: false,
+            y_expand: false,
+            x_fill: false,
+            y_fill: false,
+            x_align: St.Align.START
+        });
+    },
+
     _init_note_toolbar: function() {
         this._toolbar = new DesktopNoteToolbar.DesktopNoteToolbar(this);
         this.actor.add(this._toolbar.actor, {
             row: 2,
-            col: 0,
+            col: 1,
             x_expand: false,
             y_expand: false,
             x_fill: false,
