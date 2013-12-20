@@ -201,7 +201,10 @@ const GnoteIntegration = new Lang.Class({
     _init_note_view: function() {
         this._note_view = new GnoteNoteView.GnoteNoteView(this._list_view.actor);
         this._note_view.connect('url-clicked', Lang.bind(this, function(o, url) {
-            if(url.indexOf(':') === -1) {
+            if(Utils.starts_with(url, '/')) {
+                url = 'file://' + url;
+            }
+            else if(url.indexOf(':') === -1) {
                 url = 'http://' + url;
             }
 
@@ -209,7 +212,8 @@ const GnoteIntegration = new Lang.Class({
                 url,
                 global.create_app_launch_context()
             );
-            this.hide();
+            this._note_view.hide(false);
+            this.hide(false);
         }));
         this._note_view.connect('note-clicked', Lang.bind(this, function(o, title) {
             Utils.get_client().find_note(title, Lang.bind(this, function(result) {
