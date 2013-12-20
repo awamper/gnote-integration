@@ -210,11 +210,14 @@ const GnoteNoteView = new Lang.Class({
         this._contents_label.set_text('...');
     },
 
-    show: function() {
+    show: function(animation) {
         if(this.showed) return;
 
         this.showed = true;
-        let animation = Utils.SETTINGS.get_boolean(PrefsKeys.ENABLE_ANIMATIONS_KEY);
+        animation =
+            animation !== undefined
+            ? animation
+            : Utils.SETTINGS.get_boolean(PrefsKeys.ENABLE_ANIMATIONS_KEY);
 
         if(!animation) {
             this._replaced_actor.hide();
