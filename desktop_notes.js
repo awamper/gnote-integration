@@ -255,8 +255,8 @@ const DesktopNotes = new Lang.Class({
         this._box.add_child(note_container.actor);
         this._notes[note.uri] = note_container;
 
-        if(note_container.note.properties.page !== this._current_page_index) {
-            note_container.actor.hide();
+        if(note_container.note.properties.page === this._current_page_index) {
+            note_container.show();
         }
 
         note_container.actor.x = note_container.note.properties.x;
