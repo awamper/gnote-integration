@@ -8,14 +8,16 @@ const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
+const PopupDialog = Me.imports.popup_dialog;
 
 const ConfirmationDialog = new Lang.Class({
     Name: "ConfirmationDialog",
+    Extends: PopupDialog.PopupDialog,
 
     _init: function(label_text, button) {
-        this.actor = new St.Table({
+        this.parent();
+        this._table = new St.Table({
             style_class: 'gnote-confirm-dialog-box',
-            visible: false,
             homogeneous: false,
             reactive: true
         });
@@ -37,7 +39,7 @@ const ConfirmationDialog = new Lang.Class({
         });
         this._cancel_button.connect("clicked", Lang.bind(this, this.on_cancel));
 
-        this.actor.add(this._label, {
+        this._table.add(this._label, {
             row: 0,
             col: 0,
             x_expand: true,
@@ -47,7 +49,7 @@ const ConfirmationDialog = new Lang.Class({
             x_align: St.Align.MIDDLE,
             y_align: St.Align.MIDDLE
         });
-        this.actor.add(this._ok_button, {
+        this._table.add(this._ok_button, {
             row: 1,
             col: 0,
             x_expand: false,
@@ -56,7 +58,7 @@ const ConfirmationDialog = new Lang.Class({
             y_fill: false,
             x_align: St.Align.END
         });
-        this.actor.add(this._cancel_button, {
+        this._table.add(this._cancel_button, {
             row: 1,
             col: 1,
             x_expand: false,
@@ -69,13 +71,7 @@ const ConfirmationDialog = new Lang.Class({
         this.on_confirm = null;
         this._button = button;
 
-        Main.uiGroup.add_child(this.actor);
-    },
-
-    _reposition: function() {
-        let [x, y] = global.get_pointer();
-        this.actor.x = x - this.actor.width;
-        this.actor.y = y - this.actor.height;
+        this.actor.add(this._table);
     },
 
     on_confirmed: function() {
@@ -88,43 +84,7 @@ const ConfirmationDialog = new Lang.Class({
 
     on_cancel: function() {
         this.hide();
-    },
-
-    show: function() {
-        if(this.actor.visible) return;
-
-        this._reposition();
-        Main.pushModal(this.actor, {
-            keybindingMode: Shell.KeyBindingMode.NORMAL
-        });
-
-        this.actor.opacity = 0;
-        this.actor.show();
-
-        Tweener.removeTweens(this.actor);
-        Tweener.addTween(this.actor, {
-            opacity: 255,
-            time: 0.3,
-            transition: 'easeOutQuad',
-        });
-    },
-
-    hide: function() {
-        if(!this.actor.visible) return;
-
-        Main.popModal(this.actor);
-
-        Tweener.removeTweens(this.actor);
-        Tweener.addTween(this.actor, {
-            opacity: 0,
-            time: 0.3,
-            transition: 'easeOutQuad',
-            onComplete: Lang.bind(this, function() {
-                this.actor.hide();
-                this.actor.opacity = 255;
-            })
-        });
-    },
+    }
 });
 
 const ButtonsBarButton = new Lang.Class({
