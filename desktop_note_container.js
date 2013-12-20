@@ -36,6 +36,7 @@ const DesktopNoteContainer = new Lang.Class({
             height: this._note.properties.height
         });
         this.actor.set_pivot_point(0.5, 0.5);
+        this.actor.hide();
 
         this._resize_background = null;
 
@@ -43,6 +44,7 @@ const DesktopNoteContainer = new Lang.Class({
         this._init_note_content();
         this._init_note_toolbar();
 
+        this._is_modal = false;
         this._note_drag_action = null;
         this._note_drag_action_handle_clone = null;
         this._add_note_drag_action();
@@ -76,6 +78,47 @@ const DesktopNoteContainer = new Lang.Class({
 
     _init_note_content: function(width, height) {
         this._note_markup = new St.Entry();
+        this._note_markup.connect('captured-event',
+            Lang.bind(this, function(o, e) {
+                if(e.type() === Clutter.EventType.BUTTON_PRESS) {
+                    if(this._is_modal) return false;
+
+                    this._note_markup.clutter_text.set_editable(true);
+                    let result = Main.pushModal(this.actor, {
+                        keybindingMode: Shell.KeyBindingMode.NORMAL
+                    });
+
+                    if(result) this._is_modal = true;
+
+                    return false;
+                }
+                else if(e.type() === Clutter.EventType.LEAVE) {
+                    this._note_markup.clutter_text.set_selection(0, 0);
+
+                    if(this._is_modal) {
+                        Main.popModal(this.actor);
+                        this._is_modal = false;
+                    }
+
+                    return false;
+                }
+                else if(e.type() === Clutter.EventType.KEY_PRESS) {
+                    if(e.has_control_modifier()) return false;
+
+                    let symbol = e.get_key_symbol();
+                    let ch = Utils.get_unichar(symbol);
+                    let backspace = symbol === Clutter.BackSpace;
+                    let enter =
+                        symbol == Clutter.Return || symbol == Clutter.KP_Enter;
+
+                    if(ch || backspace || enter) return true;
+                    else return false;
+                }
+                else {
+                    return false;
+                }
+            })
+        );
         this._note_markup.clutter_text.set_single_line_mode(false);
         this._note_markup.clutter_text.set_activatable(false);
         this._note_markup.clutter_text.set_line_wrap(true);
@@ -304,6 +347,8 @@ const DesktopNoteContainer = new Lang.Class({
 
     hide: function(on_complete) {
         if(!this.actor.visible) return;
+
+        this._note_markup.clutter_text.set_selection(0, 0);
 
         Tweener.removeTweens(this.actor);
         Tweener.addTween(this.actor, {
