@@ -280,8 +280,7 @@ const GnoteNote = new Lang.Class({
             let markup_tag = this._get_markup_tag(node.name);
 
             if(!markup_tag) {
-                log(this._escape_markup(node.name))
-                note_markup.push(this._escape_markup(node.name));
+                // note_markup.push(this._escape_markup(node.name));
             }
             else {
                 note_markup.push(markup_tag.open);
@@ -291,7 +290,7 @@ const GnoteNote = new Lang.Class({
             let markup_tag = this._get_markup_tag(name);
 
             if(!markup_tag) {
-                note_markup.push(this._escape_markup(name));
+                // note_markup.push(this._escape_markup(name));
             }
             else {
                 note_markup.push(markup_tag.close);
