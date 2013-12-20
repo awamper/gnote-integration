@@ -508,6 +508,30 @@ const PrefsWidget = new GObject.Class({
             'string'
         );
 
+        let renderers = [
+            {
+                title: 'Snippet',
+                value: Constants.RENDERER.SNIPPET
+            },
+            {
+                title: 'Title',
+                value: Constants.RENDERER.TITLE
+            }
+        ];
+
+        page.add_combo(
+            'All notes renderer:',
+            PrefsKeys.ALL_NOTES_RENDERER_KEY,
+            renderers,
+            'integer'
+        );
+        page.add_combo(
+            'Search notes renderer:',
+            PrefsKeys.SEARCH_NOTES_RENDERER_KEY,
+            renderers,
+            'integer'
+        );
+
         page.add_boolean(
             'Enable animations:',
             PrefsKeys.ENABLE_ANIMATIONS_KEY

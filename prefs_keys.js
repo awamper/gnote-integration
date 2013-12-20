@@ -5,7 +5,6 @@ const NOTE_CONTENTS_SIZE_KEY = 'note-contents-size';
 const TITLE_SIZE_KEY = 'title-size';
 const SNIPPET_SIZE_KEY = 'snippet-size';
 const DATE_SIZE_KEY = 'date-size';
-const PINNED_NOTES_RENDERER_KEY = 'pinned-notes-renderer';
 const ALL_NOTES_RENDERER_KEY = 'all-notes-renderer';
 const SEARCH_NOTES_RENDERER_KEY = 'search-notes-renderer';
 const WIDTH_PERCENTS_KEY = 'width-percents';
