@@ -9,6 +9,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const PrefsKeys = Me.imports.prefs_keys;
 const Utils = Me.imports.utils;
+const Constants = Me.imports.constants;
 
 const KeybindingsWidget = new GObject.Class({
     Name: 'Keybindings.Widget',
@@ -493,11 +494,11 @@ const PrefsWidget = new GObject.Class({
         let apps = [
             {
                 title: 'Gnote',
-                value: 'org.gnome.Gnote'
+                value: Constants.APPLICATION.GNOTE
             },
             {
                 title: 'Tomboy',
-                value: 'org.gnome.Tomboy'
+                value: Constants.APPLICATION.TOMBOY
             }
         ];
         page.add_combo(
