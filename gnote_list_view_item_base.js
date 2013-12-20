@@ -94,7 +94,7 @@ const GnoteListViewItemBase = new Lang.Class({
 
             if(this.date_label.hovered) {
                 this.date_label.hovered = false;
-                let date_string = Utils.get_date_string(this.change_date);
+                let date_string = Utils.get_date_string(this.note.update_date);
                 let new_text = this.date_label.change_template.format(
                     date_string
                 );
