@@ -28,7 +28,7 @@ const GnoteListViewTitle = new Lang.Class({
             y_fill: false,
             y_align: St.Align.MIDDLE
         });
-        this.actor.add(this.date_label, {
+        this.actor.add(this.date_label.actor, {
             row: 1,
             col: 0,
             x_expand: false,

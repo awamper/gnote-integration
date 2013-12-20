@@ -11,6 +11,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 const PrefsKeys = Me.imports.prefs_keys;
 const DesktopNoteToolbar = Me.imports.desktop_note_toolbar;
+const NoteDateLabel = Me.imports.note_date_label;
 
 const MIN_WIDTH = 200;
 const MIN_HEIGHT = 200;
@@ -42,7 +43,7 @@ const DesktopNoteContainer = new Lang.Class({
 
         this._init_note_title();
         this._init_note_content();
-        this._init_note_update_date();
+        this._init_note_date();
         this._init_note_toolbar();
 
         this._is_modal = false;
@@ -157,12 +158,13 @@ const DesktopNoteContainer = new Lang.Class({
         });
     },
 
-    _init_note_update_date: function() {
-        this._note_update_date = new St.Label({
+    _init_note_date: function() {
+        this._note_date_label = new NoteDateLabel.NoteDateLabel({
             style_class: 'desktop-note-date',
-            text: Utils.get_date_string(this._note.update_date)
+            create_date: this._note.create_date,
+            update_date: this._note.update_date
         });
-        this.actor.add(this._note_update_date, {
+        this.actor.add(this._note_date_label.actor, {
             row: 2,
             col: 0,
             x_expand: false,

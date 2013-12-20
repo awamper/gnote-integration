@@ -42,7 +42,7 @@ const GnoteListViewSnippet = new Lang.Class({
             x_align: St.Align.START,
             y_align: St.Align.MIDDLE
         });
-        this.actor.add(this.date_label, {
+        this.actor.add(this.date_label.actor, {
             row: 2,
             col: 0,
             x_expand: false,
