@@ -1,3 +1,4 @@
+const St = imports.gi.St;
 const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -6,14 +7,22 @@ const Utils = Me.imports.utils;
 const PrefsKeys = Me.imports.prefs_keys;
 const ButtonsBar = Me.imports.buttons_bar;
 const DesktopNotes = Me.imports.desktop_notes;
+const Shared = Me.imports.shared;
 
 const GnoteListItemButtons = new Lang.Class({
     Name: 'GnoteListItemButtons',
 
-    _init: function(uri, gnote_integration) {
+    _init: function(uri) {
         this._uri = uri;
-        this._gnote_integration = gnote_integration;
-        this._statusbar = this._gnote_integration._statusbar;
+
+        if(Shared.gnote_integration === null) {
+            throw new Error(
+                'GnoteListItemButtons:_init():Shared.gnote_integration is null'
+            );
+        }
+
+        this._gnote_integration = Shared.gnote_integration;
+        this._statusbar = this._gnote_integration.statusbar;
 
         this._buttons_bar = new ButtonsBar.ButtonsBar({
             style_class: 'gnote-snippet-buttons-box'
