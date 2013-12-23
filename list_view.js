@@ -34,6 +34,11 @@ const ItemsCounter = new Lang.Class({
     _on_changed: function() {
         let count = this._list_model.length;
         this.actor.set_text(this._count_text.format(count));
+    },
+
+    destroy: function() {
+        delete this._list_model;
+        this.actor.destroy();
     }
 });
 
@@ -125,10 +130,17 @@ const RendererBase = new Lang.Class({
             style_class: this.params.style_class,
             reactive: true
         });
+        this.actor.connect('destroy', Lang.bind(this, this.destroy));
     },
 
     get_display: function(model, index) {
         throw new Error('not implemented');
+    },
+
+    destroy: function() {
+        delete this.params;
+
+        if(this.actor) this.actor.destroy();
     }
 });
 
@@ -193,6 +205,11 @@ const ListViewShortcutEmblem = new Lang.Class({
         });
     },
 
+    destroy: function() {
+        delete this.params;
+        this.actor.destroy();
+    },
+
     set number(number) {
         if(number <= 0 && number >= 9) return;
 
@@ -206,6 +223,7 @@ const ListViewShortcutEmblem = new Lang.Class({
 
     set display(display) {
         this._display = display;
+        this._display.connect('destroy', Lang.bind(this, this.destroy));
     }
 });
 
@@ -550,8 +568,9 @@ const ListView = new Lang.Class({
     },
 
     destroy: function() {
-        delete this._displays;
+        if(this.model) this.model.destroy();
         this.actor.destroy();
+        delete this._displays;
     },
 
     set renderer(renderer) {

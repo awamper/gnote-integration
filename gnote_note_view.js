@@ -207,6 +207,7 @@ const GnoteNoteView = new Lang.Class({
     },
 
     clear: function() {
+        if(this._note) this._note.destroy();
         this._contents_label.set_text('...');
     },
 
@@ -294,7 +295,7 @@ const GnoteNoteView = new Lang.Class({
     },
 
     destroy: function() {
-        this._client.destroy();
+        this.clear();
         this.actor.destroy();
     },
 

@@ -335,6 +335,7 @@ const ButtonsBar = new Lang.Class({
     },
 
     destroy: function() {
+        this.clear();
         this.actor.destroy();
     }
 });

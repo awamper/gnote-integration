@@ -111,6 +111,10 @@ const GnoteListItemButtons = new Lang.Class({
         this._buttons_bar.add_button(this._delete_btn);
     },
 
+    destroy: function() {
+        this._buttons_bar.destroy();
+    },
+
     get actor() {
         return this._buttons_bar.actor;
     }

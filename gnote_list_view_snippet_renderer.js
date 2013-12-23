@@ -105,5 +105,11 @@ const GnoteListViewSnippetRenderer = new Lang.Class({
         this.parse_note(this.uri);
 
         return this.actor;
+    },
+
+    destroy: function() {
+        this.date_label.destroy();
+        this.buttons.destroy();
+        this.parent();
     }
 });

@@ -59,6 +59,10 @@ const GnoteToolbar = new Lang.Class({
         this._buttons_bar.add_button(this._prefs_btn);
     },
 
+    destroy: function() {
+        this._buttons_bar.destroy();
+    },
+
     get actor() {
         return this._buttons_bar.actor;
     },

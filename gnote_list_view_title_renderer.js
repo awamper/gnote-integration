@@ -61,5 +61,11 @@ const GnoteListViewTitleRenderer = new Lang.Class({
         this.parse_note(this.uri);
 
         return this.actor;
+    },
+
+    destroy: function() {
+        this.buttons.destroy();
+        this.date_label.destroy();
+        this.parent();
     }
 });

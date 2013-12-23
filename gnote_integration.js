@@ -450,7 +450,6 @@ const GnoteIntegration = new Lang.Class({
     },
 
     _show_notes: function(note_uris, renderer) {
-        this._list_view.clear();
         this._list_view.set_renderer(renderer);
         this._list_model.set_items(note_uris);
     },
@@ -589,8 +588,10 @@ const GnoteIntegration = new Lang.Class({
     },
 
     destroy: function() {
-        this._list_model.destroy();
+        this._statusbar.destroy();
+        this._note_view.destroy();
         this._list_view.destroy();
+        this._items_counter.destroy();
         Utils.get_client().destroy();
         Shared.gnote_integration = null;
         this.parent();

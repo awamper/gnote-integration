@@ -72,5 +72,11 @@ const GnoteListViewRendererBase = new Lang.Class({
         );
 
         return buttons;
+    },
+
+    destroy: function() {
+        this.parent();
+        delete this.uri;
+        this.note.destroy();
     }
 });

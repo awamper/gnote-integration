@@ -410,7 +410,16 @@ const GnoteNote = new Lang.Class({
     },
 
     destroy: function() {
-        // 
+        delete this._xml;
+        delete this._title;
+        delete this._title_markup;
+        delete this._content;
+        delete this._markup;
+        delete this._create_date;
+        delete this._update_date;
+        delete this._notebooks;
+        delete this._tags;
+        delete this._urls;
     },
 
     set title_size(size) {
