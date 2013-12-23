@@ -7,10 +7,6 @@
         <default>'org.gnome.Gnote'</default>
     </key>
 
-    <key type="i" name="max-displayed-notes">
-        <default>30</default>
-    </key>
-
     <key type="i" name="max-snippet-length">
         <default>300</default>
     </key>

@@ -536,15 +536,7 @@ const PrefsWidget = new GObject.Class({
             'Enable animations:',
             PrefsKeys.ENABLE_ANIMATIONS_KEY
         );
-        page.add_spin(
-            'Max displayed notes:',
-            PrefsKeys.MAX_DISPLAYED_NOTES_KEY,
-            {
-                lower: 5,
-                upper: 200,
-                step_increment: 5
-            }
-        );
+
         page.add_spin(
             'Max snippet length:',
             PrefsKeys.MAX_SNIPPET_LENGTH_KEY,

@@ -13,7 +13,6 @@ const ENABLE_ANIMATIONS_KEY = 'enable-animations';
 const ENABLE_SHORTCUTS_KEY = 'enable-shortcuts';
 const SHOW_DIALOG_SHORTCUT_KEY = 'show-dialog-shortcut';
 const SHOW_MENU_SHORTCUT_KEY = 'show-menu-shortcut';
-const MAX_DISPLAYED_NOTES_KEY = 'max-displayed-notes';
 const ENABLE_DESKTOP_NOTES_KEY = 'enable-desktop-notes';
 const SHOW_DESKTOP_NOTES_SHORTCUT_KEY = 'show-desktop-notes-shortcut';
 const DESKTOP_NOTE_TITLE_SIZE_KEY = 'desktop-note-title-size';
