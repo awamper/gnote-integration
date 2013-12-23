@@ -135,7 +135,7 @@ const Dialog = new Lang.Class({
             Tweener.removeTweens(this.actor);
             Tweener.addTween(this.actor, {
                 time: this.params.animation_time / St.get_slow_down_factor(),
-                transition: 'easeOutQuad',
+                transition: 'easeOutBack',
                 y: target
             });
         }
@@ -161,7 +161,7 @@ const Dialog = new Lang.Class({
             Tweener.removeTweens(this.actor);
             Tweener.addTween(this.actor, {
                 time: this.params.animation_time / St.get_slow_down_factor(),
-                transition: 'easeOutQuad',
+                transition: 'easeInBack',
                 y: this._hidden_y,
                 onComplete: Lang.bind(this, function() {
                     this.actor.hide();
