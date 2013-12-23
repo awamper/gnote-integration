@@ -76,20 +76,34 @@ const NoteDateLabel = new Lang.Class({
         }
     },
 
-    _show_create_date: function() {
-        Utils.label_transition(
-            this.actor,
-            this._create_markup,
-            ANIMATION_TIMES.DATE
-        );
+    _show_create_date: function(animation) {
+        animation = animation === false ? false : true;
+
+        if(animation) {
+            Utils.label_transition(
+                this.actor,
+                this._create_markup,
+                ANIMATION_TIMES.DATE
+            );
+        }
+        else {
+            this.actor.clutter_text.set_markup(this._create_markup);
+        }
     },
 
-    _show_update_date: function() {
-        Utils.label_transition(
-            this.actor,
-            this._update_markup,
-            ANIMATION_TIMES.DATE
-        );
+    _show_update_date: function(animation) {
+        animation = animation === false ? false : true;
+
+        if(animation) {
+            Utils.label_transition(
+                this.actor,
+                this._update_markup,
+                ANIMATION_TIMES.DATE
+            );
+        }
+        else {
+            this.actor.clutter_text.set_markup(this._update_markup);
+        }
     },
 
     destroy: function() {
@@ -103,7 +117,7 @@ const NoteDateLabel = new Lang.Class({
         let date_string = Utils.get_date_string(date);
         this._create_markup = this._create_template.format(date_string);
 
-        if(this._hovered) this._show_create_date();
+        if(this._hovered) this._show_create_date(false);
     },
 
     get create_date() {
@@ -116,7 +130,7 @@ const NoteDateLabel = new Lang.Class({
         let date_string = Utils.get_date_string(date);
         this._update_markup = this._update_template.format(date_string);
 
-        if(!this._hovered) this._show_update_date();
+        if(!this._hovered) this._show_update_date(false);
     },
 
     get update_date() {
