@@ -4,18 +4,27 @@ const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
-const GnoteListViewItemBase = Me.imports.gnote_list_view_item_base;
+const GnoteListViewRendererBase = Me.imports.gnote_list_view_renderer_base;
 
-const GnoteListViewTitle = new Lang.Class({
+const GnoteListViewTitleRenderer = new Lang.Class({
     Name: "GnoteListViewTitle",
-    Extends: GnoteListViewItemBase.GnoteListViewItemBase,
+    Extends: GnoteListViewRendererBase.GnoteListViewRendererBase,
 
-    _init: function(uri, gnote_integration) {
-        this.parent(uri, gnote_integration);
+    _init: function(params) {
+        this.parent(params);
+    },
 
-        this.init_title();
-        this.init_date();
-        this.init_buttons();
+    on_note_parsed: function() {
+        this.title_label.set_text(this.note.title);
+        this.date_label.create_date = this.note.create_date;
+        this.date_label.update_date = this.note.update_date;
+    },
+
+    get_display: function(model, index) {
+        this.parent(model, index);
+        this.title_label = this.get_title();
+        this.date_label = this.get_date();
+        this.buttons = this.get_buttons();
 
         this.actor.add(this.title_label, {
             row: 0,
@@ -49,6 +58,8 @@ const GnoteListViewTitle = new Lang.Class({
             y_align: St.Align.MIDDLE
         });
 
-        this.parse_note();
+        this.parse_note(this.uri);
+
+        return this.actor;
     }
 });

@@ -16,12 +16,12 @@ const StatusBar = Me.imports.status_bar;
 const PrefsKeys = Me.imports.prefs_keys;
 const GnoteToolbar = Me.imports.gnote_toolbar;
 const ListView = Me.imports.list_view;
-const ListViewItemsCounter = Me.imports.list_view_items_counter;
-const GnoteListViewTitle = Me.imports.gnote_list_view_title;
-const GnoteListViewSnippet = Me.imports.gnote_list_view_snippet;
+const GnoteListViewTitleRenderer = Me.imports.gnote_list_view_title_renderer;
+const GnoteListViewSnippetRenderer = Me.imports.gnote_list_view_snippet_renderer;
 const GnoteNoteView = Me.imports.gnote_note_view;
 const DesktopNotes = Me.imports.desktop_notes;
 const Constants = Me.imports.constants;
+const Shared = Me.imports.shared;
 
 const TIMEOUT_TIMES = {
     SEARCH: 400
@@ -76,21 +76,33 @@ const GnoteIntegration = new Lang.Class({
                 this._notes_changed_trigger = true;
             })
         );
-        this._init_search_entry();
-        this._list_view = new ListView.ListView();
-        this._list_view.connect(
-            "item-clicked",
-            Lang.bind(this, this._on_item_clicked)
-        );
-        this._list_view.connect(
-            "displayed-items-changed",
+
+        this._list_model = new ListView.Model();
+        this._list_model.set_validator(Lang.bind(this, function(item) {
+            return !Utils.is_blank(item);
+        }));
+        this._list_model.connect(
+            "changed::items",
             Lang.bind(this, this._on_items_changed)
         );
-        this._items_counter = new ListViewItemsCounter.ListViewItemsCounter(
-            this._list_view
-        );
-        this._toolbar = new GnoteToolbar.GnoteToolbar(this);
 
+        this._list_view = new ListView.ListView({
+            scrollview_style: 'gnote-list-view-scrollbox',
+            box_style: 'gnote-list-view-box',
+            shortcut_style: 'gnote-shortcut-label'
+        });
+        this._list_view.set_model(this._list_model);
+        this._list_view.set_renderer(this._get_user_renderer(
+            PrefsKeys.ALL_NOTES_RENDERER_KEY
+        ));
+        this._list_view.connect(
+            "clicked",
+            Lang.bind(this, this._on_item_clicked)
+        );
+
+        this._items_counter = new ListView.ItemsCounter(this._list_model);
+        this._toolbar = new GnoteToolbar.GnoteToolbar(this);
+        this._init_search_entry();
         this._init_note_view();
 
         this.table.add(this._search_entry, {
@@ -194,23 +206,25 @@ const GnoteIntegration = new Lang.Class({
                 this._notes_changed_trigger = true;
             })
         );
+
+        Shared.gnote_integration = this;
     },
 
-    _on_item_clicked: function(object, button, item) {
+    _on_item_clicked: function(object, button, display, model, index) {
         switch(button) {
             case Clutter.BUTTON_SECONDARY:
-                this.delete_item(item);
+                this.delete_item(model, index);
                 break;
             case Clutter.BUTTON_MIDDLE:
                 break;
             default:
-                this.activate_item(item);
+                this.activate_item(model, index);
                 break;
         }
     },
 
     _on_items_changed: function() {
-        if(this._list_view.displayed_length > 0) {
+        if(this._list_model.length > 0) {
             this._status_label.hide();
         }
         else {
@@ -278,7 +292,6 @@ const GnoteIntegration = new Lang.Class({
     _on_key_press_event: function(o, e) {
         let symbol = e.get_key_symbol()
         let ch = Utils.get_unichar(symbol);
-        let selected_count = this._list_view.get_selected().length;
 
         if(symbol === Clutter.KEY_Control_L || symbol === Clutter.KEY_Control_R) {
             this._list_view.show_shortcuts();
@@ -299,7 +312,9 @@ const GnoteIntegration = new Lang.Class({
             return true;
         }
         else if(symbol === Clutter.Up) {
-            if(selected_count > 0) {
+            let selected_index = this._list_view.get_selected_index();
+
+            if(selected_index !== -1) {
                 this._list_view.select_previous();
             }
             else {
@@ -309,7 +324,9 @@ const GnoteIntegration = new Lang.Class({
             return true;
         }
         else if(symbol === Clutter.Down) {
-            if(selected_count > 0) {
+            let selected_index = this._list_view.get_selected_index();
+
+            if(selected_index !== -1) {
                 this._list_view.select_next();
             }
             else {
@@ -337,19 +354,19 @@ const GnoteIntegration = new Lang.Class({
             return true;
         }
         else if(symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
-            let selected = this._list_view.get_selected();
+            let selected_index = this._list_view.get_selected_index();
 
-            if(selected.length === 1) {
-                this.activate_item(selected[0]);
+            if(selected_index !== -1) {
+                this.activate_item(this._list_model, selected_index);
             }
 
             return true;
         }
         else if(symbol == Clutter.Delete) {
-            let selected = this._list_view.get_selected();
+            let selected_index = this._list_view.get_selected_index();
 
-            if(selected.length === 1) {
-                this.delete_item(selected[0]);
+            if(selected_index !== -1) {
+                this.delete_item(this._list_model, selected_index);
             }
 
             return true;
@@ -381,7 +398,7 @@ const GnoteIntegration = new Lang.Class({
                 this.actor.grab_key_focus();
                 this._list_view.clear();
                 this._notes_changed_trigger = true;
-                this._show_start_notes();
+                this._show_all_notes();
             }
 
             return true;
@@ -415,118 +432,49 @@ const GnoteIntegration = new Lang.Class({
         }
     },
 
-    _activate_by_shortcut: function(shortcut) {
-        for(let i = 0; i < this._list_view.displayed_length; i++) {
-            let item = this._list_view.displayed_items[i];
+    _activate_by_shortcut: function(number) {
+        let index = this._list_view.get_index_for_shortcut(number);
+        if(index === -1) return;
+        this.activate_item(this._list_model, index);
+    },
 
-            if(item.shortcut === shortcut) {
-                this.activate_item(item);
-                break;
-            }
+    _get_user_renderer: function(settings_key) {
+        let renderer = GnoteListViewSnippetRenderer.GnoteListViewSnippetRenderer;
+        let user_renderer = Utils.SETTINGS.get_int(settings_key);
+
+        if(user_renderer === Constants.RENDERER.TITLE) {
+            renderer = GnoteListViewTitleRenderer.GnoteListViewTitleRenderer;
         }
+
+        return renderer;
     },
 
     _show_notes: function(note_uris, renderer) {
-        this._loading_message_id = this._statusbar.add_message({
-            text: "Loading...",
-            has_spinner: true
-        });
-        renderer = renderer || GnoteListViewSnippet.GnoteListViewSnippet;
-        Mainloop.idle_add(Lang.bind(this, function() {
-            let snippets = [];
-
-            for(let i = 0; i < note_uris.length; i++) {
-                let uri = note_uris[i];
-
-                if(Utils.is_blank(uri)) continue;
-
-                let snippet = new renderer(uri, this);
-                snippets.push(snippet);
-            }
-
-            this._list_view.set_items(snippets);
-            this._list_view.show_all();
-            this._list_view.actor.vscroll.adjustment.value = 0;
-            this._list_view.select_first();
-            this._statusbar.remove_message(this._loading_message_id);
-        }));
+        this._list_view.clear();
+        this._list_view.set_renderer(renderer);
+        this._list_model.set_items(note_uris);
     },
 
     _show_all_notes: function() {
-        Utils.get_client().list_all_notes(Lang.bind(this, function(uris, error) {
-            if(!uris) {
-                Main.notify("Gnote Integration", 'Can\'t connect to Gnote');
-                return;
-            }
+        // if(!this._notes_changed_trigger) return;
 
-            this._show_notes(uris);
-        }));
-    },
+        // this._notes_changed_trigger = false;
 
-    _show_pined_notes: function() {
-        let pinned_uris = Utils.get_client().get_pinned_notes_sync();
-        this._show_notes(pinned_uris);
-    },
+        let renderer = this._get_user_renderer(PrefsKeys.ALL_NOTES_RENDERER_KEY);
+        Utils.get_client().list_all_notes(
+            Lang.bind(this, function(uris, error) {
+                if(!uris) {
+                    Main.notify("Gnote Integration", error);
+                    return;
+                }
 
-    _show_start_notes: function() {
-        if(!this._notes_changed_trigger) return;
-
-        this._notes_changed_trigger = false;
-        this._list_view.clear();
-
-        let max_notes = Utils.SETTINGS.get_int(PrefsKeys.MAX_DISPLAYED_NOTES_KEY);
-        let result_uris = Utils.get_client().get_pinned_notes_sync();
-        let renderer = GnoteListViewSnippet.GnoteListViewSnippet;
-
-        if(
-            Utils.SETTINGS.get_int(PrefsKeys.ALL_NOTES_RENDERER_KEY)
-            === Constants.RENDERER.TITLE
-        ) {
-            renderer = GnoteListViewTitle.GnoteListViewTitle;
-        }
-
-        if(result_uris.length >= max_notes) {
-            result_uris = result_uris.slice(0, max_notes);
-            this._show_notes(result_uris, renderer);
-        }
-        else {
-            Utils.get_client().list_all_notes(
-                Lang.bind(this, function(uris, error) {
-                    if(!uris) {
-                        Main.notify(
-                            "Gnote Integration",
-                            'Can\'t connect to Gnote'
-                        );
-                        return;
-                    }
-
-                    for(let index in uris) {
-                        let uri = uris[index];
-                        let exists = result_uris.indexOf(uri) !== -1;
-
-                        if(!exists) {
-                            result_uris.push(uri);
-                        }
-
-                        if(result_uris.length >= max_notes + 1) break;
-
-                    }
-
-                    this._show_notes(result_uris, renderer);
-                })
-            );
-        }
+                this._show_notes(uris, renderer);
+            })
+        );
     },
 
     _search_notes: function(term) {
-        let renderer = GnoteListViewSnippet.GnoteListViewSnippet;
-
-        if(
-            Utils.SETTINGS.get_int(PrefsKeys.SEARCH_NOTES_RENDERER_KEY)
-            === Constants.RENDERER.TITLE
-        ) {
-            renderer = GnoteListViewTitle.GnoteListViewTitle;
-        }
+        let renderer = this._get_user_renderer(PrefsKeys.SEARCH_NOTES_RENDERER_KEY);
         Utils.get_client().search_notes(term, false,
             Lang.bind(this, function(uris, error) {
                 if(!uris) {
@@ -534,9 +482,6 @@ const GnoteIntegration = new Lang.Class({
                     return;
                 }
 
-                uris = uris.slice(0, Utils.SETTINGS.get_int(
-                    PrefsKeys.MAX_DISPLAYED_NOTES_KEY
-                ));
                 this._show_notes(uris, renderer);
             })
         );
@@ -595,14 +540,14 @@ const GnoteIntegration = new Lang.Class({
         this._statusbar.remove_message(message_id);
     },
 
-    activate_item: function(item) {
-        this._show_note(item.uri);
+    activate_item: function(model, index) {
+        this._show_note(model.get(index));
     },
 
-    delete_item: function(item) {
-        let total_items = this._list_view.length;
-        this._list_view.remove_item(item);
-        Utils.get_client().delete_note(item.uri);
+    delete_item: function(model, index) {
+        let uri = model.get(index);
+        Utils.get_client().delete_note(uri);
+        model.delete(index);
     },
 
     delete_note: function(uri) {
@@ -620,7 +565,7 @@ const GnoteIntegration = new Lang.Class({
             : animation
         this.parent(animation);
 
-        this._show_start_notes();
+        this._show_all_notes();
 
         if(!this._is_empty_entry(this._search_entry)) {
             this._search_entry.clutter_text.set_selection(
@@ -640,13 +585,14 @@ const GnoteIntegration = new Lang.Class({
             animation === undefined
             ? Utils.SETTINGS.get_boolean(PrefsKeys.ENABLE_ANIMATIONS_KEY)
             : animation
-        this._list_view.unselect_all();
-        this._list_view.hide_shortcuts();
         this.parent(animation);
     },
 
     destroy: function() {
+        this._list_model.destroy();
+        this._list_view.destroy();
         Utils.get_client().destroy();
+        Shared.gnote_integration = null;
         this.parent();
     },
 
@@ -656,5 +602,9 @@ const GnoteIntegration = new Lang.Class({
         }
 
         return this._search_entry.text;
+    },
+
+    get statusbar() {
+        return this._statusbar;
     }
 });
