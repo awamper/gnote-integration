@@ -113,7 +113,7 @@ const Dialog = new Lang.Class({
         this.table.height = my_height;
     },
 
-    show: function(animation, target) {
+    show: function(animation, on_complete) {
         if(this._open) return;
 
         animation = animation ===
@@ -129,24 +129,27 @@ const Dialog = new Lang.Class({
         this._open = true;
         this.actor.show();
         this.resize();
-        target = target === undefined ? this._target_y : target;
 
         if(animation) {
             Tweener.removeTweens(this.actor);
             Tweener.addTween(this.actor, {
                 time: this.params.animation_time / St.get_slow_down_factor(),
                 transition: 'easeOutBack',
-                y: target
+                y: this._target_y,
+                onComplete: Lang.bind(this, function() {
+                    if(typeof on_complete === 'function') on_complete();
+                })
             });
         }
         else {
-            this.actor.y = target;
+            this.actor.y = this._target_y;
+            if(typeof on_complete === 'function') on_complete();
         }
 
         this._connect_captured_event();
     },
 
-    hide: function(animation, target) {
+    hide: function(animation, on_complete) {
         if(!this._open) return;
 
         Main.popModal(this.actor);
@@ -165,12 +168,14 @@ const Dialog = new Lang.Class({
                 y: this._hidden_y,
                 onComplete: Lang.bind(this, function() {
                     this.actor.hide();
+                    if(typeof on_complete === 'function') on_complete();
                 })
             });
         }
         else {
             this.actor.hide();
             this.actor.y = this._hidden_y;
+            if(typeof on_complete === 'function') on_complete();
         }
     },
 
