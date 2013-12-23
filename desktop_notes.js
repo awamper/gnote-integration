@@ -13,6 +13,7 @@ const PrefsKeys = Me.imports.prefs_keys;
 const DesktopNoteContainer = Me.imports.desktop_note_container;
 const GnoteNote = Me.imports.gnote_note;
 const PageIndicators = Me.imports.page_indicators;
+const Shared = Me.imports.shared;
 
 const ANIMATION_TIMES = {
     HIDE: 0.5,
@@ -159,6 +160,8 @@ const DesktopNotes = new Lang.Class({
         this._notes = {};
         this._resize();
         this._load_notes();
+
+        Shared.desktop_notes = this;
     },
 
     _on_key_release_event: function(o, e) {
@@ -546,6 +549,7 @@ const DesktopNotes = new Lang.Class({
     },
 
     destroy: function() {
+        Shared.desktop_notes = null;
         this._destroy_all_notes();
         this._background_actor.destroy();
     }
