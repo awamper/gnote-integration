@@ -135,26 +135,17 @@ const DesktopNoteContainer = new Lang.Class({
         let scroll_child = new St.BoxLayout({
             vertical: true
         });
-        scroll_child.add(this._note_markup);
+        scroll_child.add_actor(this._note_markup);
         this._note_scroll = new St.ScrollView({
-            style_class: 'desktop-note-content'
+            style_class: 'desktop-note-scrollbox desktop-note-content'
         });
         this._note_scroll.set_background_color(note_color);
         this._note_scroll.add_actor(scroll_child);
 
-        this._note_box = new St.BoxLayout({
-            style_class: 'desktop-note-scrollbox'
-        });
-        this._note_box.add_child(this._note_scroll);
-
-        this.actor.add(this._note_box, {
+        this.actor.add(this._note_scroll, {
             row: 1,
             col: 0,
-            col_span: 2,
-            x_expand: true,
-            y_expand: true,
-            x_fill: true,
-            y_fill: true
+            col_span: 2
         });
     },
 

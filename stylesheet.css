@@ -322,6 +322,10 @@
 
 .desktop-note-container {
     background-color: rgba(0, 0, 0, 0.5);
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .desktop-note-toolbar-box {
@@ -346,7 +350,7 @@
 }
 
 .desktop-note-title {
-    padding: 5px;
+    padding-bottom: 5px;
 }
 
 .desktop-note-content {
@@ -356,15 +360,11 @@
 }
 
 .desktop-note-date {
-    padding: 5px;
     font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
 }
 
 .desktop-note-scrollbox {
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 5px;
 }
 
 .desktop-note-scrollbox StScrollView.vfade {
