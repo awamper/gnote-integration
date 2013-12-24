@@ -17,7 +17,7 @@ const ClientBase = new Lang.Class({
         );
         this._provider.connectSignal(
             'NoteAdded',
-            Lang.bind(this, function(proxy, sender, uri) {
+            Lang.bind(this, function(proxy, sender, [uri]) {
                 this.emit('note-added', uri);
             })
         );
@@ -29,7 +29,7 @@ const ClientBase = new Lang.Class({
         );
         this._provider.connectSignal(
             'NoteSaved',
-            Lang.bind(this, function(proxy, sender, uri) {
+            Lang.bind(this, function(proxy, sender, [uri]) {
                 this.emit('note-saved', uri);
             })
         );
