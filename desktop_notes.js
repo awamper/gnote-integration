@@ -25,7 +25,8 @@ const IDS = {
     OVERVIEW_HIDDEN: 0,
     ENABLED_NOTES: 0,
     MAX_PAGES: 0,
-    NOTE_DELETED: 0
+    NOTE_DELETED: 0,
+    NOTE_SAVED: 0
 };
 const DEFAULT_NOTE_PROPERTIES = {
     X: 0,
@@ -45,6 +46,14 @@ const DesktopNotes = new Lang.Class({
             Lang.bind(this, function(client, uri, title) {
                 if(this.is_note_on_desktop(uri)) {
                     this.remove_note(uri);
+                }
+            })
+        );
+        IDS.NOTE_SAVED = Utils.get_client().connect(
+            'note-saved',
+            Lang.bind(this, function(client, uri) {
+                if(this.is_note_on_desktop(uri)) {
+                    this.update_note(uri);
                 }
             })
         );
@@ -248,18 +257,25 @@ const DesktopNotes = new Lang.Class({
             Utils.get_client().disconnect(IDS.NOTE_DELETED);
             IDS.NOTE_DELETED = 0;
         }
+        if(IDS.NOTE_SAVED !== 0) {
+            Utils.get_client().disconnect(IDS.NOTE_SAVED);
+            IDS.NOTE_SAVED = 0;
+        }
     },
 
-    _show_note: function(note) {
+    _show_note: function(note, animation) {
         let properties = this.get_note_properties(note.uri);
         note.properties = properties;
-        let note_container = new DesktopNoteContainer.DesktopNoteContainer(this, note);
+        let note_container = new DesktopNoteContainer.DesktopNoteContainer(
+            this,
+            note
+        );
 
         this._box.add_child(note_container.actor);
         this._notes[note.uri] = note_container;
 
         if(note_container.note.properties.page === this._current_page_index) {
-            note_container.show();
+            note_container.show(animation);
         }
 
         note_container.actor.x = note_container.note.properties.x;
@@ -355,6 +371,19 @@ const DesktopNotes = new Lang.Class({
             this._enabled_notes
         );
         this._load_note(uri);
+    },
+
+    update_note: function(uri) {
+        let note = new GnoteNote.GnoteNote(uri);
+        note.connect(
+            "notify::parsed",
+            Lang.bind(this, function() {
+                this._destroy_container(uri);
+                this._show_note(note, false);
+            })
+        );
+
+        note.start_parsing();
     },
 
     remove_note: function(uri) {

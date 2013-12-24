@@ -348,22 +348,28 @@ const DesktopNoteContainer = new Lang.Class({
         });
     },
 
-    show: function() {
-        // if(this.actor.visible) return;
+    show: function(animation) {
+        if(animation === false) {
+            this.actor.opacity = 255;
+            this.actor.scale_x = 1;
+            this.actor.scale_y = 1;
+            this.actor.show();
+        }
+        else {
+            this.actor.opacity = 0;
+            this.actor.scale_x = 0.2;
+            this.actor.scale_y = 0.2;
+            this.actor.show();
 
-        this.actor.opacity = 0;
-        this.actor.scale_x = 0.2;
-        this.actor.scale_y = 0.2;
-        this.actor.show();
-
-        Tweener.removeTweens(this.actor);
-        Tweener.addTween(this.actor, {
-            time: ANIMATION_TIMES.SHOW / St.get_slow_down_factor(),
-            transition: 'easeOutQuad',
-            scale_x: 1,
-            scale_y: 1,
-            opacity: 255
-        });
+            Tweener.removeTweens(this.actor);
+            Tweener.addTween(this.actor, {
+                time: ANIMATION_TIMES.SHOW / St.get_slow_down_factor(),
+                transition: 'easeOutQuad',
+                scale_x: 1,
+                scale_y: 1,
+                opacity: 255
+            });
+        }
     },
 
     hide: function(on_complete) {
