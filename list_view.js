@@ -262,6 +262,7 @@ const ListView = new Lang.Class({
         this._displays = [];
         this._loading_items = false;
         this._preload_pages = 1.1;
+        this._preload_point = 85; // %
         this._displays = [];
         this._renderer = null;
         this._model = null;
@@ -278,9 +279,9 @@ const ListView = new Lang.Class({
         if(TIMEOUT_IDS.SCROLL !== 0) {
             Mainloop.source_remove(TIMEOUT_IDS.SCROLL);
         }
-        if(this._loading_items) return;
+        if(this._loading_items || !this._is_need_preload()) return;
 
-        TIMEOUT_IDS.SCROLL = Mainloop.timeout_add(300,
+        TIMEOUT_IDS.SCROLL = Mainloop.timeout_add(200,
             Lang.bind(this, this._preload_items)
         );
     },
@@ -349,6 +350,15 @@ const ListView = new Lang.Class({
             display: display
         });
         display.shortcut = emblem;
+    },
+
+    _is_need_preload: function() {
+        let load_position =
+            this._v_adjustment.upper / 100 * this._preload_point;
+        let current_position =
+            this._v_adjustment.value + this._v_adjustment.page_size;
+
+        return (current_position >= load_position)
     },
 
     _preload_items: function() {
