@@ -452,6 +452,7 @@ const GnoteIntegration = new Lang.Class({
     _show_notes: function(note_uris, renderer) {
         this._list_view.set_renderer(renderer);
         this._list_model.set_items(note_uris);
+        this._list_view.select_first_visible();
     },
 
     _show_all_notes: function() {
