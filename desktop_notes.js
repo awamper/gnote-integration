@@ -322,6 +322,25 @@ const DesktopNotes = new Lang.Class({
         Main.wm.removeKeybinding(PrefsKeys.SHOW_DESKTOP_NOTES_SHORTCUT_KEY);
     },
 
+    _cleanup_enabled_notes: function() {
+        Utils.get_client().list_all_notes(
+            Lang.bind(this, function(all_notes) {
+                if(!all_notes) return;
+
+                for(let i in this._enabled_notes) {
+                    let uri = this._enabled_notes[i];
+
+                    if(!Utils.get_client().is_valid_uri(uri)) {
+                        continue;
+                    }
+                    else if(all_notes.indexOf(uri) === -1) {
+                        this.remove_note(uri);
+                    }
+                }
+            })
+        )
+    },
+
     indicate_pages: function() {
         let note_pages = [];
 
@@ -399,6 +418,8 @@ const DesktopNotes = new Lang.Class({
         }
 
         let container = this._notes[uri];
+
+        if(!container) return;
 
         if(!container.actor.visible) {
             this._destroy_container(uri);
@@ -569,6 +590,7 @@ const DesktopNotes = new Lang.Class({
         let background_group = this._find_background_group();
         background_group.add_child(this._background_actor);
         this._add_keybindings();
+        this._cleanup_enabled_notes();
     },
 
     disable: function() {
