@@ -530,6 +530,12 @@ const GnoteIntegration = new Lang.Class({
     },
 
     resize: function() {
+        this.params.width_percents = Utils.SETTINGS.get_int(
+            PrefsKeys.WIDTH_PERCENTS_KEY
+        );
+        this.params.height_percents = Utils.SETTINGS.get_int(
+            PrefsKeys.HEIGHT_PERCENTS_KEY
+        );
         let message_id = this._statusbar.add_message({
             text: 'Test1234!',
             has_spinner: true
