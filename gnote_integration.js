@@ -490,9 +490,9 @@ const GnoteIntegration = new Lang.Class({
         this._note_view.show();
     },
 
-    _get_item_for_uri: function(uri) {
-        for each(let item in this._list_view.items) {
-            if(item.uri === uri) return item;
+    _get_index_for_uri: function(uri) {
+        for(let i = 0; i < this._list_model.length; i++) {
+            if(this._list_model.get(i) === uri) return i;
         }
 
         return -1;
@@ -549,10 +549,10 @@ const GnoteIntegration = new Lang.Class({
     },
 
     delete_note: function(uri) {
-        let item = this._get_item_for_uri(uri);
+        let index = this._get_index_for_uri(uri);
 
-        if(item !== -1) {
-            this.delete_item(item);
+        if(index !== -1) {
+            this.delete_item(this._list_model, index);
         }
     },
 
