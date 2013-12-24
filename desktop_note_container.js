@@ -339,7 +339,7 @@ const DesktopNoteContainer = new Lang.Class({
         Tweener.removeTweens(this.actor);
         Tweener.addTween(this.actor, {
             time: ANIMATION_TIMES.NEW_PAGE / St.get_slow_down_factor(),
-            transition: 'easeOutQuad',
+            transition: 'easeInBack',
             translation_x: new_x,
             onComplete: Lang.bind(this, function() {
                 this.actor.hide();
