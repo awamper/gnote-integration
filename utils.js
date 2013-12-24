@@ -47,16 +47,6 @@ function get_client() {
     return _CLIENT;
 }
 
-function is_valid_uri_for_current_client(uri) {
-    let dbus_name = SETTINGS.get_string(PrefsKeys.DBUS_NAME_KEY);
-    let patterns = {
-        'org.gnome.Gnote': /note:\/\/gnote\/[0-9a-z-]+/,
-        'org.gnome.Tomboy': /note:\/\/tomboy\/[0-9a-z-]+/
-    };
-
-    return patterns[dbus_name].test(uri);
-}
-
 function launch_extension_prefs(uuid) {
     const Shell = imports.gi.Shell;
 

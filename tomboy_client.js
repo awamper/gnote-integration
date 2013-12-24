@@ -189,6 +189,11 @@ const TomboyClient = new Lang.Class({
         return notes.indexOf(uri) !== -1;
     },
 
+    is_valid_uri: function(uri) {
+        let pattern = /note:\/\/tomboy\/[0-9a-z-]+/;
+        return pattern.test(uri);
+    },
+
     destroy: function() {
         this._settings.run_dispose();
         this.parent();

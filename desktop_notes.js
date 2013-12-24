@@ -284,7 +284,7 @@ const DesktopNotes = new Lang.Class({
     },
 
     _load_note: function(uri) {
-        if(!Utils.is_valid_uri_for_current_client(uri)) {
+        if(!Utils.get_client().is_valid_uri(uri)) {
             return;
         }
 

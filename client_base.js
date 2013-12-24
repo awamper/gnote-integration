@@ -175,6 +175,10 @@ const ClientBase = new Lang.Class({
         );        
     },
 
+    is_valid_uri: function(uri) {
+        throw new Error('ClientBase:is_valid_uri(): not implemented');
+    },
+
     destroy: function() {
         this._provider.run_dispose();
         this.emit('destroy');
