@@ -17,7 +17,9 @@ const Shared = Me.imports.shared;
 
 const ANIMATION_TIMES = {
     HIDE: 0.5,
-    SHOW: 0.5
+    SHOW: 0.5,
+    SHOW_MODAL: 0.3,
+    HIDE_MODAL: 0.3
 };
 const IDS = {
     MONITORS_CHANGED: 0,
@@ -571,19 +573,35 @@ const DesktopNotes = new Lang.Class({
             return;
         }
 
+        this.actor.opacity = 0;
         this._is_modal = true;
         this.set_background_color(0, 0, 0, 0.5);
+
+        Tweener.removeTweens(this.actor);
+        Tweener.addTween(this.actor, {
+            opacity: 255,
+            time: ANIMATION_TIMES.SHOW_MODAL,
+            transition: 'easeOutQuad'
+        });
     },
 
     hide_modal: function() {
         if(!this._is_modal) return;
 
-        Main.popModal(this.actor);
-        Main.uiGroup.remove_child(this.actor);
-        this._background_actor.add_child(this.actor);
-
-        this._is_modal = false;
-        this.set_background_color(0, 0, 0, 0);
+        Tweener.removeTweens(this.actor);
+        Tweener.addTween(this.actor, {
+            opacity: 0,
+            time: ANIMATION_TIMES.HIDE_MODAL,
+            transition: 'easeOutQuad',
+            onComplete: Lang.bind(this, function() {
+                this.set_background_color(0, 0, 0, 0);
+                this.actor.opacity = 255;
+                Main.popModal(this.actor);
+                Main.uiGroup.remove_child(this.actor);
+                this._background_actor.add_child(this.actor);
+                this._is_modal = false;
+            })
+        });
     },
 
     enable: function() {
