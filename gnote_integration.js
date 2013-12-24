@@ -455,10 +455,9 @@ const GnoteIntegration = new Lang.Class({
     },
 
     _show_all_notes: function() {
-        // if(!this._notes_changed_trigger) return;
+        if(!this._notes_changed_trigger) return;
 
-        // this._notes_changed_trigger = false;
-
+        this._notes_changed_trigger = false;
         let renderer = this._get_user_renderer(PrefsKeys.ALL_NOTES_RENDERER_KEY);
         Utils.get_client().list_all_notes(
             Lang.bind(this, function(uris, error) {
