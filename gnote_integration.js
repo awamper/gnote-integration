@@ -570,6 +570,8 @@ const GnoteIntegration = new Lang.Class({
             : animation
         this.parent(animation);
 
+        this._list_view.reset_scroll();
+        this._list_view.select_first();
         this._show_all_notes();
 
         if(!this._is_empty_entry(this._search_entry)) {
