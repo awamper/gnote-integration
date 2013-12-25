@@ -429,6 +429,7 @@ const DesktopNoteContainer = new Lang.Class({
             this.actor.scale_x = 1;
             this.actor.scale_y = 1;
             this.actor.show();
+            this.emit('showed');
         }
         else {
             this.actor.opacity = 0;
