@@ -476,7 +476,7 @@ const ListView = new Lang.Class({
     },
 
     select_first: function() {
-        if(this._displays > 0) {
+        if(this._displays.length > 0) {
             this.select(this._displays[0]);
         }
     },
