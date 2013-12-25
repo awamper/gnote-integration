@@ -1,6 +1,5 @@
 const St = imports.gi.St;
 const Lang = imports.lang;
-const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
@@ -48,7 +47,6 @@ const DesktopNoteToolbar = new Lang.Class({
         this._init_color_button();
         this._init_edit_button();
         this._init_remove_button();
-        this._init_resize_button();
     },
 
     _init_page_button: function() {
@@ -108,20 +106,6 @@ const DesktopNoteToolbar = new Lang.Class({
         };
         this.remove_button = new ButtonsBar.ButtonsBarButton(button_params);
         this._buttonsbar.add_button(this.remove_button);
-    },
-
-    _init_resize_button: function() {
-        let gicon = new Gio.FileIcon({
-            file: Gio.File.new_for_path(Me.path + '/images/resize.svg')
-        });
-        this.resize_button = new St.Icon({
-            gicon: gicon,
-            style_class: 'desktop-note-resize-icon',
-            reactive: true,
-            track_hover: true
-        });
-
-        this.actor.add_child(this.resize_button);
     },
 
     destroy: function() {

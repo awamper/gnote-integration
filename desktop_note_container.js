@@ -2,6 +2,8 @@ const St = imports.gi.St;
 const Lang = imports.lang;
 const Shell = imports.gi.Shell;
 const Clutter = imports.gi.Clutter;
+const Gio = imports.gi.Gio;
+const Signals = imports.signals;
 const Pango = imports.gi.Pango;
 const Tweener = imports.ui.tweener;
 const Main = imports.ui.main;
@@ -23,6 +25,154 @@ const ANIMATION_TIMES = {
     NEW_PAGE: 0.3
 };
 
+const DesktopNoteResizeButton = new Lang.Class({
+    Name: 'DesktopNoteResizeButton',
+
+    _init: function(desktop_note_container) {
+        this._min_opacity = 100;
+        this._max_opacity = 255;
+
+        this.actor = new St.Icon({
+            style_class: 'desktop-note-resize-icon',
+            reactive: true,
+            opacity: this._min_opacity,
+            x: 0,
+            y: 0
+        });
+        this.actor.connect('enter-event', Lang.bind(this, function() {
+            Tweener.removeTweens(this.actor);
+            Tweener.addTween(this.actor, {
+                time: 0.3,
+                transition: 'easeOutQuad',
+                opacity: this._max_opacity
+            });
+        }));
+        this.actor.connect('leave-event', Lang.bind(this, function() {
+            Tweener.removeTweens(this.actor);
+            Tweener.addTween(this.actor, {
+                time: 0.3,
+                transition: 'easeOutQuad',
+                opacity: this._min_opacity
+            });
+        }));
+        let gicon = new Gio.FileIcon({
+            file: Gio.File.new_for_path(Me.path + '/images/resize.svg')
+        });
+        this.actor.set_gicon(gicon);
+
+        this._start_size = {
+            width: 0,
+            height: 0
+        };
+        this._last_size = {
+            width: 0,
+            height: 0
+        };
+        this._resize_background = null;
+
+        this._container = desktop_note_container;
+        this._container.connect('showed',
+            Lang.bind(this, function() {
+                this._container.actor.add_child(this.actor);
+                this._reposition();
+                this._add_drag_action();
+            })
+        );
+    },
+
+    _add_drag_action: function() {
+        let drag_action = new Clutter.DragAction();
+        drag_action.connect(
+            'drag-begin',
+            Lang.bind(this, function() {
+                let [x, y] = this._container.actor.get_transformed_position();
+                this._resize_background = new St.Bin({
+                    style_class: 'desktop-note-container',
+                    width: this._container.actor.width,
+                    height: this._container.actor.height,
+                    x: x,
+                    y: y
+                });
+                Main.uiGroup.add_child(this._resize_background);
+
+                this._start_size.width = this._container.actor.width;
+                this._start_size.height = this._container.actor.height;
+                this._last_size.width = this._container.actor.width;
+                this._last_size.height = this._container.actor.height;
+
+                this.actor.hide();
+            })
+        );
+        drag_action.connect(
+            'drag-progress',
+            Lang.bind(this, function(action, actor, delta_x, delta_y) {
+                let [x, y] = action.get_motion_coords();
+                let width = this._start_size.width + delta_x;
+                let height = this._start_size.height + delta_y;
+
+                if(width >= MIN_WIDTH) {
+                    this._resize_background.width = width;
+                    this._last_size.width = width;
+                }
+                if(height >= MIN_HEIGHT) {
+                    this._resize_background.height = height;
+                    this._last_size.height = height;
+                }
+
+                return false;
+            })
+        );
+        drag_action.connect(
+            'drag-end',
+            Lang.bind(this, function() {
+                this._container.update_properties({
+                    width: this._last_size.width,
+                    height: this._last_size.height
+                });
+
+                this._resize_container(
+                    this._last_size.width,
+                    this._last_size.height
+                );
+
+                this._resize_background.destroy();
+                this._resize_background = null;
+                this._container.reset_drag_area();
+            })
+        );
+        this.actor.add_action(drag_action);
+    },
+
+    _reposition: function() {
+        this.actor.x = this._container.actor.width - this.actor.width - 1;
+        this.actor.y = this._container.actor.height - this.actor.height - 1;
+    },
+
+    _resize_container: function(width, height) {
+        Tweener.removeTweens(this._container.table);
+        Tweener.addTween(this._container.table, {
+            time: ANIMATION_TIMES.RESIZE,
+            transition: 'easeOutQuad',
+            width: width,
+            height: height,
+            onComplete: Lang.bind(this, function() {
+                this.actor.opacity = this._min_opacity;
+                this._reposition();
+                this.actor.show();
+            })
+        });
+    },
+
+    destroy: function() {
+        if(this._resize_background) {
+            this._resize_background.destroy();
+        }
+
+        delete this._container;
+        this.actor.destroy();
+    }
+});
+
 const DesktopNoteContainer = new Lang.Class({
     Name: "DesktopNoteContainer",
 
@@ -30,16 +180,19 @@ const DesktopNoteContainer = new Lang.Class({
         this._note = note;
         this.desktop_notes = desktop_notes;
 
-        this.actor = new St.Table({
+        this.actor = new St.BoxLayout();
+        this.actor.set_pivot_point(0.5, 0.5);
+        this.actor.hide();
+
+        this._table = new St.Table({
             homogeneous: false,
             style_class: 'desktop-note-container',
             width: this._note.properties.width,
             height: this._note.properties.height
         });
-        this.actor.set_pivot_point(0.5, 0.5);
-        this.actor.hide();
+        this.actor.add_child(this._table);
 
-        this._resize_background = null;
+        this._resize_button = new DesktopNoteResizeButton(this);
 
         this._init_note_title();
         this._init_note_content();
@@ -67,7 +220,7 @@ const DesktopNoteContainer = new Lang.Class({
             )
         );
 
-        this.actor.add(this._note_title, {
+        this._table.add(this._note_title, {
             row: 0,
             col: 0,
             col_span: 2,
@@ -142,7 +295,7 @@ const DesktopNoteContainer = new Lang.Class({
         this._note_scroll.set_background_color(note_color);
         this._note_scroll.add_actor(scroll_child);
 
-        this.actor.add(this._note_scroll, {
+        this._table.add(this._note_scroll, {
             row: 1,
             col: 0,
             col_span: 2
@@ -155,7 +308,7 @@ const DesktopNoteContainer = new Lang.Class({
             create_date: this._note.create_date,
             update_date: this._note.update_date
         });
-        this.actor.add(this._note_date_label.actor, {
+        this._table.add(this._note_date_label.actor, {
             row: 2,
             col: 0,
             x_expand: false,
@@ -168,7 +321,7 @@ const DesktopNoteContainer = new Lang.Class({
 
     _init_note_toolbar: function() {
         this._toolbar = new DesktopNoteToolbar.DesktopNoteToolbar(this);
-        this.actor.add(this._toolbar.actor, {
+        this._table.add(this._toolbar.actor, {
             row: 2,
             col: 1,
             x_expand: false,
@@ -177,70 +330,6 @@ const DesktopNoteContainer = new Lang.Class({
             y_fill: false,
             x_align: St.Align.END
         });
-
-        let resize_drag_action = new Clutter.DragAction();
-        resize_drag_action.connect(
-            'drag-begin',
-            Lang.bind(this, function() {
-                let [x, y] = this.actor.get_transformed_position();
-                this._resize_background = new St.Bin({
-                    style_class: 'desktop-note-container',
-                    width: this.actor.width,
-                    height: this.actor.height,
-                    x: x,
-                    y: y
-                });
-                Main.uiGroup.add_child(this._resize_background);
-
-                this._toolbar.resize_button.start_size = {
-                    width: this.actor.width,
-                    height: this.actor.height
-                };
-                this._toolbar.resize_button.last_size = {
-                    width: this.actor.width,
-                    height: this.actor.height
-                };
-            })
-        );
-        resize_drag_action.connect(
-            'drag-progress',
-            Lang.bind(this, function(action, actor, delta_x, delta_y) {
-                let [x, y] = resize_drag_action.get_motion_coords();
-                let width = this._toolbar.resize_button.start_size.width + delta_x;
-                let height = this._toolbar.resize_button.start_size.height + delta_y;
-
-                if(width >= MIN_WIDTH) {
-                    this._resize_background.width = width;
-                    this._toolbar.resize_button.last_size.width = width;
-                }
-                if(height >= MIN_HEIGHT) {
-                    this._resize_background.height = height;
-                    this._toolbar.resize_button.last_size.height = height;
-                }
-
-                return false;
-            })
-        );
-        resize_drag_action.connect(
-            'drag-end',
-            Lang.bind(this, function() {
-                let width = this._toolbar.resize_button.last_size.width;
-                let height = this._toolbar.resize_button.last_size.height;
-
-                this.update_properties({
-                    width: width,
-                    height: height
-                });
-
-                this.resize_actor(width, height);
-
-                this._resize_background.destroy();
-                this._resize_background = null;
-
-                this._note_drag_action.set_drag_area(null);
-            })
-        );
-        this._toolbar.resize_button.add_action(resize_drag_action);
     },
 
     _set_not_drag_area: function() {
@@ -298,18 +387,12 @@ const DesktopNoteContainer = new Lang.Class({
         this._note_drag_action_handle_clone.destroy();
     },
 
-    set_note_background: function(clutter_color) {
-        this._note_scroll.set_background_color(clutter_color);
+    reset_drag_area: function() {
+        this._note_drag_action.set_drag_area(null);
     },
 
-    resize_actor: function(width, height) {
-        Tweener.removeTweens(this.actor);
-        Tweener.addTween(this.actor, {
-            time: ANIMATION_TIMES.RESIZE,
-            transition: 'easeOutQuad',
-            width: width,
-            height: height
-        });
+    set_note_background: function(clutter_color) {
+        this._note_scroll.set_background_color(clutter_color);
     },
 
     update_properties: function(new_properties) {
@@ -358,7 +441,10 @@ const DesktopNoteContainer = new Lang.Class({
                 transition: 'easeOutQuad',
                 scale_x: 1,
                 scale_y: 1,
-                opacity: 255
+                opacity: 255,
+                onComplete: Lang.bind(this, function() {
+                    this.emit('showed');
+                })
             });
         }
     },
@@ -377,6 +463,7 @@ const DesktopNoteContainer = new Lang.Class({
             opacity: 0,
             onComplete: Lang.bind(this, function() {
                 this.actor.hide();
+                this.emit('hided');
                 if(typeof on_complete === 'function') on_complete()
             })
         });
@@ -386,10 +473,8 @@ const DesktopNoteContainer = new Lang.Class({
         if(this._note_drag_action_handle_clone) {
             this._note_drag_action_handle_clone.destroy();
         }
-        if(this._resize_background) {
-            this._resize_background.destroy();
-        }
 
+        this._resize_button.destroy();
         this._note.destroy();
         this._toolbar.destroy();
         this.actor.destroy();
@@ -401,5 +486,10 @@ const DesktopNoteContainer = new Lang.Class({
 
     get uri() {
         return this._note.uri;
+    },
+
+    get table() {
+        return this._table;
     }
 });
+Signals.addSignalMethods(DesktopNoteContainer.prototype);
