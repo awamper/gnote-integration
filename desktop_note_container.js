@@ -73,11 +73,12 @@ const DesktopNoteResizeButton = new Lang.Class({
         this._container = desktop_note_container;
         this._container.connect('showed',
             Lang.bind(this, function() {
-                this._container.actor.add_child(this.actor);
                 this._reposition();
-                this._add_drag_action();
+
+                if(!this.actor.has_actions()) this._add_drag_action();
             })
         );
+        this._container.actor.add_child(this.actor);
     },
 
     _add_drag_action: function() {
