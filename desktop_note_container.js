@@ -244,6 +244,7 @@ const DesktopNoteContainer = new Lang.Class({
         this._note_content_view = new DesktopNoteView.DesktopNoteView(this);
         this._note_content_view.connect('url-clicked',
             Lang.bind(this, function(o, uri) {
+                this.desktop_notes.hide_modal();
                 Utils.open_uri(uri);
             })
         );
@@ -253,6 +254,7 @@ const DesktopNoteContainer = new Lang.Class({
                     Lang.bind(this, function(note_uri) {
                         if(!note_uri) return;
 
+                        this.desktop_notes.hide_modal();
                         Utils.get_client().display_note(note_uri);
                     })
                 );
