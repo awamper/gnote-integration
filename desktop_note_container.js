@@ -243,27 +243,17 @@ const DesktopNoteContainer = new Lang.Class({
 
         this._note_content_view = new DesktopNoteView.DesktopNoteView(this);
         this._note_content_view.connect('url-clicked',
-            Lang.bind(this, function(o, url) {
-                if(Utils.starts_with(url, '/')) {
-                    url = 'file://' + url;
-                }
-                else if(url.indexOf(':') === -1) {
-                    url = 'http://' + url;
-                }
-
-                Gio.app_info_launch_default_for_uri(
-                    url,
-                    global.create_app_launch_context()
-                );
+            Lang.bind(this, function(o, uri) {
+                Utils.open_uri(uri);
             })
         );
         this._note_content_view.connect('note-clicked',
             Lang.bind(this, function(o, title) {
                 Utils.get_client().find_note(title,
-                    Lang.bind(this, function(uri) {
-                        if(!uri) return;
+                    Lang.bind(this, function(note_uri) {
+                        if(!note_uri) return;
 
-                        Utils.get_client().display_note(uri);
+                        Utils.get_client().display_note(note_uri);
                     })
                 );
             })

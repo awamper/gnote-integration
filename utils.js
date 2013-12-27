@@ -30,6 +30,28 @@ const SETTINGS = getSettings();
 
 let _CLIENT = null;
 
+function expand_path(path) {
+    if(starts_with(path, '~')) {
+        path = GLib.build_pathv('/', [GLib.get_home_dir(), path.substr(1)]);
+    }
+
+    return path;
+}
+
+function open_uri(uri) {
+    if(starts_with(uri, '/') || starts_with(uri, '~')) {
+        uri = 'file://' + expand_path(uri).trim();
+    }
+    else if(uri.indexOf(':') === -1) {
+        uri = 'http://' + uri.trim();
+    }
+
+    Gio.app_info_launch_default_for_uri(
+        uri,
+        global.create_app_launch_context()
+    );
+}
+
 function get_client() {
     let dbus_name = SETTINGS.get_string(PrefsKeys.DBUS_NAME_KEY);
     let clients = {
