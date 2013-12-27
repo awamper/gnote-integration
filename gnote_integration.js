@@ -303,6 +303,19 @@ const GnoteIntegration = new Lang.Class({
             if(number !== NaN && number >= 1 && number <= 9) {
                 this._activate_by_shortcut(number);
             }
+            else if(unichar === 'n' && !this._is_empty_entry(this._search_entry)) {
+                let search_text = this._search_entry.text.trim();
+                this.hide(false);
+                this._search_entry.set_text('');
+                Utils.get_client().create_named_note(
+                    search_text,
+                    Lang.bind(this, function(uri) {
+                        if(!uri) return;
+
+                        Utils.get_client().display_note(uri);
+                    })
+                );
+            }
 
             return false;
         }
@@ -598,6 +611,7 @@ const GnoteIntegration = new Lang.Class({
             animation === undefined
             ? Utils.SETTINGS.get_boolean(PrefsKeys.ENABLE_ANIMATIONS_KEY)
             : animation
+        this._list_view.hide_shortcuts();
         this.parent(animation);
     },
 
