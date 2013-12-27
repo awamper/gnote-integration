@@ -14,11 +14,12 @@ const Utils = Me.imports.utils;
 const Dialog = Me.imports.dialog;
 const StatusBar = Me.imports.status_bar;
 const PrefsKeys = Me.imports.prefs_keys;
+const GnoteNote = Me.imports.gnote_note;
 const GnoteToolbar = Me.imports.gnote_toolbar;
 const ListView = Me.imports.list_view;
 const GnoteListViewTitleRenderer = Me.imports.gnote_list_view_title_renderer;
 const GnoteListViewSnippetRenderer = Me.imports.gnote_list_view_snippet_renderer;
-const GnoteNoteView = Me.imports.gnote_note_view;
+const DialogNoteView = Me.imports.dialog_note_view;
 const DesktopNotes = Me.imports.desktop_notes;
 const Constants = Me.imports.constants;
 const Shared = Me.imports.shared;
@@ -125,18 +126,6 @@ const GnoteIntegration = new Lang.Class({
             x_align: St.Align.MIDDLE,
             y_align: St.Align.MIDDLE
         });
-        this.table.add(this._note_view.actor, {
-            row: 0,
-            row_span: 2,
-            col: 0,
-            col_span: 3,
-            x_fill: true,
-            x_expand: true,
-            y_fill: false,
-            y_expand: false,
-            y_align: St.Align.START,
-            x_align: St.Align.START
-        });
         this.table.add(this._status_label, {
             row: 1,
             col: 0,
@@ -177,6 +166,18 @@ const GnoteIntegration = new Lang.Class({
             y_expand: false,
             y_align: St.Align.MIDDLE,
             x_align: St.Align.END
+        });
+        this.table.add(this._note_view.actor, {
+            row: 0,
+            row_span: 3,
+            col: 0,
+            col_span: 3,
+            x_fill: true,
+            x_expand: true,
+            y_fill: true,
+            y_expand: false,
+            y_align: St.Align.START,
+            x_align: St.Align.START
         });
 
         this._loading_message_id = 0;
@@ -233,29 +234,37 @@ const GnoteIntegration = new Lang.Class({
     },
 
     _init_note_view: function() {
-        this._note_view = new GnoteNoteView.GnoteNoteView(this._list_view.actor);
-        this._note_view.connect('url-clicked', Lang.bind(this, function(o, url) {
-            if(Utils.starts_with(url, '/')) {
-                url = 'file://' + url;
-            }
-            else if(url.indexOf(':') === -1) {
-                url = 'http://' + url;
-            }
+        this._note_view = new DialogNoteView.DialogNoteView(
+            this._list_view.actor
+        );
+        this._note_view.connect('url-clicked',
+            Lang.bind(this, function(o, url) {
+                if(Utils.starts_with(url, '/')) {
+                    url = 'file://' + url;
+                }
+                else if(url.indexOf(':') === -1) {
+                    url = 'http://' + url;
+                }
 
-            Gio.app_info_launch_default_for_uri(
-                url,
-                global.create_app_launch_context()
-            );
-            this._note_view.hide(false);
-            this.hide(false);
-        }));
-        this._note_view.connect('note-clicked', Lang.bind(this, function(o, title) {
-            Utils.get_client().find_note(title, Lang.bind(this, function(result) {
-                if(!result) return;
+                Gio.app_info_launch_default_for_uri(
+                    url,
+                    global.create_app_launch_context()
+                );
+                this._note_view.hide(false);
+                this.hide(false);
+            })
+        );
+        this._note_view.connect('note-clicked',
+            Lang.bind(this, function(o, title) {
+                Utils.get_client().find_note(title,
+                    Lang.bind(this, function(uri) {
+                        if(!uri) return;
 
-                this._note_view.load_note(result);
-            }));
-        }));
+                        this._show_note(uri);
+                    })
+                );
+            })
+        );
     },
 
     _init_search_entry: function() {
@@ -487,8 +496,15 @@ const GnoteIntegration = new Lang.Class({
     },
 
     _show_note: function(uri) {
-        this._note_view.load_note(uri);
-        this._note_view.show();
+        let note = new GnoteNote.GnoteNote(uri);
+        note.connect(
+            'notify::parsed',
+            Lang.bind(this, function() {
+                this._note_view.set_note(note);
+                this._note_view.show();
+            })
+        );
+        note.start_parsing();
     },
 
     _get_index_for_uri: function(uri) {

@@ -197,59 +197,59 @@
     font-size: 12px;
 }
 
-.gnote-note-view-box {
+.dialog-note-view-box {
     padding: 5px;
     color: #C4C4C4;
     background-color: #545353;
     border: 1px solid #9C9C9C;
 }
 
-.gnote-note-view-box StScrollView.vfade {
+.dialog-note-view-box StScrollView.vfade {
     -st-vfade-offset: 60px;
 }
 
-.gnote-note-view-box StScrollView.hfade {
+.dialog-note-view-box StScrollView.hfade {
     -st-hfade-offset: 60px;
 }
 
-.gnote-note-view-box StScrollView StScrollBar {
+.dialog-note-view-box StScrollView StScrollBar {
     min-width: 8px;
     min-height: 8px;
 }
 
-.gnote-note-view-box StScrollBar StBin#trough {
+.dialog-note-view-box StScrollBar StBin#trough {
     padding-left: 20px;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 0px;
 }
 
-.gnote-note-view-box StScrollBar StBin#vhandle {
+.dialog-note-view-box StScrollBar StBin#vhandle {
     background-color: rgba(255, 255, 255, 0.4);
     border: 1px solid #242424;
     border-radius: 0px;
     transition-duration: 300ms;
 }
 
-.gnote-note-view-box StScrollBar StBin#hhandle {
+.dialog-note-view-box StScrollBar StBin#hhandle {
     background-color: rgba(255, 255, 255, 0.4);
     border: 1px solid #242424;
     border-radius: 0px;
     transition-duration: 300ms;
 }
 
-.gnote-note-view-box StScrollBar StBin#hhandle:hover,
-.gnote-note-view-box StScrollBar StBin#vhandle:hover {
+.dialog-note-view-box StScrollBar StBin#hhandle:hover,
+.dialog-note-view-box StScrollBar StBin#vhandle:hover {
     background-color: rgba(255, 255, 255, 0.7);
     transition-duration: 300ms;
 }
 
-.gnote-note-view-box StScrollBar StBin#hhandle:active,
-.gnote-note-view-box StScrollBar StBin#vhandle:active {
+.dialog-note-view-box StScrollBar StBin#hhandle:active,
+.dialog-note-view-box StScrollBar StBin#vhandle:active {
     background-color: rgba(255, 255, 255, 0.7);
     transition-duration: 300ms;
 }
 
-.gnote-note-view-contents {
+.dialog-note-view-contents {
     selection-background-color: #bbbbbb;
     selected-color: #333333;
 }
@@ -353,61 +353,62 @@
     padding-bottom: 5px;
 }
 
-.desktop-note-content {
-    selected-color: black;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    padding: 5px;
-}
-
 .desktop-note-date {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
 }
 
-.desktop-note-scrollbox {
+.desktop-note-view-content {
+    padding: 5px;
 }
 
-.desktop-note-scrollbox StScrollView.vfade {
+.desktop-note-view-box {
+    padding: 5px;
+    selected-color: black;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.desktop-note-view-box StScrollView.vfade {
     -st-vfade-offset: 60px;
 }
 
-.desktop-note-scrollbox StScrollView.hfade {
+.desktop-note-view-box StScrollView.hfade {
     -st-hfade-offset: 60px;
 }
 
-.desktop-note-scrollbox StScrollView StScrollBar {
+.desktop-note-view-box StScrollView StScrollBar {
     min-width: 8px;
     min-height: 8px;
 }
 
-.desktop-note-scrollbox StScrollBar StBin#trough {
+.desktop-note-view-box StScrollBar StBin#trough {
     padding-left: 20px;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 0px;
 }
 
-.desktop-note-scrollbox StScrollBar StBin#vhandle {
+.desktop-note-view-box StScrollBar StBin#vhandle {
     background-color: rgba(255, 255, 255, 0.4);
     border: 1px solid #242424;
     border-radius: 0px;
     transition-duration: 300ms;
 }
 
-.desktop-note-scrollbox StScrollBar StBin#hhandle {
+.desktop-note-view-box StScrollBar StBin#hhandle {
     background-color: rgba(255, 255, 255, 0.4);
     border: 1px solid #242424;
     border-radius: 0px;
     transition-duration: 300ms;
 }
 
-.desktop-note-scrollbox StScrollBar StBin#hhandle:hover,
-.desktop-note-scrollbox StScrollBar StBin#vhandle:hover {
+.desktop-note-view-box StScrollBar StBin#hhandle:hover,
+.desktop-note-view-box StScrollBar StBin#vhandle:hover {
     background-color: rgba(255, 255, 255, 0.7);
     transition-duration: 300ms;
 }
 
-.desktop-note-scrollbox StScrollBar StBin#hhandle:active,
-.desktop-note-scrollbox StScrollBar StBin#vhandle:active {
+.desktop-note-view-box StScrollBar StBin#hhandle:active,
+.desktop-note-view-box StScrollBar StBin#vhandle:active {
     background-color: rgba(255, 255, 255, 0.7);
     transition-duration: 300ms;
 }

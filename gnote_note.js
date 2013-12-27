@@ -5,7 +5,6 @@ const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
-const PrefsKeys = Me.imports.prefs_keys;
 const Sax = Me.imports.libs.sax;
 
 const REGEXPS = {
@@ -32,13 +31,6 @@ const GnoteNote = new Lang.Class({
 
     _init: function(uri) {
         this.uri = uri.trim();
-
-        this._title_size = Utils.SETTINGS.get_int(
-            PrefsKeys.NOTE_TITLE_SIZE_KEY
-        );
-        this._content_size = Utils.SETTINGS.get_int(
-            PrefsKeys.NOTE_CONTENTS_SIZE_KEY
-        );
 
         this._xml = '';
         this._title = '';
@@ -305,18 +297,7 @@ const GnoteNote = new Lang.Class({
         });
         parser.onend = Lang.bind(this, function() {
             let markup = note_markup.join('');
-            let title_end_index = markup.indexOf('\n');
-            let title_markup = '<span font="%s">%s</span>'.format(
-                this.title_size,
-                markup.slice(0, title_end_index)
-            );
-            let content = markup.substr(title_end_index);
-            let content_markup = '<span font="%s">%s</span>'.format(
-                this.content_size,
-                content.trim()
-            );
-            this._title_markup = title_markup;
-            this._markup = content_markup;
+            this._markup = markup;
             this.STATES.MARKUP = STATE_TYPES.PARSED;
 
             if(this.is_parsed()) this._on_parsed();
@@ -325,7 +306,11 @@ const GnoteNote = new Lang.Class({
         let content_xml = REGEXPS.CONTENT.exec(this.xml);
 
         if(content_xml !== null) {
-            content_xml = '<note-content>%s</note-content>'.format(content_xml[1]);
+            content_xml = content_xml[1];
+            let title_end_index = content_xml.indexOf('\n');
+            content_xml = content_xml.substr(title_end_index);
+            content_xml = content_xml.trim();
+            content_xml = '<note-content>%s</note-content>'.format(content_xml);
             parser.write(content_xml).close();
         }
         else {
@@ -422,22 +407,6 @@ const GnoteNote = new Lang.Class({
         delete this._urls;
     },
 
-    set title_size(size) {
-        this._title_size = size;
-    },
-
-    get title_size() {
-        return this._title_size;
-    },
-
-    set content_size(size) {
-        this._content_size = size;
-    },
-
-    get content_size() {
-        return this._content_size;
-    },
-
     get xml() {
         return this._xml;
     },
@@ -454,16 +423,6 @@ const GnoteNote = new Lang.Class({
         }
 
         return this._title;
-    },
-
-    get title_markup() {
-        if(this.STATES.CONTENT !== STATE_TYPES.PARSED) {
-            throw new Error(
-                'GnoteIntegration:GnoteNote: content is note parsed'
-            );
-        }
-
-        return this._title_markup;
     },
 
     get content() {

@@ -14,6 +14,7 @@ const Utils = Me.imports.utils;
 const PrefsKeys = Me.imports.prefs_keys;
 const DesktopNoteToolbar = Me.imports.desktop_note_toolbar;
 const NoteDateLabel = Me.imports.note_date_label;
+const DesktopNoteView = Me.imports.desktop_note_view;
 
 const MIN_WIDTH = 200;
 const MIN_HEIGHT = 200;
@@ -234,73 +235,45 @@ const DesktopNoteContainer = new Lang.Class({
     },
 
     _init_note_content: function(width, height) {
-        this._note_markup = new St.Entry();
-        this._note_markup.connect('captured-event',
-            Lang.bind(this, function(o, e) {
-                if(e.type() === Clutter.EventType.BUTTON_PRESS) {
-                    if(this._is_modal) return false;
-
-                    this._note_markup.clutter_text.set_editable(true);
-                    let result = Main.pushModal(this.actor, {
-                        keybindingMode: Shell.KeyBindingMode.NORMAL
-                    });
-
-                    if(result) this._is_modal = true;
-
-                    return false;
-                }
-                else if(e.type() === Clutter.EventType.LEAVE) {
-                    this._note_markup.clutter_text.set_selection(0, 0);
-
-                    if(this._is_modal) {
-                        Main.popModal(this.actor);
-                        this._is_modal = false;
-                    }
-
-                    return false;
-                }
-                else if(e.type() === Clutter.EventType.KEY_PRESS) {
-                    if(e.has_control_modifier()) return false;
-
-                    let symbol = e.get_key_symbol();
-                    let ch = Utils.get_unichar(symbol);
-                    let backspace = symbol === Clutter.BackSpace;
-                    let enter =
-                        symbol == Clutter.Return || symbol == Clutter.KP_Enter;
-
-                    if(ch || backspace || enter) return true;
-                    else return false;
-                }
-                else {
-                    return false;
-                }
-            })
-        );
-        this._note_markup.clutter_text.set_single_line_mode(false);
-        this._note_markup.clutter_text.set_activatable(false);
-        this._note_markup.clutter_text.set_line_wrap(true);
-        this._note_markup.clutter_text.set_line_wrap_mode(Pango.WrapMode.WORD);
-        this._note_markup.clutter_text.set_ellipsize(Pango.EllipsizeMode.NONE);
-        this._note_markup.clutter_text.set_editable(false);
-        this._note_markup.clutter_text.set_markup(this._note.markup);
-
         let [color_result, note_color] =
             Clutter.Color.from_string(this._note.properties.color)
         let scroll_child = new St.BoxLayout({
             vertical: true
         });
-        scroll_child.add_actor(this._note_markup);
-        this._note_scroll = new St.ScrollView({
-            style_class: 'desktop-note-scrollbox desktop-note-content'
-        });
-        this._note_scroll.set_background_color(note_color);
-        this._note_scroll.add_actor(scroll_child);
 
-        this._table.add(this._note_scroll, {
+        this._note_content_view = new DesktopNoteView.DesktopNoteView(this);
+        this._note_content_view.connect('url-clicked',
+            Lang.bind(this, function(o, url) {
+                if(Utils.starts_with(url, '/')) {
+                    url = 'file://' + url;
+                }
+                else if(url.indexOf(':') === -1) {
+                    url = 'http://' + url;
+                }
+
+                Gio.app_info_launch_default_for_uri(
+                    url,
+                    global.create_app_launch_context()
+                );
+            })
+        );
+        this._note_content_view.connect('note-clicked',
+            Lang.bind(this, function(o, title) {
+                Utils.get_client().find_note(title,
+                    Lang.bind(this, function(uri) {
+                        if(!uri) return;
+
+                        Utils.get_client().display_note(uri);
+                    })
+                );
+            })
+        );
+        this._table.add(this._note_content_view.actor, {
             row: 1,
             col: 0,
             col_span: 2
         });
+        this.set_note_background(note_color);
     },
 
     _init_note_date: function() {
@@ -393,7 +366,7 @@ const DesktopNoteContainer = new Lang.Class({
     },
 
     set_note_background: function(clutter_color) {
-        this._note_scroll.set_background_color(clutter_color);
+        this._note_content_view.set_background(clutter_color);
     },
 
     update_properties: function(new_properties) {
@@ -454,7 +427,7 @@ const DesktopNoteContainer = new Lang.Class({
     hide: function(on_complete) {
         if(!this.actor.visible) return;
 
-        this._note_markup.clutter_text.set_selection(0, 0);
+        this._note_content_view.set_selection(0, 0);
 
         Tweener.removeTweens(this.actor);
         Tweener.addTween(this.actor, {
@@ -476,6 +449,7 @@ const DesktopNoteContainer = new Lang.Class({
             this._note_drag_action_handle_clone.destroy();
         }
 
+        this._note_content_view.destroy();
         this._resize_button.destroy();
         this._note.destroy();
         this._toolbar.destroy();
@@ -492,6 +466,14 @@ const DesktopNoteContainer = new Lang.Class({
 
     get table() {
         return this._table;
+    },
+
+    set is_modal(modal) {
+        this._is_modal = modal;
+    },
+
+    get is_modal() {
+        return this._is_modal;
     }
 });
 Signals.addSignalMethods(DesktopNoteContainer.prototype);
