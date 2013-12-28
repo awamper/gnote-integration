@@ -127,7 +127,7 @@ const GnoteNote = new Lang.Class({
                 close: '</span>'
             },
             'size:small': {
-                open: '<span size="x-small">',
+                open: '<span size="xx-small">',
                 close: '</span>'
             },
             'size:large': {
