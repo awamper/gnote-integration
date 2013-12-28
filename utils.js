@@ -52,6 +52,18 @@ function open_uri(uri) {
     );
 }
 
+function is_double_click_event(clutter_event) {
+    let button = clutter_event.get_button();
+    let click_count = clutter_event.get_click_count();
+
+    if(button === Clutter.BUTTON_PRIMARY && click_count === 2) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 function get_client() {
     let dbus_name = SETTINGS.get_string(PrefsKeys.DBUS_NAME_KEY);
     let clients = {

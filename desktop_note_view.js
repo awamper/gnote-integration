@@ -33,7 +33,7 @@ const DesktopNoteView = new Lang.Class({
 
         this.actor.connect('button-press-event',
             Lang.bind(this, function(o, e) {
-                if(this._is_double_click_event(e)) {
+                if(Utils.is_double_click_event(e)) {
                     this._open_note();
                     return true;
                 }
@@ -61,7 +61,7 @@ const DesktopNoteView = new Lang.Class({
 
     _on_captured_event: function(o, e) {
         if(e.type() === Clutter.EventType.BUTTON_PRESS) {
-            if(this._is_double_click_event(e)) {
+            if(Utils.is_double_click_event(e)) {
                 this._open_note();
                 return false;
             }
@@ -111,18 +111,6 @@ const DesktopNoteView = new Lang.Class({
         if(this._container.is_modal) {
             Main.popModal(this._container.actor);
             this._container.is_modal = false;
-        }
-    },
-
-    _is_double_click_event: function(clutter_event) {
-        let button = clutter_event.get_button();
-        let click_count = clutter_event.get_click_count();
-
-        if(button === Clutter.BUTTON_PRIMARY && click_count === 2) {
-            return true;
-        }
-        else {
-            return false;
         }
     },
 
