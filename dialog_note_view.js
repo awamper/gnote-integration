@@ -22,6 +22,37 @@ const ANIMATION_TIMES = {
 
 const MIN_SCALE = 0.2;
 
+const DialogNoteViewToolbar = new Lang.Class({
+    Name: 'DialogNoteViewToolbar',
+
+    _init: function() {
+        this.actor = new St.BoxLayout({
+            style_class: 'dialog-note-view-toolbar-box'
+        });
+
+        this.search_all_btn = new St.Button({
+            label: 'Search all',
+            style_class: 'dialog-note-view-toolbar-button'
+        });
+        this.open_btn = new St.Button({
+            label: 'Open',
+            style_class: 'dialog-note-view-toolbar-button'
+        });
+        this.delete_btn = new St.Button({
+            label: 'Delete',
+            style_class: 'dialog-note-view-toolbar-button'
+        });
+
+        this.actor.add_child(this.search_all_btn);
+        this.actor.add_child(this.open_btn);
+        this.actor.add_child(this.delete_btn);
+    },
+
+    destroy: function() {
+        this.actor.destroy();
+    }
+});
+
 const DialogNoteView = new Lang.Class({
     Name: 'DialogNoteView',
     Extends: NoteContentView.NoteContentView,
@@ -37,6 +68,18 @@ const DialogNoteView = new Lang.Class({
             change_cursor_on_links: true
         };
         this.parent(params);
+
+        this._toolbar = new DialogNoteViewToolbar();
+        this._toolbar.search_all_btn.connect('clicked',
+            Lang.bind(this, this.hide)
+        );
+        this._toolbar.open_btn.connect('clicked',
+            Lang.bind(this, this._open_note)
+        );
+        this._toolbar.delete_btn.connect('clicked',
+            Lang.bind(this, this._delete_note)
+        );
+        this.actor.insert_child_at_index(this._toolbar.actor, 0);
 
         this._title_label = new St.Label({
             style_class: params.content_style,
@@ -88,6 +131,9 @@ const DialogNoteView = new Lang.Class({
             return false;
         }
         else if(e.type() === Clutter.EventType.KEY_PRESS) {
+            return true;
+        }
+        else if(e.type() === Clutter.EventType.KEY_RELEASE) {
             if(e.has_control_modifier()) return true;
 
             let symbol = e.get_key_symbol();
@@ -107,14 +153,11 @@ const DialogNoteView = new Lang.Class({
                 return true;
             }
             else if(enter) {
-                Utils.get_client().display_note(this._note.uri);
-                this.hide(false);
-                Shared.gnote_integration.hide(false);
+                this._open_note();
                 return true;
             }
             else if(symbol === Clutter.Delete) {
-                this.hide();
-                Shared.gnote_integration.delete_note(this._note.uri);
+                this._delete_note();
                 return true;
             }
             else if(ch) {
@@ -135,6 +178,17 @@ const DialogNoteView = new Lang.Class({
         else {
             return false;
         }
+    },
+
+    _delete_note: function() {
+        this.hide();
+        Shared.gnote_integration.delete_note(this._note.uri);
+    },
+
+    _open_note: function() {
+        Utils.get_client().display_note(this._note.uri);
+        this.hide(false);
+        Shared.gnote_integration.hide(false);
     },
 
     _scroll_step_up: function() {
@@ -219,6 +273,7 @@ const DialogNoteView = new Lang.Class({
         if(!animation) {
             this.actor.hide();
             this.clear();
+            this._replaced_actor.set_scale(1, 1);
             this._replaced_actor.opacity = 255;
             this._replaced_actor.show();
             this._replaced_actor.grab_key_focus();
@@ -266,6 +321,7 @@ const DialogNoteView = new Lang.Class({
             CONNECTION_IDS.TITLE_SIZE = 0;
         }
 
+        this._toolbar.destroy();
         this.parent();
     },
 

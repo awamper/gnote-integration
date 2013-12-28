@@ -197,6 +197,21 @@
     font-size: 12px;
 }
 
+.dialog-note-view-toolbar-box {
+    spacing: 10px;
+}
+
+.dialog-note-view-toolbar-button {
+    color: #C4C4C4;
+    text-decoration: underline;
+}
+
+.dialog-note-view-toolbar-button:hover {
+    background-color: #3465a4;
+    color: white;
+    transition-duration: 200ms;
+}
+
 .dialog-note-view-box {
     padding: 5px;
     color: #C4C4C4;
