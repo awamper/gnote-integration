@@ -9,6 +9,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 const PrefsKeys = Me.imports.prefs_keys;
 const NoteContentView = Me.imports.note_content_view;
+const Shared = Me.imports.shared;
 
 const CONNECTION_IDS = {
     CONTENT_SIZE: 0
@@ -29,7 +30,18 @@ const DesktopNoteView = new Lang.Class({
             change_cursor_on_links: false
         };
         this.parent(params);
-        
+
+        this.actor.connect('button-press-event',
+            Lang.bind(this, function(o, e) {
+                if(this._is_double_click_event(e)) {
+                    this._open_note();
+                    return true;
+                }
+
+                return false;
+            })
+        );
+
         this.contents_label.connect('captured-event',
             Lang.bind(this, this._on_captured_event)
         );
@@ -49,25 +61,22 @@ const DesktopNoteView = new Lang.Class({
 
     _on_captured_event: function(o, e) {
         if(e.type() === Clutter.EventType.BUTTON_PRESS) {
-            if(this._container.is_modal) return false;
-
-            this.contents_label.clutter_text.set_editable(true);
-            let result = Main.pushModal(this._container.actor, {
-                keybindingMode: Shell.KeyBindingMode.NORMAL
-            });
-
-            if(result) this._container.is_modal = true;
-
-            return false;
+            if(this._is_double_click_event(e)) {
+                this._open_note();
+                return false;
+            }
+            else if(this._container.is_modal) {
+                return false;
+            }
+            else {
+                this._push_modal();
+                return false;
+            }
         }
         else if(e.type() === Clutter.EventType.LEAVE) {
             this.contents_label.clutter_text.set_selection(0, 0);
             this.contents_label.clutter_text.set_editable(false);
-
-            if(this._container.is_modal) {
-                Main.popModal(this._container.actor);
-                this._container.is_modal = false;
-            }
+            this._pop_modal();
 
             return false;
         }
@@ -85,6 +94,42 @@ const DesktopNoteView = new Lang.Class({
         else {
             return false;
         }
+    },
+
+    _push_modal: function() {
+        if(this._container.is_modal) return;
+
+        this.contents_label.clutter_text.set_editable(true);
+        let result = Main.pushModal(this._container.actor, {
+            keybindingMode: Shell.KeyBindingMode.NORMAL
+        });
+
+        if(result) this._container.is_modal = true;
+    },
+
+    _pop_modal: function() {
+        if(this._container.is_modal) {
+            Main.popModal(this._container.actor);
+            this._container.is_modal = false;
+        }
+    },
+
+    _is_double_click_event: function(clutter_event) {
+        let button = clutter_event.get_button();
+        let click_count = clutter_event.get_click_count();
+
+        if(button === Clutter.BUTTON_PRIMARY && click_count === 2) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+
+    _open_note: function() {
+        this._pop_modal();
+        Shared.desktop_notes.hide_modal();
+        Utils.get_client().display_note(this._container.note.uri);
     },
 
     set_selection: function(start, end) {
