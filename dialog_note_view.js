@@ -91,13 +91,21 @@ const DialogNoteView = new Lang.Class({
 
             let symbol = e.get_key_symbol();
             let ch = Utils.get_unichar(symbol);
-            let enter = symbol == Clutter.Return || symbol == Clutter.KP_Enter;
+            let enter =
+                symbol === Clutter.Return
+                || symbol === Clutter.KP_Enter;
+            let control =
+                symbol === Clutter.KEY_Control_L
+                || symbol === Clutter.KEY_Control_R;
 
             if(symbol === Clutter.BackSpace || symbol === Clutter.Escape) {
                 this.hide();
                 return true;
             }
-            if(ch || enter) {
+            else if(control) {
+                return true;
+            }
+            else if(ch || enter) {
                 return true;
             }
             else if(symbol === Clutter.Up) {
@@ -110,7 +118,7 @@ const DialogNoteView = new Lang.Class({
             };
         }
         else {
-            return false;
+            return true;
         }
     },
 
