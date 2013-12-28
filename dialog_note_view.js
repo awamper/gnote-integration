@@ -100,12 +100,36 @@ const DialogNoteView = new Lang.Class({
             if(ch || enter) {
                 return true;
             }
-            else {
-                return false;
+            else if(symbol === Clutter.Up) {
+                this._scroll_step_up();
+                return true;
             }
+            else if (symbol === Clutter.Down) {
+                this._scroll_step_down();
+                return true;
+            };
         }
         else {
             return false;
+        }
+    },
+
+    _scroll_step_up: function() {
+        let value = this.scroll.vscroll.adjustment.value;
+        let step_increment = this.scroll.vscroll.adjustment.step_increment;
+        
+        if(value > 0) {
+            this.scroll.vscroll.adjustment.value = value - step_increment;
+        }
+    },
+
+    _scroll_step_down: function() {
+        let value = this.scroll.vscroll.adjustment.value;
+        let step_increment = this.scroll.vscroll.adjustment.step_increment;
+        let upper = this.scroll.vscroll.adjustment.upper;
+        
+        if(value < upper) {
+            this.scroll.vscroll.adjustment.value = value + step_increment;
         }
     },
 
