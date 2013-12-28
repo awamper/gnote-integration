@@ -9,6 +9,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 const PrefsKeys = Me.imports.prefs_keys;
 const NoteContentView = Me.imports.note_content_view;
+const Shared = Me.imports.shared;
 
 const CONNECTION_IDS = {
     CONTENT_SIZE: 0,
@@ -105,7 +106,18 @@ const DialogNoteView = new Lang.Class({
             else if(control) {
                 return true;
             }
-            else if(ch || enter) {
+            else if(enter) {
+                Utils.get_client().display_note(this._note.uri);
+                this.hide(false);
+                Shared.gnote_integration.hide(false);
+                return true;
+            }
+            else if(symbol === Clutter.Delete) {
+                this.hide();
+                Shared.gnote_integration.delete_note(this._note.uri);
+                return true;
+            }
+            else if(ch) {
                 return true;
             }
             else if(symbol === Clutter.Up) {
@@ -115,7 +127,10 @@ const DialogNoteView = new Lang.Class({
             else if (symbol === Clutter.Down) {
                 this._scroll_step_down();
                 return true;
-            };
+            }
+            else {
+                return true;
+            }
         }
         else {
             return true;
@@ -191,14 +206,15 @@ const DialogNoteView = new Lang.Class({
         this.grab_key_focus();
     },
 
-    hide: function() {
+    hide: function(animation) {
         if(!this.showed) return;
 
         this.contents_label.clutter_text.set_selection(0, 0);
         this.showed = false;
-        let animation = Utils.SETTINGS.get_boolean(
-            PrefsKeys.ENABLE_ANIMATIONS_KEY
-        );
+        animation =
+            animation !== undefined
+            ? animation
+            : Utils.SETTINGS.get_boolean(PrefsKeys.ENABLE_ANIMATIONS_KEY);
 
         if(!animation) {
             this.actor.hide();
