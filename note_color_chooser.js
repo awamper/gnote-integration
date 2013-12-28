@@ -31,6 +31,7 @@ const NoteColorChooser = new Lang.Class({
             'changed::' + PrefsKeys.DESKTOP_NOTES_COLORS_KEY,
             Lang.bind(this, function() {
                 this._colors = this._get_colors();
+                this._show_colors();
             })
         );
 
