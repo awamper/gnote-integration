@@ -298,7 +298,7 @@ const DesktopNoteContainer = new Lang.Class({
         });
     },
 
-    _set_not_drag_area: function() {
+    _set_note_drag_area: function() {
         let parent = this.actor.get_parent();
         let area_width = parent.width - this.actor.width;
         let area_height = parent.height - this.actor.height;
@@ -332,7 +332,7 @@ const DesktopNoteContainer = new Lang.Class({
 
     _on_drag_begin: function(action, actor, x, y, mods) {
         if(!this._note_drag_action.drag_area_set) {
-            this._set_not_drag_area();
+            this._set_note_drag_area();
         }
 
         this._note_drag_action_handle_clone = new Clutter.Clone({
