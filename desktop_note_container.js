@@ -69,6 +69,10 @@ const DesktopNoteResizeButton = new Lang.Class({
             width: 0,
             height: 0
         };
+        this._container_max_size = {
+            width: 0,
+            height: 0
+        };
         this._resize_background = null;
 
         this._container = desktop_note_container;
@@ -101,6 +105,7 @@ const DesktopNoteResizeButton = new Lang.Class({
                 this._start_size.height = this._container.actor.height;
                 this._last_size.width = this._container.actor.width;
                 this._last_size.height = this._container.actor.height;
+                this._container_max_size = this._get_container_max_size();
 
                 this.actor.hide();
             })
@@ -112,11 +117,17 @@ const DesktopNoteResizeButton = new Lang.Class({
                 let width = this._start_size.width + delta_x;
                 let height = this._start_size.height + delta_y;
 
-                if(width >= MIN_WIDTH) {
+                if(
+                    width >= MIN_WIDTH
+                    && width <= this._container_max_size.width
+                ) {
                     this._resize_background.width = width;
                     this._last_size.width = width;
                 }
-                if(height >= MIN_HEIGHT) {
+                if(
+                    height >= MIN_HEIGHT
+                    && height <= this._container_max_size.height
+                ) {
                     this._resize_background.height = height;
                     this._last_size.height = height;
                 }
@@ -140,6 +151,10 @@ const DesktopNoteResizeButton = new Lang.Class({
                 this._resize_background.destroy();
                 this._resize_background = null;
                 this._container.reset_drag_area();
+                this._container_max_size = {
+                    width: 0,
+                    height: 0
+                };
             })
         );
         this.actor.add_action(drag_action);
@@ -163,6 +178,17 @@ const DesktopNoteResizeButton = new Lang.Class({
                 this.actor.show();
             })
         });
+    },
+
+    _get_container_max_size: function() {
+        let container_parent = this._container.actor.get_parent();
+        let width = container_parent.width - this._container.actor.x;
+        let height = container_parent.height - this._container.actor.y;
+
+        return {
+            width: width,
+            height: height
+        };
     },
 
     destroy: function() {
