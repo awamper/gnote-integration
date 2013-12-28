@@ -133,7 +133,7 @@ const DialogNoteView = new Lang.Class({
             }
         }
         else {
-            return true;
+            return false;
         }
     },
 
