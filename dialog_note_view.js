@@ -10,6 +10,7 @@ const Utils = Me.imports.utils;
 const PrefsKeys = Me.imports.prefs_keys;
 const NoteContentView = Me.imports.note_content_view;
 const Shared = Me.imports.shared;
+const ConfirmationModalDialog = Me.imports.confirmation_modal_dialog;
 
 const CONNECTION_IDS = {
     CONTENT_SIZE: 0,
@@ -181,8 +182,22 @@ const DialogNoteView = new Lang.Class({
     },
 
     _delete_note: function() {
-        this.hide();
-        Shared.gnote_integration.delete_note(this._note.uri);
+        let modal = new ConfirmationModalDialog.ConfirmationModalDialog({
+            box_style: 'confirmation-modal-dialog-box',
+            button_style: 'confirmation-modal-dialog-button',
+            message_style: 'confirmation-modal-dialog-message',
+            source_actor: Shared.gnote_integration.actor,
+            destroy_on_close: true
+        });
+        modal.connect('activated',
+            Lang.bind(this, function(button, type) {
+                if(type === ConfirmationModalDialog.BUTTON_TYPES.OK) {
+                    this.hide();
+                    Shared.gnote_integration.delete_note(this._note.uri);
+                }
+            })
+        );
+        modal.show();
     },
 
     _open_note: function() {

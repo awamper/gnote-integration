@@ -496,3 +496,24 @@
 .desktop-notes-page-indicator:checked:active .desktop-notes-page-indicator-icon {
     background-image: url(images/page-indicator-checked.svg);
 }
+
+.confirmation-modal-dialog-box {
+    spacing: 10px;
+    width: 200px;
+    height: 70px;
+}
+
+.confirmation-modal-dialog-message {
+    font-size: 20px;
+}
+
+.confirmation-modal-dialog-button {
+    font-size: 17px;
+    color: #C4C4C4;
+}
+
+.confirmation-modal-dialog-button:hover {
+    background-color: #3465a4;
+    color: white;
+    transition-duration: 200ms;
+}

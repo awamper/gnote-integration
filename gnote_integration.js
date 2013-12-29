@@ -23,6 +23,7 @@ const DialogNoteView = Me.imports.dialog_note_view;
 const DesktopNotes = Me.imports.desktop_notes;
 const Constants = Me.imports.constants;
 const Shared = Me.imports.shared;
+const ConfirmationModalDialog = Me.imports.confirmation_modal_dialog;
 
 const TIMEOUT_TIMES = {
     SEARCH: 400
@@ -375,11 +376,26 @@ const GnoteIntegration = new Lang.Class({
             return true;
         }
         else if(symbol == Clutter.Delete) {
-            let selected_index = this._list_view.get_selected_index();
+            let modal = new ConfirmationModalDialog.ConfirmationModalDialog({
+                box_style: 'confirmation-modal-dialog-box',
+                button_style: 'confirmation-modal-dialog-button',
+                message_style: 'confirmation-modal-dialog-message',
+                source_actor: this.actor,
+                destroy_on_close: true
+            });
+            modal.connect('activated',
+                Lang.bind(this, function(button, type) {
+                    if(type === ConfirmationModalDialog.BUTTON_TYPES.OK) {
+                        let selected_index =
+                            this._list_view.get_selected_index();
 
-            if(selected_index !== -1) {
-                this.delete_item(this._list_model, selected_index);
-            }
+                        if(selected_index !== -1) {
+                            this.delete_item(this._list_model, selected_index);
+                        }
+                    }
+                })
+            );
+            modal.show();
 
             return true;
         }
