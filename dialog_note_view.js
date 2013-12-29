@@ -285,13 +285,14 @@ const DialogNoteView = new Lang.Class({
             ? animation
             : Utils.SETTINGS.get_boolean(PrefsKeys.ENABLE_ANIMATIONS_KEY);
 
+        this.replaced_actor_grab_key_focus();
+
         if(!animation) {
             this.actor.hide();
             this.clear();
             this._replaced_actor.set_scale(1, 1);
             this._replaced_actor.opacity = 255;
             this._replaced_actor.show();
-            this._replaced_actor.grab_key_focus();
             return;
         }
 
@@ -318,8 +319,15 @@ const DialogNoteView = new Lang.Class({
             scale_y: 1,
             transition: 'easeOutQuad'
         });
+    },
 
-        this._replaced_actor.grab_key_focus();
+    replaced_actor_grab_key_focus: function() {
+        if(!Utils.is_blank(Shared.gnote_integration.search_text)) {
+            Shared.gnote_integration.search_entry.grab_key_focus();
+        }
+        else {
+            this._replaced_actor.grab_key_focus();
+        }
     },
 
     grab_key_focus: function() {

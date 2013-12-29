@@ -672,6 +672,10 @@ const GnoteIntegration = new Lang.Class({
         return this._search_entry.text;
     },
 
+    get search_entry() {
+        return this._search_entry;
+    },
+
     get statusbar() {
         return this._statusbar;
     }
