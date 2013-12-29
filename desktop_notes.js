@@ -149,9 +149,29 @@ const DesktopNotes = new Lang.Class({
         IDS.MAX_PAGES = Utils.SETTINGS.connect(
             'changed::' + PrefsKeys.DESKTOP_NOTES_MAX_PAGES,
             Lang.bind(this, function() {
-                this._page_indicators.set_n_pages(
-                    Utils.SETTINGS.get_int(PrefsKeys.DESKTOP_NOTES_MAX_PAGES)
+                let max_pages = Utils.SETTINGS.get_int(
+                    PrefsKeys.DESKTOP_NOTES_MAX_PAGES
                 );
+                let max_index = max_pages - 1;
+
+                if(max_index < this._page_indicators.n_pages) {
+                    for(let i in this._notes) {
+                        let note = this._notes[i].note;
+
+                        if(note.properties.page > max_index) {
+                            this.update_note_properties(note.uri, {
+                                page: max_index
+                            });
+                        }
+                    }
+                }
+
+                if(this._current_page_index >= max_index) {
+                    this.show_page(max_index);
+                }
+
+                this._page_indicators.set_n_pages(max_pages);
+                this.indicate_pages();
             })
         );
 
