@@ -143,6 +143,14 @@ const ClientBase = new Lang.Class({
         );
     },
 
+    display_note_with_search: function(uri, term, callback) {
+        this._provider.DisplayNoteWithSearchRemote(uri, term,
+            Lang.bind(this, function(result, error) {
+                this._return(result, error, 'display_search_with_text', callback);
+            })
+        );
+    },
+
     display_search: function(callback) {
         this._provider.DisplaySearchRemote(
             Lang.bind(this, function(result, error) {

@@ -581,7 +581,27 @@ const GnoteIntegration = new Lang.Class({
     },
 
     activate_item: function(model, index) {
-        this._show_note(model.get(index));
+        if(
+            Utils.SETTINGS.get_int(PrefsKeys.SNIPPET_ACTIVATE_ACTION_KEY)
+            === Constants.SNIPPET_ACTIVATE_ACTIONS.VIEW_NOTE
+        ) {
+            this._show_note(model.get(index));
+        }
+        else {
+            this.hide(false);
+
+            if(!this._is_empty_entry(this._search_entry)) {
+                Utils.get_client().display_note_with_search(
+                    model.get(index),
+                    this._search_entry.text
+                );
+                this._search_entry.set_text('');
+                this._notes_changed_trigger = true;
+            }
+            else {
+                Utils.get_client().display_note(model.get(index));
+            }
+        }
     },
 
     delete_item: function(model, index) {

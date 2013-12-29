@@ -105,5 +105,9 @@
         <default>false</default>
     </key>
 
+    <key type="i" name="snippet-activate-action">
+        <default>0</default>
+    </key>
+
   </schema>
 </schemalist>
