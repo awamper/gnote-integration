@@ -21,3 +21,4 @@ const ENABLED_DESKTOP_NOTES_KEY = 'enabled-desktop-notes';
 const DESKTOP_NOTES_PROPERTIES_KEY = 'desktop-notes-properties';
 const DESKTOP_NOTES_COLORS_KEY = 'desktop-notes-colors';
 const DESKTOP_NOTES_MAX_PAGES = 'desktop-notes-max-pages';
+const DISABLE_SEARCH_DIALOG_KEY = 'disable-search-dialog';

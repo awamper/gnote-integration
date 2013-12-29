@@ -242,7 +242,17 @@ const GnoteIntegrationButton = new Lang.Class({
             case Clutter.BUTTON_MIDDLE:
                 break;
             default:
-                this._gnote.toggle();
+                let disable_search_dialog = Utils.SETTINGS.get_boolean(
+                    PrefsKeys.DISABLE_SEARCH_DIALOG_KEY
+                );
+
+                if(disable_search_dialog) {
+                    Utils.get_client().display_search();
+                }
+                else {
+                    this._gnote.toggle();
+                }
+
                 break;
         }
 

@@ -101,5 +101,9 @@
         <default>5</default>
     </key>
 
+    <key type="b" name="disable-search-dialog">
+        <default>false</default>
+    </key>
+
   </schema>
 </schemalist>

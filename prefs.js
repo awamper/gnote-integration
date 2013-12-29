@@ -547,6 +547,11 @@ const PrefsWidget = new GObject.Class({
             }
         );
 
+        page.add_boolean(
+            'Show app instead of search dialog:',
+            PrefsKeys.DISABLE_SEARCH_DIALOG_KEY
+        );
+
         let result = {
             label: page_label,
             page: page
