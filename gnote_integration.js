@@ -307,7 +307,7 @@ const GnoteIntegration = new Lang.Class({
             else if(unichar === 'n' && !this._is_empty_entry(this._search_entry)) {
                 let search_text = this._search_entry.text.trim();
                 this.hide(false);
-                this._search_entry.set_text('');
+                this.clear_search();
                 Utils.get_client().create_named_note(
                     search_text,
                     Lang.bind(this, function(uri) {
@@ -422,10 +422,9 @@ const GnoteIntegration = new Lang.Class({
                 this.hide();
             }
             else {
-                this._search_entry.set_text('');
+                this.clear_search();
                 this.actor.grab_key_focus();
                 this._list_view.clear();
-                this._notes_changed_trigger = true;
                 this._show_all_notes();
             }
 
@@ -561,7 +560,7 @@ const GnoteIntegration = new Lang.Class({
             event.type() === Clutter.EventType.BUTTON_PRESS
             && this.is_point_outside_dialog(x, y))
         {
-            this._search_entry.set_text('');
+            this.clear_search();
         }
     },
 
@@ -595,8 +594,7 @@ const GnoteIntegration = new Lang.Class({
                     model.get(index),
                     this._search_entry.text
                 );
-                this._search_entry.set_text('');
-                this._notes_changed_trigger = true;
+                this.clear_search();
             }
             else {
                 Utils.get_client().display_note(model.get(index));
@@ -649,6 +647,11 @@ const GnoteIntegration = new Lang.Class({
             : animation
         this._list_view.hide_shortcuts();
         this.parent(animation);
+    },
+
+    clear_search: function() {
+        this._search_entry.set_text('');
+        this._notes_changed_trigger = true;
     },
 
     destroy: function() {
