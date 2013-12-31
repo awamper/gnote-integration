@@ -2,6 +2,7 @@ const St = imports.gi.St;
 const Lang = imports.lang;
 const Pango = imports.gi.Pango;
 const Clutter = imports.gi.Clutter;
+const Meta = imports.gi.Meta;
 const Tweener = imports.ui.tweener;
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -128,10 +129,11 @@ const DialogNoteView = new Lang.Class({
         else if(e.type() === Clutter.EventType.LEAVE) {
             this.contents_label.clutter_text.set_selection(0, 0);
             this.contents_label.clutter_text.set_editable(false);
-            global.unset_cursor();
+            global.screen.set_cursor(Meta.Cursor.DEFAULT);
             return false;
         }
         else if(e.type() === Clutter.EventType.KEY_PRESS) {
+            if(e.has_control_modifier()) return false;
             return true;
         }
         else if(e.type() === Clutter.EventType.KEY_RELEASE) {

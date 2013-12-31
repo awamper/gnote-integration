@@ -161,8 +161,8 @@ const DesktopNoteResizeButton = new Lang.Class({
     },
 
     _reposition: function() {
-        this.actor.x = this._container.actor.width - this.actor.width - 1;
-        this.actor.y = this._container.actor.height - this.actor.height - 1;
+        this.actor.x = this._container._table.width - this.actor.width - 1;
+        this.actor.y = this._container._table.height - this.actor.height - 1;
     },
 
     _resize_container: function(width, height) {
@@ -208,7 +208,7 @@ const DesktopNoteContainer = new Lang.Class({
         this._note = note;
         this.desktop_notes = desktop_notes;
 
-        this.actor = new St.BoxLayout();
+        this.actor = new Clutter.Actor();
         this.actor.set_pivot_point(0.5, 0.5);
         this.actor.hide();
 
@@ -363,9 +363,9 @@ const DesktopNoteContainer = new Lang.Class({
 
         this._note_drag_action_handle_clone = new Clutter.Clone({
             source: this.actor,
+            opacity: 100,
             x: this.actor.x,
-            y: this.actor.y,
-            opacity: 100
+            y: this.actor.y
         });
         this.actor.get_parent().add_child(this._note_drag_action_handle_clone);
     },

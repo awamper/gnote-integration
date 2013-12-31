@@ -45,7 +45,7 @@ const GnoteEntryMenuItem = new Lang.Class({
         });
         this.entry.set_primary_icon(primary_icon);
         this.entry.clutter_text.connect('activate', Lang.bind(this, this.activate));
-        this.addActor(this.entry);
+        this.actor.add_child(this.entry);
     },
 
     _onButtonReleaseEvent: function(actor, event) {
@@ -101,7 +101,7 @@ const GnotePinnedNoteMenuItem = Lang.Class({
         this.box = new St.BoxLayout();
         this.box.add_child(this.icon);
         this.box.add(this.title);
-        this.addActor(this.box);
+        this.actor.add_child(this.box);
     },
 
     _onButtonReleaseEvent: function(actor, event) {
@@ -111,10 +111,17 @@ const GnotePinnedNoteMenuItem = Lang.Class({
 
 const GnoteIntegrationButton = new Lang.Class({
     Name: 'GnoteIntegrationButton',
-    Extends: PanelMenu.SystemStatusButton,
+    Extends: PanelMenu.Button,
 
     _init: function() {
-        this.parent(Utils.ICONS.INDICATOR);
+        this.parent(0.0, "gnote-integration");
+
+        let icon = new St.Icon({
+            icon_name: Utils.ICONS.INDICATOR,
+            style_class: 'system-status-icon'
+        });
+        this.actor.add_child(icon);
+
         this._desktop_notes = null;
         this._gnote = new GnoteIntegration.GnoteIntegration();
         this._create_note = null;

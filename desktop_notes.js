@@ -91,7 +91,7 @@ const DesktopNotes = new Lang.Class({
         );
         this.set_background_color(0, 0, 0, 0);
         
-        this._box = new St.BoxLayout();
+        this._box = new Clutter.Actor();
 
         this._page_indicators = new PageIndicators.PageIndicators();
         this._page_indicators.set_n_pages(

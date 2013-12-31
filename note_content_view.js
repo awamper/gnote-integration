@@ -1,6 +1,6 @@
 const St = imports.gi.St;
 const Lang = imports.lang;
-const Shell = imports.gi.Shell;
+const Meta = imports.gi.Meta;
 const Clutter = imports.gi.Clutter;
 const Pango = imports.gi.Pango;
 const Signals = imports.signals;
@@ -112,10 +112,10 @@ const NoteContentView = new Lang.Class({
         let url = this._find_url_at_coords(x, y);
 
         if(url !== -1) {
-            global.set_cursor(Shell.Cursor.POINTING_HAND);
+            global.screen.set_cursor(Meta.Cursor.POINTING_HAND);
         }
         else {
-            global.unset_cursor();
+            global.screen.set_cursor(Meta.Cursor.DEFAULT);
         }
     },
 

@@ -43,7 +43,7 @@ const ConfirmationModalDialog = new Lang.Class({
             Lang.bind(this, this.destroy)
         );
 
-        this.actor = new St.BoxLayout({
+        this.actor = new St.Widget({
             style: 'background-color: rgba(0, 0, 0, 0.7)',
             reactive: true
         });
@@ -55,12 +55,7 @@ const ConfirmationModalDialog = new Lang.Class({
         this._table = new St.Table({
             style_class: this.params.box_style
         });
-        this.actor.add(this._table, {
-            x_expand: true,
-            y_expand: true,
-            x_fill: false,
-            y_fill: false
-        });
+        this.actor.add_child(this._table);
 
         this._message = new St.Label({
             text: this.params.message,

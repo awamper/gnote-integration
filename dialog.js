@@ -34,8 +34,12 @@ const Dialog = new Lang.Class({
             'key-release-event',
             Lang.bind(this, this._on_key_release_event)
         );
-        Main.layoutManager.panelBox.add_child(this.actor);
-        this.actor.lower_bottom();
+
+        Main.uiGroup.add_actor(this.actor);
+        Main.uiGroup.set_child_below_sibling(
+            this.actor,
+            Main.layoutManager.panelBox
+        );
 
         this.table = new St.Table({
             style_class: this.params.style_class,
@@ -101,10 +105,13 @@ const Dialog = new Lang.Class({
         let my_width = primary.width / 100 * this.params.width_percents;
         let my_height = available_height / 100 * this.params.height_percents;
 
-        this.actor.x = primary.width - my_width;
-        this._hidden_y = this.actor.get_parent().height - my_height;
+        this._hidden_y =
+            primary.y
+            + Main.layoutManager.panelBox.height
+            - my_height;
         this._target_y = this._hidden_y + my_height;
 
+        this.actor.x = primary.width - my_width;
         this.actor.y = this._hidden_y;
         this.actor.width = my_width;
         this.actor.height = my_height;
