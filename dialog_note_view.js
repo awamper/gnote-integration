@@ -133,8 +133,22 @@ const DialogNoteView = new Lang.Class({
             return false;
         }
         else if(e.type() === Clutter.EventType.KEY_PRESS) {
-            if(e.has_control_modifier()) return false;
-            return true;
+            let symbol = e.get_key_symbol();
+
+            if(e.has_control_modifier()) {
+                return false;
+            }
+            else if(symbol === Clutter.Up) {
+                this._scroll_step_up();
+                return true;
+            }
+            else if (symbol === Clutter.Down) {
+                this._scroll_step_down();
+                return true;
+            }
+            else {
+                return true;
+            }
         }
         else if(e.type() === Clutter.EventType.KEY_RELEASE) {
             if(e.has_control_modifier()) return true;
@@ -164,14 +178,6 @@ const DialogNoteView = new Lang.Class({
                 return true;
             }
             else if(ch) {
-                return true;
-            }
-            else if(symbol === Clutter.Up) {
-                this._scroll_step_up();
-                return true;
-            }
-            else if (symbol === Clutter.Down) {
-                this._scroll_step_down();
                 return true;
             }
             else {
