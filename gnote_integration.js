@@ -303,6 +303,7 @@ const GnoteIntegration = new Lang.Class({
             
             if(number !== NaN && number >= 1 && number <= 9) {
                 this._activate_by_shortcut(number);
+                this._list_view.hide_shortcuts();
             }
             else if(unichar === 'n' && !this._is_empty_entry(this._search_entry)) {
                 let search_text = this._search_entry.text.trim();
