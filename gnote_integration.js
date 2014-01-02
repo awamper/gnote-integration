@@ -468,7 +468,16 @@ const GnoteIntegration = new Lang.Class({
     _activate_by_shortcut: function(number) {
         let index = this._list_view.get_index_for_shortcut(number);
         if(index === -1) return;
-        this.activate_item(this._list_model, index);
+
+        if(
+            Utils.SETTINGS.get_int(PrefsKeys.SHORTCUT_ACTIVATE_ACTION_KEY)
+            === Constants.SHORTCUT_ACTIVATE_ACTIONS.VIEW_NOTE
+        ) {
+            this.activate_item(this._list_model, index);
+        }
+        else {
+            this.activate_item_alt(this._list_model, index);
+        }
     },
 
     _get_user_renderer: function(settings_key) {
