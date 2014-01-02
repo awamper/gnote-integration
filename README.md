@@ -3,18 +3,21 @@ Integration Gnote or Tomboy with gnome-shell
   
 ##### Search notes(Left-click on panel button or \<Super\>G): 
 * Start typing to search  
-* Left-click(or \<Enter\>) - activate item  
-* Right-click(or \<Delete\>) - delete  
+* Left-click(or \<Enter\>) - view note  
+* Right-click(or \<Ctrl\>\<Enter\>) - open in edior  
+* \<Delete\> - delete  
 * \<Up\>/\<Down\> - navigation  
 * \<Escape\> - close dialog
+* \<Ctrl\> + 1-9 - shortcut for first 9 notes
 
 ##### Note view:  
 * \<Escape\> or \<BackSpace\> - close  
-* Double-click - open in editor
+* \<Enter\> - open in editor
 
 ##### Desktop notes:
 * Drag by title to set position  
 * Drag by lower right corner to resize
+* Scroll with pressed right button - previous/next page
 
 ##### Menu/Pinned notes(Right-click on panel button or \<Super\>\<Shift\>G:
 * Click title - open note  
