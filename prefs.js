@@ -552,6 +552,23 @@ const PrefsWidget = new GObject.Class({
             PrefsKeys.DISABLE_SEARCH_DIALOG_KEY
         );
 
+        let actions = [
+            {
+                title: 'View note',
+                value: Constants.SHORTCUT_ACTIVATE_ACTIONS.VIEW_NOTE
+            },
+            {
+                title: 'Open in editor',
+                value: Constants.SHORTCUT_ACTIVATE_ACTIONS.OPEN_IN_EDITOR
+            }
+        ];
+        page.add_combo(
+            'Shortcut activate action:',
+            PrefsKeys.SHORTCUT_ACTIVATE_ACTION_KEY,
+            actions,
+            'integer'
+        );
+
         let result = {
             label: page_label,
             page: page
