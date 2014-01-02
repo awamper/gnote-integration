@@ -215,7 +215,7 @@ const GnoteIntegration = new Lang.Class({
     _on_item_clicked: function(object, button, display, model, index) {
         switch(button) {
             case Clutter.BUTTON_SECONDARY:
-                this.delete_item(model, index);
+                this.activate_item_alt(model, index);
                 break;
             case Clutter.BUTTON_MIDDLE:
                 break;
@@ -371,7 +371,12 @@ const GnoteIntegration = new Lang.Class({
             let selected_index = this._list_view.get_selected_index();
 
             if(selected_index !== -1) {
-                this.activate_item(this._list_model, selected_index);
+                if(e.has_control_modifier()) {
+                    this.activate_item_alt(this._list_model, selected_index);
+                }
+                else {
+                    this.activate_item(this._list_model, selected_index);
+                }
             }
 
             return true;
@@ -581,25 +586,21 @@ const GnoteIntegration = new Lang.Class({
     },
 
     activate_item: function(model, index) {
-        if(
-            Utils.SETTINGS.get_int(PrefsKeys.SNIPPET_ACTIVATE_ACTION_KEY)
-            === Constants.SNIPPET_ACTIVATE_ACTIONS.VIEW_NOTE
-        ) {
-            this._show_note(model.get(index));
+        this._show_note(model.get(index));
+    },
+
+    activate_item_alt: function(model, index) {
+        this.hide(false);
+
+        if(!this._is_empty_entry(this._search_entry)) {
+            Utils.get_client().display_note_with_search(
+                model.get(index),
+                this._search_entry.text
+            );
+            this.clear_search();
         }
         else {
-            this.hide(false);
-
-            if(!this._is_empty_entry(this._search_entry)) {
-                Utils.get_client().display_note_with_search(
-                    model.get(index),
-                    this._search_entry.text
-                );
-                this.clear_search();
-            }
-            else {
-                Utils.get_client().display_note(model.get(index));
-            }
+            Utils.get_client().display_note(model.get(index));
         }
     },
 
