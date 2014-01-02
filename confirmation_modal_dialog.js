@@ -182,8 +182,8 @@ const ConfirmationModalDialog = new Lang.Class({
     },
 
     _activate_button: function(button_type) {
-        this.emit('activated', button_type);
         this.hide();
+        this.emit('activated', button_type);
     },
 
     show: function() {
