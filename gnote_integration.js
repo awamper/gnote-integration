@@ -660,7 +660,9 @@ const GnoteIntegration = new Lang.Class({
         this.parent(animation);
     },
 
-    clear_search: function() {
+    clear_search: function(reset_trigger) {
+        if(this._is_empty_entry(this._search_entry)) return;
+
         this._search_entry.set_text('');
         this._notes_changed_trigger = true;
     },
