@@ -111,6 +111,14 @@ const ClientBase = new Lang.Class({
         );
     },
 
+    set_note_contents: function(uri, contents, callback) {
+        this._provider.SetNoteContentsRemote(uri, contents,
+            Lang.bind(this, function(result, error) {
+                this._return(result, error, 'set_note_contents', callback);
+            })
+        );
+    },
+
     note_exists: function(uri, callback) {
         this._provider.NoteExistsRemote(uri,
             Lang.bind(this, function(result, error) {
@@ -123,6 +131,14 @@ const ClientBase = new Lang.Class({
         this._provider.FindNoteRemote(title,
             Lang.bind(this, function(result, error) {
                 this._return(result, error, 'find_note', callback);
+            })
+        );
+    },
+
+    create_note: function(callback) {
+        this._provider.CreateNoteRemote(
+            Lang.bind(this, function(result, error) {
+                this._return(result, error, 'create_note', callback);
             })
         );
     },

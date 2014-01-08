@@ -61,9 +61,12 @@ const GnoteEntryMenuItem = new Lang.Class({
     },
 
     activate: function() {
-        let text = this.entry.text === this._hint_text ? '' : this.entry.text;
-        this.emit('activate', text);
+        this.emit('activate', this.entry_text);
     },
+
+    get entry_text() {
+        return this.entry.text === this._hint_text ? '' : this.entry.text;
+    }
 });
 
 const GnotePinnedNoteMenuItem = Lang.Class({
@@ -117,7 +120,8 @@ const GnoteIntegrationButton = new Lang.Class({
         this.parent(Utils.ICONS.INDICATOR);
         this._desktop_notes = null;
         this._gnote = new GnoteIntegration.GnoteIntegration();
-        this._create_note = null;
+        this._create_named_note_menu_item = null;
+        this._create_note_from_clipboard_menu_item = null;
 
         this.menu.actor.connect(
             'key-press-event',
@@ -180,26 +184,36 @@ const GnoteIntegrationButton = new Lang.Class({
         }
 
         let separator = new PopupMenu.PopupSeparatorMenuItem();
-        this._create_note = new GnoteEntryMenuItem({
+        this._create_named_note_menu_item = new GnoteEntryMenuItem({
             style_class: 'gnote-entry-menu-item'
         });
-        this._create_note.connect('activate',
+        this._create_named_note_menu_item.connect('activate',
             Lang.bind(this, function(object, note_name) {
                 if(!note_name) return;
+                this._create_new_note(note_name, null, true);
+            })
+        );
+        this.menu.addMenuItem(separator);
+        this.menu.addMenuItem(this._create_named_note_menu_item);
 
-                Utils.get_client().create_named_note(note_name,
-                    Lang.bind(this, function(uri) {
-                        if(!uri) return;
+        let second_separator = new PopupMenu.PopupSeparatorMenuItem();
+        this._create_note_from_clipboard_menu_item = new PopupMenu.PopupMenuItem('');
+        this._create_note_from_clipboard_menu_item.label.clutter_text.set_use_markup(true);
+        this._create_note_from_clipboard_menu_item.connect('activate',
+            Lang.bind(this, function() {
+                let clipboard = St.Clipboard.get_default();
+                clipboard.get_text(St.ClipboardType.CLIPBOARD,
+                    Lang.bind(this, function(clipboard, text) {
+                        if(Utils.is_blank(text)) return;
 
-                        Utils.get_client().display_note(uri);
+                        let note_name = null;
+                        let entry_text = this._create_named_note_menu_item.entry_text;
+                        if(!Utils.is_blank(entry_text)) note_name = entry_text;
+                        this._create_new_note(note_name, text, true);
                     })
                 );
             })
         );
-        this.menu.addMenuItem(separator);
-        this.menu.addMenuItem(this._create_note);
-
-        let second_separator = new PopupMenu.PopupSeparatorMenuItem();
         let show_all_menu_item = new PopupMenu.PopupMenuItem('Show all notes');
         show_all_menu_item.connect('activate',
             Lang.bind(this, function() {
@@ -213,6 +227,7 @@ const GnoteIntegrationButton = new Lang.Class({
             })
         );
         this.menu.addMenuItem(second_separator);
+        this.menu.addMenuItem(this._create_note_from_clipboard_menu_item);
         this.menu.addMenuItem(show_all_menu_item);
         this.menu.addMenuItem(preferences_menu_item);
     },
@@ -221,9 +236,9 @@ const GnoteIntegrationButton = new Lang.Class({
         let symbol = e.get_key_symbol()
         let ch = Utils.get_unichar(symbol);
 
-        if(ch && this._create_note) {
-            this._create_note.entry.set_text(ch);
-            this._create_note.entry.grab_key_focus();
+        if(ch && this._create_named_note_menu_item) {
+            this._create_named_note_menu_item.entry.set_text(ch);
+            this._create_named_note_menu_item.entry.grab_key_focus();
             return true;
         }
         else {
@@ -268,7 +283,62 @@ const GnoteIntegrationButton = new Lang.Class({
     _onOpenStateChanged: function(menu, open) {
         this.parent(menu, open);
 
-        if(!open) this._create_note.entry.set_text('');
+        if(open) {
+            this._create_named_note_menu_item.entry.set_text('');
+            let clipboard = St.Clipboard.get_default();
+            clipboard.get_text(St.ClipboardType.CLIPBOARD,
+                Lang.bind(this, function(clipboard, text) {
+                    let text_length = 0;
+
+                    if(!Utils.is_blank(text)) {
+                        text_length = text.trim().length;
+                    }
+
+                    if(text_length < 1) {
+                        this._create_note_from_clipboard_menu_item.setSensitive(false);
+                        this._create_note_from_clipboard_menu_item.label.clutter_text.set_markup(
+                            'New note from clipboard' +
+                            '(<span size="xx-small" color="grey"><i>empty</i></span>)'
+                        );
+                    }
+                    else {
+                        this._create_note_from_clipboard_menu_item.setSensitive(true);
+                        this._create_note_from_clipboard_menu_item.label.clutter_text.set_markup(
+                            'New note from clipboard' +
+                            '(<span size="xx-small" color="grey"><i>%s chars</i></span>)'
+                            .format(text_length)
+                        );
+                    }
+                })
+            );
+        }
+    },
+
+    _create_new_note: function(name, content, display) {
+        function on_note_created(uri) {
+            if(!uri) return;
+
+            Utils.get_client().get_note_title(uri, Lang.bind(this, function(title) {
+                if(content !== null) {
+                    if(name === null) {
+                        name = title
+                    }
+
+                    content = name + '\n\n' + content;
+                    Utils.get_client().set_note_contents(uri, content);
+                }
+                if(display === true) {
+                    Utils.get_client().display_note(uri);
+                }
+            }));
+        }
+
+        if(name !== null) {
+            Utils.get_client().create_named_note(name, on_note_created)
+        }
+        else {
+            Utils.get_client().create_note(on_note_created);
+        }
     },
 
     enable_desktop_notes: function() {
