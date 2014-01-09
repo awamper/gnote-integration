@@ -431,6 +431,7 @@ const GnoteIntegration = new Lang.Class({
                 this.clear_search();
                 this.actor.grab_key_focus();
                 this._list_view.clear();
+                this._notes_changed_trigger = true;
                 this._show_all_notes();
             }
 
