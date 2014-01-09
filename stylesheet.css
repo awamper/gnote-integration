@@ -355,6 +355,10 @@
     icon-size: 12px;
 }
 
+.desktop-note-close-icon {
+    icon-size: 15px;
+}
+
 .desktop-note-toolbar-button {
     padding-left: 5px;
     color: grey;

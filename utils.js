@@ -20,10 +20,10 @@ const ICONS = {
     CREATE_NOTE: 'list-add-symbolic',
     SHOW_ON_DESKTOP: 'list-add-symbolic',
     PINNED: 'bookmark-new-symbolic',
-    REMOVE_FROM_DESKTOP: 'user-trash-symbolic',
     NOTE_COLOR: 'preferences-color-symbolic',
     RESIZE_NOTE: 'view-fullscreen-symbolic',
-    PAGE: 'view-paged-symbolic'
+    PAGE: 'view-paged-symbolic',
+    DESKTOP_NOTE_CLOSE: 'window-close-symbolic'
 };
 
 const SETTINGS = getSettings();

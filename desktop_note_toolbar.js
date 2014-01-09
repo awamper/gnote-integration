@@ -48,7 +48,6 @@ const DesktopNoteToolbar = new Lang.Class({
         this._init_page_button();
         this._init_color_button();
         this._init_edit_button();
-        this._init_remove_button();
     },
 
     _init_page_button: function() {
@@ -91,23 +90,6 @@ const DesktopNoteToolbar = new Lang.Class({
         };
         this.edit_button = new ButtonsBar.ButtonsBarButton(button_params);
         this._buttonsbar.add_button(this.edit_button);
-    },
-
-    _init_remove_button: function() {
-        let button_params = {
-            icon_name: Utils.ICONS.REMOVE_FROM_DESKTOP,
-            icon_style: 'desktop-note-toolbar-icon',
-            button_style_class: 'desktop-note-toolbar-button',
-            confirmation_dialog: true,
-            confirmation_dialog_label: 'Remove from desktop?',
-            action: Lang.bind(this, function() {
-                this._note_container.desktop_notes.remove_note(
-                    this._note_container.uri
-                );
-            })
-        };
-        this.remove_button = new ButtonsBar.ButtonsBarButton(button_params);
-        this._buttonsbar.add_button(this.remove_button);
     },
 
     destroy: function() {
