@@ -105,11 +105,11 @@ const Dialog = new Lang.Class({
         let my_width = primary.width / 100 * this.params.width_percents;
         let my_height = available_height / 100 * this.params.height_percents;
 
-        this._hidden_y =
-            primary.y
-            + Main.layoutManager.panelBox.height
-            - my_height;
-        this._target_y = this._hidden_y + my_height;
+        this._hidden_y = primary.y - my_height;
+        this._target_y =
+            this._hidden_y
+            + my_height
+            + Main.layoutManager.panelBox.height;
 
         this.actor.x = primary.width - my_width;
         this.actor.y = this._hidden_y;
