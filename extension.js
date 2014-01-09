@@ -257,6 +257,7 @@ const GnoteIntegrationButton = new Lang.Class({
             case Clutter.BUTTON_MIDDLE:
                 break;
             default:
+                this.menu.close(false);
                 let disable_search_dialog = Utils.SETTINGS.get_boolean(
                     PrefsKeys.DISABLE_SEARCH_DIALOG_KEY
                 );
