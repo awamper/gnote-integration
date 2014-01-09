@@ -16,8 +16,8 @@ const DesktopNoteToolbar = Me.imports.desktop_note_toolbar;
 const NoteDateLabel = Me.imports.note_date_label;
 const DesktopNoteView = Me.imports.desktop_note_view;
 
-const MIN_WIDTH = 200;
-const MIN_HEIGHT = 200;
+const MIN_WIDTH = 150;
+const MIN_HEIGHT = 150;
 
 const ANIMATION_TIMES = {
     RESIZE: 0.3,
