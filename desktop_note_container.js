@@ -19,7 +19,7 @@ const DesktopNoteView = Me.imports.desktop_note_view;
 const Shared = Me.imports.shared;
 
 const MIN_WIDTH = 150;
-const MIN_HEIGHT = 150;
+const MIN_HEIGHT = 130;
 
 const ANIMATION_TIMES = {
     RESIZE: 0.3,
