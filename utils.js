@@ -3,6 +3,7 @@ const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Clutter = imports.gi.Clutter;
 const ExtensionUtils = imports.misc.extensionUtils;
+const Notify = imports.ui.main.notify;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const Moment = Me.imports.libs.moment;
@@ -38,12 +39,29 @@ function expand_path(path) {
     return path;
 }
 
-function open_uri(uri) {
-    if(starts_with(uri, '/') || starts_with(uri, '~')) {
-        uri = 'file://' + expand_path(uri).trim();
+function open_uri(path) {
+    let uri;
+    path = path.trim();
+
+    if(starts_with(path, '/') || starts_with(path, '~')) {
+        path = expand_path(path);
+        let dir = Gio.file_new_for_path(path);
+
+        if(!dir.query_exists(null)) {
+            Notify(
+                'Cannot open location',
+                'Path "%s" does not exist.'.format(path)
+            );
+            return;
+        }
+
+        uri = 'file://' + path;
     }
-    else if(uri.indexOf(':') === -1) {
-        uri = 'http://' + uri.trim();
+    else if(path.indexOf(':') === -1) {
+        uri = 'http://' + path;
+    }
+    else {
+        uri = path;
     }
 
     Gio.app_info_launch_default_for_uri(
