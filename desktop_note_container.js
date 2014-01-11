@@ -3,6 +3,7 @@ const Lang = imports.lang;
 const Shell = imports.gi.Shell;
 const Clutter = imports.gi.Clutter;
 const Gio = imports.gi.Gio;
+const Mainloop = imports.mainloop;
 const Signals = imports.signals;
 const Pango = imports.gi.Pango;
 const Tweener = imports.ui.tweener;
@@ -16,6 +17,8 @@ const PrefsKeys = Me.imports.prefs_keys;
 const DesktopNoteToolbar = Me.imports.desktop_note_toolbar;
 const NoteDateLabel = Me.imports.note_date_label;
 const DesktopNoteView = Me.imports.desktop_note_view;
+const LinkPreviewDialog = Me.imports.link_preview_dialog;
+const GnoteNote = Me.imports.gnote_note;
 const Shared = Me.imports.shared;
 
 const MIN_WIDTH = 150;
@@ -26,6 +29,10 @@ const ANIMATION_TIMES = {
     HIDE: 0.5,
     SHOW: 0.5,
     NEW_PAGE: 0.3
+};
+
+const TIMEOUT_IDS = {
+    LINK_PREVIEW: 0
 };
 
 const DesktopNoteButtonBase = new Lang.Class({
@@ -289,6 +296,7 @@ const DesktopNoteContainer = new Lang.Class({
 
         this._close_button = new DesktopNoteCloseButton(this);
         this._resize_button = new DesktopNoteResizeButton(this);
+        this._link_preview_dialog = new LinkPreviewDialog.LinkPreviewDialog();
 
         this._init_note_title();
         this._init_note_content();
@@ -352,6 +360,38 @@ const DesktopNoteContainer = new Lang.Class({
                         Utils.get_client().display_note(note_uri);
                     })
                 );
+            })
+        );
+        this._note_content_view.connect('link-enter',
+            Lang.bind(this, function(o, url_data) {
+                if(TIMEOUT_IDS.LINK_PREVIEW !== 0) {
+                    Mainloop.source_remove(TIMEOUT_IDS.LINK_PREVIEW);
+                }
+
+                TIMEOUT_IDS.LINK_PREVIEW = Mainloop.timeout_add(500,
+                    Lang.bind(this, function() {
+                        if(url_data.type === GnoteNote.LINK_TYPES.NOTE) {
+                            Utils.get_client().find_note(url_data.url,
+                                Lang.bind(this, function(note_uri) {
+                                    if(!note_uri) return;
+                                    this._link_preview_dialog.preview(note_uri);
+                                })
+                            );
+                        }
+                        else if(url_data.type === GnoteNote.LINK_TYPES.URL) {
+                            this._link_preview_dialog.preview(url_data.url);
+                        }
+                    })
+                );
+            })
+        );
+        this._note_content_view.connect('link-leave',
+            Lang.bind(this, function(o) {
+                if(TIMEOUT_IDS.LINK_PREVIEW !== 0) {
+                    Mainloop.source_remove(TIMEOUT_IDS.LINK_PREVIEW);
+                }
+
+                this._link_preview_dialog.hide();
             })
         );
         this._table.add(this._note_content_view.actor, {

@@ -109,5 +109,37 @@
         <default>0</default>
     </key>
 
+    <key type="b" name="preview-images">
+        <default>true</default>
+    </key>
+
+    <key type="b" name="preview-files">
+        <default>true</default>
+    </key>
+
+    <key type="b" name="preview-notes">
+        <default>true</default>
+    </key>
+
+    <key type="b" name="preview-only-local">
+        <default>false</default>
+    </key>
+
+    <key type="i" name="preview-max-local-size-kb">
+        <default>20480</default>
+    </key>
+
+    <key type="i" name="preview-max-net-size-kb">
+        <default>1024</default>
+    </key>
+
+    <key type="i" name="preview-max-width">
+        <default>600</default>
+    </key>
+
+    <key type="i" name="preview-max-height">
+        <default>350</default>
+    </key>
+
   </schema>
 </schemalist>

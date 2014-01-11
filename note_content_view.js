@@ -24,7 +24,8 @@ const NoteContentView = new Lang.Class({
             content_style: '',
             scroll_style: '',
             content_size: 15,
-            change_cursor_on_links: true
+            change_cursor_on_links: true,
+            track_links_hover: false
         });
 
         this.actor = new St.BoxLayout({
@@ -33,6 +34,19 @@ const NoteContentView = new Lang.Class({
             reactive: true
         });
         this.actor.set_pivot_point(0.5, 0.5);
+
+        if(this.params.change_cursor_on_links) {
+            this.actor.connect('leave-event',
+                Lang.bind(this, function() {
+                    global.screen.set_cursor(Meta.Cursor.DEFAULT);
+
+                    if(this._url_entered) {
+                        this._url_entered = null;
+                        this.emit('link-leave');
+                    }
+                })
+            );
+        }
 
         this._contents_label = new St.Entry({
             text: '...',
@@ -73,6 +87,8 @@ const NoteContentView = new Lang.Class({
         this.scroll.add_actor(this.contents_box);
 
         this.actor.add_actor(this.scroll);
+
+        this._url_entered = null;
         this._note = null;
         this.content_size = this.params.content_size;
     },
@@ -113,9 +129,26 @@ const NoteContentView = new Lang.Class({
 
         if(url !== -1) {
             global.screen.set_cursor(Meta.Cursor.POINTING_HAND);
+            if(!this.params.track_links_hover) return;
+
+            if(this._url_entered === null) {
+                this._url_entered = url;
+                this.emit('link-enter', url);
+            }
+            else if(this._url_entered !== null && this._url_entered !== url) {
+                this._url_entered = url;
+                this.emit('link-leave');
+                this.emit('link-enter', url);
+            }
         }
         else {
             global.screen.set_cursor(Meta.Cursor.DEFAULT);
+            if(!this.params.track_links_hover) return;
+
+            if(this._url_entered) {
+                this._url_entered = null;
+                this.emit('link-leave');
+            }
         }
     },
 

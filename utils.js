@@ -3,7 +3,6 @@ const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Clutter = imports.gi.Clutter;
 const ExtensionUtils = imports.misc.extensionUtils;
-const Notify = imports.ui.main.notify;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const Moment = Me.imports.libs.moment;
@@ -48,7 +47,7 @@ function open_uri(path) {
         let dir = Gio.file_new_for_path(path);
 
         if(!dir.query_exists(null)) {
-            Notify(
+            imports.ui.main.notify(
                 'Cannot open location',
                 'Path "%s" does not exist.'.format(path)
             );
