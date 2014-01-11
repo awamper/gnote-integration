@@ -27,7 +27,8 @@ const DesktopNoteView = new Lang.Class({
             content_size: Utils.SETTINGS.get_int(
                 PrefsKeys.DESKTOP_NOTE_CONTENT_SIZE_KEY
             ),
-            change_cursor_on_links: false
+            change_cursor_on_links: false,
+            track_links_hover: true
         };
         this.parent(params);
 
