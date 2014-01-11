@@ -26,6 +26,8 @@ const SIGNAL_IDS = {
     APP: 0
 };
 
+const ALLOWED_SESSION_MODES = ['user', 'classic'];
+
 const GnoteEntryMenuItem = new Lang.Class({
     Name: 'GnoteEntryMenuItem',
     Extends: PopupMenu.PopupBaseMenuItem,
@@ -403,7 +405,7 @@ const GnoteIntegrationButton = new Lang.Class({
 let gnote_button = null;
 
 function show_button() {
-    if(Main.sessionMode.currentMode !== 'user') return;
+    if(ALLOWED_SESSION_MODES.indexOf(Main.sessionMode.currentMode) === -1) return;
 
     if(gnote_button === null) {
         gnote_button = new GnoteIntegrationButton();
