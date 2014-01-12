@@ -418,7 +418,7 @@ const GnoteNote = new Lang.Class({
     get title() {
         if(this.STATES.TITLE !== STATE_TYPES.PARSED) {
             throw new Error(
-                'GnoteIntegration:GnoteNote: title is note parsed'
+                'GnoteIntegration:GnoteNote: title is not parsed'
             );
         }
 
@@ -428,7 +428,7 @@ const GnoteNote = new Lang.Class({
     get content() {
         if(this.STATES.CONTENT !== STATE_TYPES.PARSED) {
             throw new Error(
-                'GnoteIntegration:GnoteNote: content is note parsed'
+                'GnoteIntegration:GnoteNote: content is not parsed'
             );
         }
 
@@ -438,7 +438,7 @@ const GnoteNote = new Lang.Class({
     get markup() {
         if(this.STATES.MARKUP !== STATE_TYPES.PARSED) {
             throw new Error(
-                'GnoteIntegration:GnoteNote: markup is note parsed'
+                'GnoteIntegration:GnoteNote: markup is not parsed'
             );
         }
 
@@ -448,7 +448,7 @@ const GnoteNote = new Lang.Class({
     get create_date() {
         if(this.STATES.CREATE_DATE !== STATE_TYPES.PARSED) {
             throw new Error(
-                'GnoteIntegration:GnoteNote: create date is note parsed'
+                'GnoteIntegration:GnoteNote: create date is not parsed'
             );
         }
 
@@ -458,7 +458,7 @@ const GnoteNote = new Lang.Class({
     get update_date() {
         if(this.STATES.UPDATE_DATE !== STATE_TYPES.PARSED) {
             throw new Error(
-                'GnoteIntegration:GnoteNote: update date is note parsed'
+                'GnoteIntegration:GnoteNote: update date is not parsed'
             );
         }
 
@@ -468,7 +468,7 @@ const GnoteNote = new Lang.Class({
     get notebooks() {
         if(this.STATES.TAGS !== STATE_TYPES.PARSED) {
             throw new Error(
-                'GnoteIntegration:GnoteNote: notebooks is note parsed'
+                'GnoteIntegration:GnoteNote: notebooks is not parsed'
             );
         }
 
@@ -478,7 +478,7 @@ const GnoteNote = new Lang.Class({
     get tags() {
         if(this.STATES.TAGS !== STATE_TYPES.PARSED) {
             throw new Error(
-                'GnoteIntegration:GnoteNote: tags is note parsed'
+                'GnoteIntegration:GnoteNote: tags is not parsed'
             );
         }
 
