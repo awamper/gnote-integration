@@ -36,6 +36,7 @@ const NoteColorChooser = new Lang.Class({
         );
 
         this.actor.add(this._table);
+        this.actor.z_position = 1;
     },
 
     _get_colors: function() {
