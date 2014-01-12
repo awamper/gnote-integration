@@ -61,7 +61,18 @@ const DesktopNoteView = new Lang.Class({
     },
 
     _on_captured_event: function(o, e) {
-        if(e.type() === Clutter.EventType.BUTTON_PRESS) {
+        let modifier_state = e.get_state();
+        let secondary_button_modifier =
+            modifier_state === Clutter.ModifierType.BUTTON3_MASK;
+
+        if(e.type() === Clutter.EventType.SCROLL && secondary_button_modifier) {
+            Shared.desktop_notes.on_scroll_event(o, e);
+            return true;
+        }
+        else if(e.type() === Clutter.EventType.BUTTON_PRESS) {
+            let button = e.get_button();
+            if(button !== Clutter.BUTTON_PRIMARY) return false;
+
             if(Utils.is_double_click_event(e)) {
                 this._open_note();
                 return false;
