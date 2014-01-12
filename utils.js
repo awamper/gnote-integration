@@ -251,10 +251,13 @@ function get_date_string(unix_seconds) {
     return result;
 }
 
-function is_pointer_inside_actor(actor) {
+function is_pointer_inside_actor(actor, x, y) {
     let result = false;
     let [actor_x, actor_y] = actor.get_transformed_position();
     let [pointer_x, pointer_y] = global.get_pointer();
+
+    if(x) pointer_x = x;
+    if(y) pointer_y = y;
 
     if(
         pointer_x >= actor_x
