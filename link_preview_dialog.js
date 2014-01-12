@@ -142,30 +142,6 @@ const LinkPreviewDialog = new Lang.Class({
         return [uri, type];
     },
 
-    _preview_note: function(uri) {
-        let previewer = new LinkPreviewers.NotePreviewer(uri, {
-            max_width: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_WIDTH_KEY),
-            max_height: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_HEIGHT_KEY)
-        });
-        this._show_previewer(previewer);
-    },
-
-    _preview_image: function(uri) {
-        let previewer = new LinkPreviewers.ImagePreviewer(uri, {
-            max_width: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_WIDTH_KEY),
-            max_height: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_HEIGHT_KEY)
-        });
-        this._show_previewer(previewer);
-    },
-
-    _preview_webpage: function(uri) {
-        let previewer = new LinkPreviewers.WebpagePreviewer(uri, {
-            max_width: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_WIDTH_KEY),
-            max_height: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_HEIGHT_KEY)
-        });
-        this._show_previewer(previewer);
-    },
-
     _preview_file: function(uri, uri_type) {
         function on_query_complete(object, res) {
             let info;
@@ -180,6 +156,7 @@ const LinkPreviewDialog = new Lang.Class({
 
             let content_type = info.get_content_type();
             let thumbnail_path = info.get_attribute_byte_string('thumbnail::path');
+            let previewer;
 
             if(
                 Utils.starts_with(content_type, 'image')
@@ -204,13 +181,13 @@ const LinkPreviewDialog = new Lang.Class({
                     ) * 1024;
                 if(dont_preview_local) return;
                 else if(dont_preview_net) return;
-                else this._preview_image(uri);
+                else previewer = LinkPreviewers.ImagePreviewer;
             }
             else if(
                 content_type === 'text/html'
                 && Utils.SETTINGS.get_boolean(PrefsKeys.PREVIEW_WEBPAGES_KEY)
             ) {
-                this._preview_webpage(uri)
+                previewer = LinkPreviewers.WebpagePreviewer;
             }
             else if(
                 !Utils.starts_with(content_type, 'image')
@@ -218,12 +195,16 @@ const LinkPreviewDialog = new Lang.Class({
                 && thumbnail_path !== null
                 && Utils.SETTINGS.get_boolean(PrefsKeys.PREVIEW_FILES_KEY)
             ) {
-                this._preview_image('file://' + thumbnail_path);
+                uri = 'file://' + thumbnail_path;
+                previewer = LinkPreviewers.ImagePreviewer;
             }
             else {
-                this._no_preview(uri);
+                previewer = LinkPreviewers.NoPreviewer;
             }
+
+            this._show_previewer(uri, previewer);
         }
+
         let file = Gio.file_new_for_uri(uri);
         file.query_info_async(
             'standard::content-type,standard::size,thumbnail::path',
@@ -234,18 +215,13 @@ const LinkPreviewDialog = new Lang.Class({
         );
     },
 
-    _no_preview: function(uri) {
-        let previewer = new LinkPreviewers.NoPreviewer(uri, {
+    _show_previewer: function(uri, previewer) {
+        if(this._previewer !== null) this.clear();
+
+        this._previewer = new previewer(uri, {
             max_width: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_WIDTH_KEY),
             max_height: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_HEIGHT_KEY)
         });
-        this._show_previewer(previewer);
-    },
-
-    _show_previewer: function(previewer) {
-        if(this._previewer !== null) this.clear();
-
-        this._previewer = previewer;
         this.show();
         this._status_box.show();
         this._previewer.load(Lang.bind(this, function(ok) {
@@ -268,17 +244,17 @@ const LinkPreviewDialog = new Lang.Class({
             type === URI_TYPES.NOTE
             && Utils.SETTINGS.get_boolean(PrefsKeys.PREVIEW_NOTES_KEY)
         ) {
-            this._preview_note(uri);
+            this._show_previewer(uri, LinkPreviewers.NotePreviewer);
         }
         else if(type === URI_TYPES.UNDEFINED) {
-            this._no_preview(uri);
+            this._show_previewer(uri, LinkPreviewers.NoPreviewer);
         }
         else if(type !== URI_TYPES.NOTE) {
             if(
                 Utils.SETTINGS.get_boolean(PrefsKeys.PREVIEW_ONLY_LOCAL_KEY)
                 && type === URI_TYPES.URL
             ) {
-                this._no_preview(uri);
+                this._show_previewer(uri, LinkPreviewers.NoPreviewer);
             }
             else {
                 this._preview_file(uri, type);
