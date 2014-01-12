@@ -109,7 +109,7 @@ const LinkPreviewDialog = new Lang.Class({
 
     _is_url: function(str) {
         let url_regexp = imports.misc.util._urlRegexp;
-        return url_regexp.exec(str);
+        return str.match(url_regexp) !== null;
     },
 
     _get_uri_for_note_link: function(link) {
@@ -158,6 +158,14 @@ const LinkPreviewDialog = new Lang.Class({
         this._show_previewer(previewer);
     },
 
+    _preview_webpage: function(uri) {
+        let previewer = new LinkPreviewers.WebpagePreviewer(uri, {
+            max_width: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_WIDTH_KEY),
+            max_height: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_HEIGHT_KEY)
+        });
+        this._show_previewer(previewer);
+    },
+
     _preview_file: function(uri, uri_type) {
         function on_query_complete(object, res) {
             let info;
@@ -199,7 +207,14 @@ const LinkPreviewDialog = new Lang.Class({
                 else this._preview_image(uri);
             }
             else if(
+                content_type === 'text/html'
+                && Utils.SETTINGS.get_boolean(PrefsKeys.PREVIEW_WEBPAGES_KEY)
+            ) {
+                this._preview_webpage(uri)
+            }
+            else if(
                 !Utils.starts_with(content_type, 'image')
+                && content_type !== 'text/html'
                 && thumbnail_path !== null
                 && Utils.SETTINGS.get_boolean(PrefsKeys.PREVIEW_FILES_KEY)
             ) {
@@ -233,7 +248,12 @@ const LinkPreviewDialog = new Lang.Class({
         this._previewer = previewer;
         this.show();
         this._status_box.show();
-        this._previewer.load(Lang.bind(this, function() {
+        this._previewer.load(Lang.bind(this, function(ok) {
+            if(ok !== true) {
+                this.hide();
+                return;
+            }
+
             this._status_box.hide();
             this._box.add_child(this._previewer.actor);
             this._reposition();

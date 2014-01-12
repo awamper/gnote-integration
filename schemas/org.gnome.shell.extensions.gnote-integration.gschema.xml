@@ -125,6 +125,10 @@
         <default>false</default>
     </key>
 
+    <key type="b" name="preview-webpages">
+        <default>false</default>
+    </key>
+
     <key type="i" name="preview-max-local-size-kb">
         <default>20480</default>
     </key>
@@ -139,6 +143,14 @@
 
     <key type="i" name="preview-max-height">
         <default>350</default>
+    </key>
+
+    <key type="s" name="embedly-api-key">
+        <default>''</default>
+    </key>
+
+    <key type="s" name="embedly-api-url">
+        <default>''</default>
     </key>
 
   </schema>
