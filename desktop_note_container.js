@@ -331,9 +331,6 @@ const DesktopNoteContainer = new Lang.Class({
     _init_note_content: function(width, height) {
         let [color_result, note_color] =
             Clutter.Color.from_string(this._note.properties.color)
-        let scroll_child = new St.BoxLayout({
-            vertical: true
-        });
 
         this._note_content_view = new DesktopNoteView.DesktopNoteView(this);
         this._note_content_view.connect('url-clicked',
