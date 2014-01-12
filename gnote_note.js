@@ -483,6 +483,10 @@ const GnoteNote = new Lang.Class({
         }
 
         return this._tags;
+    },
+
+    get is_template() {
+        return this.tags.indexOf('system:template') !== -1;
     }
 });
 Signals.addSignalMethods(GnoteNote.prototype);
