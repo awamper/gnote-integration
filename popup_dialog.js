@@ -53,11 +53,17 @@ const PopupDialog = new Lang.Class({
     },
 
     _on_captured_event: function(object, event) {
-        let [x, y, mods] = global.get_pointer();
-        let button_event = event.type() === Clutter.EventType.BUTTON_PRESS;
-        let pointer_outside = !Utils.is_pointer_inside_actor(this.actor);
+        if(event.type() === Clutter.EventType.BUTTON_RELEASE) {
+            let [x, y, mods] = global.get_pointer();
+            let pointer_outside = !Utils.is_pointer_inside_actor(this.actor);
 
-        if(button_event && pointer_outside) this.hide();
+            if(pointer_outside) this.hide();
+        }
+        else if(event.type() === Clutter.EventType.KEY_RELEASE) {
+            let symbol = event.get_key_symbol();
+
+            if(symbol === Clutter.Escape) this.hide();
+        }
     },
 
     show: function() {
