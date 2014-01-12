@@ -484,6 +484,11 @@ const PrefsWidget = new GObject.Class({
         notebook.append_page(links_preview_page.page, links_preview_page.label);
         notebook.append_page(keybindings_page.page, keybindings_page.label);
 
+        if(ADVANCED_MODE) {
+            let advanced_page = this._get_advanced_page();
+            notebook.append_page(advanced_page.page, advanced_page.label);
+        }
+
         this.add(notebook);
     },
 
@@ -813,10 +818,40 @@ const PrefsWidget = new GObject.Class({
         };
         return result;
     },
+
+    _get_advanced_page: function() {
+        let page_label = new Gtk.Label({
+            label: 'Advanced'
+        });
+        let page = new PrefsGrid(this._settings);
+
+        page.add_boolean(
+            'Preview webpages:',
+            PrefsKeys.PREVIEW_WEBPAGES_KEY
+        );
+
+        page.add_entry(
+            'Embed.ly api key:',
+            PrefsKeys.EMBEDLY_API_KEY_KEY
+        );
+        page.add_entry(
+            'Embed.ly api url:',
+            PrefsKeys.EMBEDLY_API_URL_KEY
+        );
+
+        let result = {
+            label: page_label,
+            page: page
+        };
+        return result;
+    }
 });
 
-function init() {
-    // nothing
+let ADVANCED_MODE = false;
+
+function init(metadata) {
+    if(metadata.advanced_prefs) ADVANCED_MODE = true;
+    else ADVANCED_MODE = false;
 }
 
 function buildPrefsWidget() {

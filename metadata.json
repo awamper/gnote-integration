@@ -7,5 +7,6 @@
   "url": "https://github.com/awamper/gnote-integration",
   "uuid": "gnote_integration@awamper.gmail.com",
   "settings-schema": "org.gnome.shell.extensions.gnote-integration",
-  "version": 0
+  "version": 0,
+  "advanced_prefs": false
 }
