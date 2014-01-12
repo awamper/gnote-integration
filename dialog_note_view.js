@@ -66,7 +66,8 @@ const DialogNoteView = new Lang.Class({
             content_size: Utils.SETTINGS.get_int(
                 PrefsKeys.NOTE_CONTENTS_SIZE_KEY
             ),
-            change_cursor_on_links: true
+            change_cursor_on_links: true,
+            track_links_hover: true
         };
         this.parent(params);
 
