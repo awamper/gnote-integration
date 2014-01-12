@@ -103,6 +103,11 @@ const LinkPreviewDialog = new Lang.Class({
 
         let dialog_x = x + cursor_indent + offset_x;
         let dialog_y = y + cursor_indent + offset_y;
+
+        if(x > dialog_x && y > dialog_y) {
+            dialog_x = x - this.actor.width - cursor_indent;
+        }
+
         this.actor.x = dialog_x;
         this.actor.y = dialog_y;
     },
