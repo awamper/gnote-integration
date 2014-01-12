@@ -630,7 +630,7 @@ const PrefsWidget = new GObject.Class({
 
     _get_window_size_page: function() {
         let page_label = new Gtk.Label({
-            label: 'Window size'
+            label: 'Dialog size'
         });
         let page = new PrefsGrid(this._settings);
 
