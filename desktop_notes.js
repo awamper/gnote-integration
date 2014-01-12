@@ -89,6 +89,16 @@ const DesktopNotes = new Lang.Class({
                 }
             })
         );
+        this.actor.connect('button-release-event',
+            Lang.bind(this, function(o, e) {
+                let button = e.get_button();
+                if(button !== Clutter.BUTTON_PRIMARY || !this._is_modal) return;
+
+                let [x, y] = global.get_pointer();
+                let note = this._find_note_at_position(x, y);
+                if(note === -1) this.hide_modal();
+            })
+        );
         this.set_background_color(0, 0, 0, 0);
         
         this._box = new Clutter.Actor();
@@ -238,6 +248,22 @@ const DesktopNotes = new Lang.Class({
         }
 
         return -1;
+    },
+
+    _find_note_at_position: function(x, y) {
+        let result = -1;
+
+        for(let uri in this._notes) {
+            let container = this._notes[uri];
+            if(container.note.properties.page !== this._current_page_index) continue;
+
+            if(Utils.is_pointer_inside_actor(this._notes[uri].actor, x, y)) {
+                result = this._notes[uri];
+                break;
+            }
+        }
+
+        return result;
     },
 
     _destroy_all_notes: function() {
