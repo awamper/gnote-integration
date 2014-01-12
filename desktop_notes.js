@@ -70,24 +70,7 @@ const DesktopNotes = new Lang.Class({
         );
         this.actor.connect(
             'scroll-event',
-            Lang.bind(this, function(o, e) {
-                let direction = e.get_scroll_direction();
-                let modifier_state = e.get_state()
-                
-                if(modifier_state !== Clutter.ModifierType.BUTTON3_MASK) return false;
-
-                if(direction === Clutter.ScrollDirection.UP) {
-                    this.show_page(this._current_page_index - 1);
-                    return true;
-                }
-                else if(direction === Clutter.ScrollDirection.DOWN) {
-                    this.show_page(this._current_page_index + 1)
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            })
+            Lang.bind(this, this.on_scroll_event)
         );
         this.actor.connect('button-release-event',
             Lang.bind(this, function(o, e) {
@@ -387,6 +370,25 @@ const DesktopNotes = new Lang.Class({
                 }
             })
         )
+    },
+
+    on_scroll_event: function(o, e) {
+        let direction = e.get_scroll_direction();
+        let modifier_state = e.get_state();
+        
+        if(modifier_state !== Clutter.ModifierType.BUTTON3_MASK) return false;
+
+        if(direction === Clutter.ScrollDirection.UP) {
+            this.show_page(this._current_page_index - 1);
+            return true;
+        }
+        else if(direction === Clutter.ScrollDirection.DOWN) {
+            this.show_page(this._current_page_index + 1)
+            return true;
+        }
+        else {
+            return false;
+        }
     },
 
     indicate_pages: function() {
