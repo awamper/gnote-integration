@@ -30,7 +30,6 @@ const DesktopNoteToolbar = new Lang.Class({
                 this._color_chooser.hide();
             })
         );
-        this._color_chooser.actor.z_position = 1;
 
         this._page_chooser = new NotePageChooser.NotePageChooser();
         this._page_chooser.connect('page-activated',

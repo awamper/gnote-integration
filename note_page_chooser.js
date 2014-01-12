@@ -25,6 +25,7 @@ const NotePageChooser = new Lang.Class({
         this._max_columns = 20;
 
         this.actor.add(this._table);
+        this.actor.z_position = 1;
     },
 
     _show_pages: function() {
