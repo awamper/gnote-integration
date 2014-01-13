@@ -231,22 +231,29 @@ const DialogNoteView = new Lang.Class({
     },
 
     _delete_note: function() {
-        let modal = new ConfirmationModalDialog.ConfirmationModalDialog({
-            box_style: 'confirmation-modal-dialog-box',
-            button_style: 'confirmation-modal-dialog-button',
-            message_style: 'confirmation-modal-dialog-message',
-            source_actor: Shared.gnote_integration.actor,
-            destroy_on_close: true
-        });
-        modal.connect('activated',
-            Lang.bind(this, function(button, type) {
-                if(type === ConfirmationModalDialog.BUTTON_TYPES.OK) {
-                    this.hide();
-                    Shared.gnote_integration.delete_note(this._note.uri);
-                }
+        Utils.get_client().get_note_title(this._note.uri,
+            Lang.bind(this, function(title) {
+                if(!title) return;
+
+                let modal = new ConfirmationModalDialog.ConfirmationModalDialog({
+                    box_style: 'confirmation-modal-dialog-box',
+                    button_style: 'confirmation-modal-dialog-button',
+                    message_style: 'confirmation-modal-dialog-message',
+                    source_actor: Shared.gnote_integration.actor,
+                    destroy_on_close: true,
+                    message: 'Delete "%s"?'.format(title)
+                });
+                modal.connect('activated',
+                    Lang.bind(this, function(button, type) {
+                        if(type === ConfirmationModalDialog.BUTTON_TYPES.OK) {
+                            this.hide();
+                            Shared.gnote_integration.delete_note(this._note.uri);
+                        }
+                    })
+                );
+                modal.show();
             })
         );
-        modal.show();
     },
 
     _open_note: function() {

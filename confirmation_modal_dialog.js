@@ -72,6 +72,7 @@ const ConfirmationModalDialog = new Lang.Class({
             style_class: this.params.button_style,
             track_hover: true
         });
+        this._ok_btn.set_margin_right(10)
         this._ok_btn.connect('clicked',
             Lang.bind(this, function() {
                 this._activate_button(BUTTON_TYPES.OK);
@@ -92,7 +93,7 @@ const ConfirmationModalDialog = new Lang.Class({
             col: 0,
             col_span: 2,
             x_expand: true,
-            y_expand: true,
+            y_expand: false,
             x_fill: false,
             y_fill: false,
             x_align: St.Align.MIDDLE,
@@ -102,21 +103,19 @@ const ConfirmationModalDialog = new Lang.Class({
             row: 1,
             col: 0,
             x_expand: true,
-            y_expand: true,
+            y_expand: false,
             x_fill: false,
             y_fill: false,
-            x_align: St.Align.END,
-            y_align: St.Align.MIDDLE
+            x_align: St.Align.END
         });
         this._table.add(this._cancel_btn, {
             row: 1,
             col: 1,
             x_expand: true,
-            y_expand: true,
+            y_expand: false,
             x_fill: false,
             y_fill: false,
-            x_align: St.Align.MIDDLE,
-            y_align: St.Align.MIDDLE
+            x_align: St.Align.START
         });
 
         Main.uiGroup.add_child(this.actor);
@@ -147,6 +146,7 @@ const ConfirmationModalDialog = new Lang.Class({
     _resize: function() {
         this.actor.width = this.params.source_actor.width;
         this.actor.height = this.params.source_actor.height;
+        this._table.width = this.actor.width;
     },
 
     _reposition: function() {
@@ -154,7 +154,7 @@ const ConfirmationModalDialog = new Lang.Class({
         this.actor.x = x;
         this.actor.y = y;
         this._table.x = this.actor.width / 2 - this._table.width / 2;
-        this._table.y = this.actor.height / 2 - this._table.height / 2;
+        this._table.y = this.actor.height / 2 - this._table.height;
     },
 
     _get_selected: function() {
