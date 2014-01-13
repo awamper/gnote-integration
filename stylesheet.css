@@ -458,7 +458,7 @@
     border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
-.desktop-note-page-chooser-box {
+.desktop-note-page-chooser-box, .note-links-preview-dialog {
     padding: 5px;
     background-color: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(0, 0, 0, 1);

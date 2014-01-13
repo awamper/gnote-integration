@@ -474,13 +474,20 @@ const PrefsWidget = new GObject.Class({
         let font_size_page = this._get_font_size_page();
         let window_size_page = this._get_window_size_page();
         let desktop_notes_page = this._get_desktop_notes_page();
+        let links_preview_page = this._get_links_preview_page();
         let keybindings_page = this._get_keybindings_page();
 
         notebook.append_page(main_page.page, main_page.label);
         notebook.append_page(font_size_page.page, font_size_page.label);
         notebook.append_page(window_size_page.page, window_size_page.label);
         notebook.append_page(desktop_notes_page.page, desktop_notes_page.label);
+        notebook.append_page(links_preview_page.page, links_preview_page.label);
         notebook.append_page(keybindings_page.page, keybindings_page.label);
+
+        if(ADVANCED_MODE) {
+            let advanced_page = this._get_advanced_page();
+            notebook.append_page(advanced_page.page, advanced_page.label);
+        }
 
         this.add(notebook);
     },
@@ -699,6 +706,82 @@ const PrefsWidget = new GObject.Class({
         return result;
     },
 
+    _get_links_preview_page: function() {
+        let page_label = new Gtk.Label({
+            label: 'Links preview'
+        });
+        let page = new PrefsGrid(this._settings);
+
+        let monitor = Gdk.Screen.get_default();
+
+        page.add_range(
+            'Preview max width(px):',
+            PrefsKeys.PREVIEW_MAX_WIDTH_KEY,
+            {
+                min: 100,
+                max: Math.floor(monitor.get_width() * 0.8),
+                step: 10,
+                add_mark: true,
+                mark_position: Math.floor(monitor.get_width() / 2)
+            }
+        );
+
+        page.add_range(
+            'Preview max height(px):',
+            PrefsKeys.PREVIEW_MAX_HEIGHT_KEY,
+            {
+                min: 100,
+                max: Math.floor(monitor.get_height() * 0.8),
+                step: 10,
+                add_mark: true,
+                mark_position: Math.floor(monitor.get_height() / 2)
+            }
+        );
+
+        page.add_boolean(
+            'Preview notes:',
+            PrefsKeys.PREVIEW_NOTES_KEY
+        );
+
+        page.add_boolean(
+            'Preview images:',
+            PrefsKeys.PREVIEW_IMAGES_KEY
+        );
+        page.add_spin(
+            '\tMax local size(kb):',
+            PrefsKeys.PREVIEW_MAX_LOCAL_SIZE_KB_KEY,
+            {
+                lower: 0,
+                upper: 1024 * 20,
+                step_increment: 2
+            }
+        );
+        page.add_spin(
+            '\tMax net size(kb):',
+            PrefsKeys.PREVIEW_MAX_NET_SIZE_KB_KEY,
+            {
+                lower: 0,
+                upper: 1024 * 20,
+                step_increment: 2
+            }
+        );
+        page.add_boolean(
+            '\tPreview only local:',
+            PrefsKeys.PREVIEW_ONLY_LOCAL_KEY
+        );
+
+        page.add_boolean(
+            'Show thumbnails for local files:',
+            PrefsKeys.PREVIEW_FILES_KEY
+        );
+
+        let result = {
+            label: page_label,
+            page: page
+        };
+        return result;
+    },
+
     _get_keybindings_page: function() {
         let page_label = new Gtk.Label({
             label: 'Shortcuts'
@@ -735,10 +818,40 @@ const PrefsWidget = new GObject.Class({
         };
         return result;
     },
+
+    _get_advanced_page: function() {
+        let page_label = new Gtk.Label({
+            label: 'Advanced'
+        });
+        let page = new PrefsGrid(this._settings);
+
+        page.add_boolean(
+            'Preview webpages:',
+            PrefsKeys.PREVIEW_WEBPAGES_KEY
+        );
+
+        page.add_entry(
+            'Embed.ly api key:',
+            PrefsKeys.EMBEDLY_API_KEY_KEY
+        );
+        page.add_entry(
+            'Embed.ly api url:',
+            PrefsKeys.EMBEDLY_API_URL_KEY
+        );
+
+        let result = {
+            label: page_label,
+            page: page
+        };
+        return result;
+    }
 });
 
-function init() {
-    // nothing
+let ADVANCED_MODE = false;
+
+function init(metadata) {
+    if(metadata.advanced_prefs) ADVANCED_MODE = true;
+    else ADVANCED_MODE = false;
 }
 
 function buildPrefsWidget() {

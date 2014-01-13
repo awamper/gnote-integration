@@ -24,12 +24,14 @@ const DesktopNotes = Me.imports.desktop_notes;
 const Constants = Me.imports.constants;
 const Shared = Me.imports.shared;
 const ConfirmationModalDialog = Me.imports.confirmation_modal_dialog;
+const LinkPreviewDialog = Me.imports.link_preview_dialog;
 
 const TIMEOUT_TIMES = {
     SEARCH: 400
 };
 const TIMEOUT_IDS = {
-    SEARCH: 0
+    SEARCH: 0,
+    LINK_PREVIEW: 0
 };
 
 const CONNECTION_IDS = {
@@ -104,6 +106,7 @@ const GnoteIntegration = new Lang.Class({
 
         this._items_counter = new ListView.ItemsCounter(this._list_model);
         this._toolbar = new GnoteToolbar.GnoteToolbar(this);
+        this._link_preview_dialog = new LinkPreviewDialog.LinkPreviewDialog();
         this._init_search_entry();
         this._init_note_view();
 
@@ -254,6 +257,38 @@ const GnoteIntegration = new Lang.Class({
                         this._show_note(uri);
                     })
                 );
+            })
+        );
+        this._note_view.connect('link-enter',
+            Lang.bind(this, function(o, url_data) {
+                if(TIMEOUT_IDS.LINK_PREVIEW !== 0) {
+                    Mainloop.source_remove(TIMEOUT_IDS.LINK_PREVIEW);
+                }
+
+                TIMEOUT_IDS.LINK_PREVIEW = Mainloop.timeout_add(500,
+                    Lang.bind(this, function() {
+                        if(url_data.type === GnoteNote.LINK_TYPES.NOTE) {
+                            Utils.get_client().find_note(url_data.url,
+                                Lang.bind(this, function(note_uri) {
+                                    if(!note_uri) return;
+                                    this._link_preview_dialog.preview(note_uri);
+                                })
+                            );
+                        }
+                        else if(url_data.type === GnoteNote.LINK_TYPES.URL) {
+                            this._link_preview_dialog.preview(url_data.url);
+                        }
+                    })
+                );
+            })
+        );
+        this._note_view.connect('link-leave',
+            Lang.bind(this, function(o) {
+                if(TIMEOUT_IDS.LINK_PREVIEW !== 0) {
+                    Mainloop.source_remove(TIMEOUT_IDS.LINK_PREVIEW);
+                }
+
+                this._link_preview_dialog.hide();
             })
         );
     },

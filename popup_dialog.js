@@ -1,8 +1,10 @@
 const St = imports.gi.St;
 const Lang = imports.lang;
 const Clutter = imports.gi.Clutter;
+const Signals = imports.signals;
 const Shell = imports.gi.Shell;
 const Tweener = imports.ui.tweener;
+const Params = imports.misc.params;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -17,8 +19,13 @@ const CONNECTION_IDS = {
 const PopupDialog = new Lang.Class({
     Name: 'PopupDialog',
 
-    _init: function() {
+    _init: function(params) {
+        this.params = Params.parse(params, {
+            style_class: '',
+            modal: false
+        });
         this.actor = new St.BoxLayout({
+            style_class: this.params.style_class,
             visible: false
         });
 
@@ -63,9 +70,12 @@ const PopupDialog = new Lang.Class({
         if(this.actor.visible) return;
 
         this._reposition();
-        Main.pushModal(this.actor, {
-            keybindingMode: Shell.KeyBindingMode.NORMAL
-        });
+
+        if(this.params.modal) {
+            Main.pushModal(this.actor, {
+                keybindingMode: Shell.KeyBindingMode.NORMAL
+            });
+        }
 
         this.actor.opacity = 0;
         this.actor.show();
@@ -74,7 +84,10 @@ const PopupDialog = new Lang.Class({
         Tweener.addTween(this.actor, {
             opacity: 255,
             time: 0.3,
-            transition: 'easeOutQuad'
+            transition: 'easeOutQuad',
+            onComplete: Lang.bind(this, function() {
+                this.emit('showed');
+            })
         });
 
         this._connect_captured_event();
@@ -83,7 +96,7 @@ const PopupDialog = new Lang.Class({
     hide: function() {
         if(!this.actor.visible) return;
 
-        Main.popModal(this.actor);
+        if(this.params.modal) Main.popModal(this.actor);
         this._disconnect_captured_event();
 
         Tweener.removeTweens(this.actor);
@@ -94,10 +107,7 @@ const PopupDialog = new Lang.Class({
             onComplete: Lang.bind(this, function() {
                 this.actor.hide();
                 this.actor.opacity = 255;
-
-                if(typeof on_complete === 'function') {
-                    on_complete();
-                }
+                this.emit('hided');
             })
         });
     },
@@ -107,3 +117,4 @@ const PopupDialog = new Lang.Class({
         this.actor.destroy();
     }
 });
+Signals.addSignalMethods(PopupDialog.prototype);
