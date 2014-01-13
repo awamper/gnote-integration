@@ -34,3 +34,4 @@ const PREVIEW_MAX_HEIGHT_KEY = 'preview-max-height';
 const PREVIEW_WEBPAGES_KEY = 'preview-webpages';
 const EMBEDLY_API_KEY_KEY = 'embedly-api-key';
 const EMBEDLY_API_URL_KEY = 'embedly-api-url';
+const WATCH_DBUS_TIMEOUT_SECONDS_KEY = 'watch-dbus-timeout-seconds';
