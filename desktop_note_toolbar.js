@@ -1,5 +1,6 @@
 const St = imports.gi.St;
 const Lang = imports.lang;
+const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
@@ -44,9 +45,32 @@ const DesktopNoteToolbar = new Lang.Class({
             })
         );
 
+        this._init_copy_button();
         this._init_page_button();
         this._init_color_button();
         this._init_edit_button();
+    },
+
+    _init_copy_button: function() {
+        let button_params = {
+            icon_name: Utils.ICONS.COPY,
+            icon_style: 'desktop-note-toolbar-icon',
+            button_style_class: 'desktop-note-toolbar-button',
+            action: Lang.bind(this, function() {
+                function on_copied(result) {
+                    if(result) Main.notify('Copied to clipboard');
+                    else Main.notify('Error');
+                }
+
+                Utils.copy_note_content_to_clipboard(
+                    this._note_container.uri,
+                    false,
+                    Lang.bind(this, on_copied)
+                );
+            })
+        };
+        this.copy_button = new ButtonsBar.ButtonsBarButton(button_params);
+        this._buttonsbar.add_button(this.copy_button);
     },
 
     _init_page_button: function() {
