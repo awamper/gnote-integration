@@ -198,16 +198,23 @@
 }
 
 .dialog-note-view-toolbar-box {
-    spacing: 10px;
+    spacing: 2px;
+}
+
+.dialog-note-view-toolbar-icon {
+    icon-size: 15px;
 }
 
 .dialog-note-view-toolbar-button {
+    padding: 2px;
     color: #C4C4C4;
+    border: 1px solid rgba(0, 0, 0, 0);
     text-decoration: underline;
+    trasition-duration: 200ms;
 }
 
 .dialog-note-view-toolbar-button:hover {
-    background-color: #3465a4;
+    border: 1px solid #3465a4;
     color: white;
     transition-duration: 200ms;
 }
