@@ -23,7 +23,8 @@ const ICONS = {
     NOTE_COLOR: 'preferences-color-symbolic',
     RESIZE_NOTE: 'view-fullscreen-symbolic',
     PAGE: 'view-paged-symbolic',
-    DESKTOP_NOTE_CLOSE: 'window-close-symbolic'
+    DESKTOP_NOTE_CLOSE: 'window-close-symbolic',
+    HOME: 'go-home-symbolic'
 };
 
 const SETTINGS = getSettings();

@@ -32,18 +32,32 @@ const DialogNoteViewToolbar = new Lang.Class({
             style_class: 'dialog-note-view-toolbar-box'
         });
 
+        let seach_all_icon = new St.Icon({
+            icon_name: Utils.ICONS.HOME,
+            style_class: 'dialog-note-view-toolbar-icon'
+        });
         this.search_all_btn = new St.Button({
-            label: 'Search all',
             style_class: 'dialog-note-view-toolbar-button'
+        });
+        this.search_all_btn.add_actor(seach_all_icon);
+
+        let open_icon = new St.Icon({
+            icon_name: Utils.ICONS.EDIT,
+            style_class: 'dialog-note-view-toolbar-icon'
         });
         this.open_btn = new St.Button({
-            label: 'Open',
             style_class: 'dialog-note-view-toolbar-button'
+        });
+        this.open_btn.add_actor(open_icon);
+
+        let delete_icon = new St.Icon({
+            icon_name: Utils.ICONS.DELETE,
+            style_class: 'dialog-note-view-toolbar-icon'
         });
         this.delete_btn = new St.Button({
-            label: 'Delete',
             style_class: 'dialog-note-view-toolbar-button'
         });
+        this.delete_btn.add_actor(delete_icon);
 
         this.actor.add_child(this.search_all_btn);
         this.actor.add_child(this.open_btn);
