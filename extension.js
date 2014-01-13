@@ -26,6 +26,10 @@ const SIGNAL_IDS = {
     APP: 0
 };
 
+const TIMEOUT_IDS = {
+    WATCH_DBUS: 0
+}
+
 const ALLOWED_SESSION_MODES = ['user', 'classic'];
 
 const GnoteEntryMenuItem = new Lang.Class({
@@ -466,10 +470,13 @@ function watch_dbus() {
         Utils.SETTINGS.get_string(PrefsKeys.DBUS_NAME_KEY),
         0,
         Lang.bind(this, function() {
-            Mainloop.timeout_add_seconds(4, Lang.bind(this, function() {
-                show_button();
-                return false;
-            }));
+            TIMEOUT_IDS.WATCH_DBUS = Mainloop.timeout_add_seconds(
+                Utils.SETTINGS.get_int(PrefsKeys.WATCH_DBUS_TIMEOUT_SECONDS_KEY),
+                Lang.bind(this, function() {
+                    show_button();
+                    return false;
+                })
+            );
         }),
         Lang.bind(this, function() {
             hide_button();
@@ -478,6 +485,11 @@ function watch_dbus() {
 }
 
 function unwatch_dbus() {
+    if(TIMEOUT_IDS.WATCH_DBUS > 0) {
+        Mainloop.source_remove(TIMEOUT_IDS.WATCH_DBUS);
+        TIMEOUT_IDS.WATCH_DBUS = 0;
+    }
+
     if(SIGNAL_IDS.BUS_WATCHER > 0) {
         Gio.bus_unwatch_name(SIGNAL_IDS.BUS_WATCHER);
         SIGNAL_IDS.BUS_WATCHER = 0;

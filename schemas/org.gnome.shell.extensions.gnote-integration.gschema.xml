@@ -109,5 +109,9 @@
         <default>0</default>
     </key>
 
+    <key type="i" name="watch-dbus-timeout-seconds">
+        <default>4</default>
+    </key>
+
   </schema>
 </schemalist>

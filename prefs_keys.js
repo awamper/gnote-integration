@@ -23,3 +23,4 @@ const DESKTOP_NOTES_COLORS_KEY = 'desktop-notes-colors';
 const DESKTOP_NOTES_MAX_PAGES = 'desktop-notes-max-pages';
 const DISABLE_SEARCH_DIALOG_KEY = 'disable-search-dialog';
 const SHORTCUT_ACTIVATE_ACTION_KEY = 'shortcut-activate-action';
+const WATCH_DBUS_TIMEOUT_SECONDS_KEY = 'watch-dbus-timeout-seconds';
