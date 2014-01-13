@@ -1,5 +1,6 @@
 const St = imports.gi.St;
 const Lang = imports.lang;
+const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
@@ -27,9 +28,37 @@ const GnoteListItemButtons = new Lang.Class({
         this._buttons_bar = new ButtonsBar.ButtonsBar({
             style_class: 'gnote-snippet-buttons-box'
         });
+
+        this._init_copy_button();
         this._init_show_on_desktop_button();
         this._init_pin_button();
         this._init_delete_button();
+    },
+
+    _init_copy_button: function() {
+        let button_params = {
+            icon_name: Utils.ICONS.COPY,
+            icon_style: 'gnote-snippet-buttons-bar-icon',
+            label_text: '',
+            tip_text: 'Copy note to clipboard',
+            button_style_class: 'gnote-snippet-buttons-bar-button',
+            statusbar: this._statusbar,
+            confirmation_dialog: false,
+            action: Lang.bind(this, function() {
+                function on_copied(result) {
+                    if(result) Main.notify('Copied to clipboard');
+                    else Main.notify('Error');
+                }
+
+                Utils.copy_note_content_to_clipboard(
+                    this._uri,
+                    false,
+                    Lang.bind(this, on_copied)
+                );
+            })
+        };
+        this._copy_btn = new ButtonsBar.ButtonsBarButton(button_params);
+        this._buttons_bar.add_button(this._copy_btn);
     },
 
     _init_pin_button: function() {

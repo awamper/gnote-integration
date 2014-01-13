@@ -3,6 +3,7 @@ const Lang = imports.lang;
 const Pango = imports.gi.Pango;
 const Clutter = imports.gi.Clutter;
 const Tweener = imports.ui.tweener;
+const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
@@ -40,6 +41,15 @@ const DialogNoteViewToolbar = new Lang.Class({
         });
         this.search_all_btn.add_actor(seach_all_icon);
 
+        let copy_icon = new St.Icon({
+            icon_name: Utils.ICONS.COPY,
+            style_class: 'dialog-note-view-toolbar-icon'
+        });
+        this.copy_btn = new St.Button({
+            style_class: 'dialog-note-view-toolbar-button'
+        });
+        this.copy_btn.add_actor(copy_icon);
+
         let open_icon = new St.Icon({
             icon_name: Utils.ICONS.EDIT,
             style_class: 'dialog-note-view-toolbar-icon'
@@ -59,6 +69,7 @@ const DialogNoteViewToolbar = new Lang.Class({
         this.delete_btn.add_actor(delete_icon);
 
         this.actor.add_child(this.search_all_btn);
+        this.actor.add_child(this.copy_btn);
         this.actor.add_child(this.open_btn);
         this.actor.add_child(this.delete_btn);
     },
@@ -91,6 +102,9 @@ const DialogNoteView = new Lang.Class({
         );
         this._toolbar.open_btn.connect('clicked',
             Lang.bind(this, this._open_note)
+        );
+        this._toolbar.copy_btn.connect('clicked',
+            Lang.bind(this, this._copy_to_clipboard)
         );
         this._toolbar.delete_btn.connect('clicked',
             Lang.bind(this, this._delete_note)
@@ -201,6 +215,19 @@ const DialogNoteView = new Lang.Class({
         else {
             return false;
         }
+    },
+
+    _copy_to_clipboard: function() {
+        function on_copied(result) {
+            if(result) Main.notify('Copied to clipboard');
+            else Main.notify('Error');
+        }
+
+        Utils.copy_note_content_to_clipboard(
+            this._note.uri,
+            false,
+            Lang.bind(this, on_copied)
+        );
     },
 
     _delete_note: function() {
