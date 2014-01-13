@@ -470,8 +470,22 @@ function watch_dbus() {
         Utils.SETTINGS.get_string(PrefsKeys.DBUS_NAME_KEY),
         0,
         Lang.bind(this, function() {
+            if(TIMEOUT_IDS.WATCH_DBUS > 0) {
+                Mainloop.source_remove(TIMEOUT_IDS.WATCH_DBUS);
+                TIMEOUT_IDS.WATCH_DBUS = 0;
+            }
+
+            let timeout = Utils.SETTINGS.get_int(
+                PrefsKeys.WATCH_DBUS_TIMEOUT_SECONDS_KEY
+            );
+
+            if(timeout < 1) {
+                show_button();
+                return;
+            }
+
             TIMEOUT_IDS.WATCH_DBUS = Mainloop.timeout_add_seconds(
-                Utils.SETTINGS.get_int(PrefsKeys.WATCH_DBUS_TIMEOUT_SECONDS_KEY),
+                timeout,
                 Lang.bind(this, function() {
                     show_button();
                     return false;
