@@ -102,10 +102,6 @@ const PopupDialog = new Lang.Class({
                 this.actor.hide();
                 this.actor.opacity = 255;
                 this.emit('hided');
-
-                if(typeof on_complete === 'function') {
-                    on_complete();
-                }
             })
         });
     },
