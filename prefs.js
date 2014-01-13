@@ -823,25 +823,48 @@ const PrefsWidget = new GObject.Class({
         let page_label = new Gtk.Label({
             label: 'Advanced'
         });
-        let page = new PrefsGrid(this._settings);
+        let notebook = new Gtk.Notebook({
+            margin_left: 5,
+            margin_top: 5,
+            margin_bottom: 5,
+            margin_right: 5,
+            expand: true
+        });
 
-        page.add_boolean(
+        let preview_webpages_page = new PrefsGrid(this._settings);
+        preview_webpages_page.add_boolean(
             'Preview webpages:',
             PrefsKeys.PREVIEW_WEBPAGES_KEY
         );
-
-        page.add_entry(
+        preview_webpages_page.add_entry(
             'Embed.ly api key:',
             PrefsKeys.EMBEDLY_API_KEY_KEY
         );
-        page.add_entry(
+        preview_webpages_page.add_entry(
             'Embed.ly api url:',
             PrefsKeys.EMBEDLY_API_URL_KEY
         );
+        notebook.append_page(preview_webpages_page, new Gtk.Label({
+            label: 'Preview webpages'
+        }));
+
+        let other_page = new PrefsGrid(this._settings);
+        other_page.add_spin(
+            'DBus watcher timeout(seconds):',
+            PrefsKeys.WATCH_DBUS_TIMEOUT_SECONDS_KEY,
+            {
+                lower: 0,
+                upper: 10,
+                step_increment: 1
+            }
+        );
+        notebook.append_page(other_page, new Gtk.Label({
+            label: 'Other'
+        }));
 
         let result = {
             label: page_label,
-            page: page
+            page: notebook
         };
         return result;
     }
