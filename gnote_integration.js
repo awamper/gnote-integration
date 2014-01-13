@@ -382,26 +382,32 @@ const GnoteIntegration = new Lang.Class({
             return true;
         }
         else if(symbol == Clutter.Delete) {
-            let modal = new ConfirmationModalDialog.ConfirmationModalDialog({
-                box_style: 'confirmation-modal-dialog-box',
-                button_style: 'confirmation-modal-dialog-button',
-                message_style: 'confirmation-modal-dialog-message',
-                source_actor: this.actor,
-                destroy_on_close: true
-            });
-            modal.connect('activated',
-                Lang.bind(this, function(button, type) {
-                    if(type === ConfirmationModalDialog.BUTTON_TYPES.OK) {
-                        let selected_index =
-                            this._list_view.get_selected_index();
+            let selected_index = this._list_view.get_selected_index();
+            if(selected_index === -1) return false;
 
-                        if(selected_index !== -1) {
-                            this.delete_item(this._list_model, selected_index);
-                        }
-                    }
+            Utils.get_client().get_note_title(
+                this._list_model.get(selected_index),
+                Lang.bind(this, function(title) {
+                    if(!title) return;
+
+                    let modal = new ConfirmationModalDialog.ConfirmationModalDialog({
+                        box_style: 'confirmation-modal-dialog-box',
+                        button_style: 'confirmation-modal-dialog-button',
+                        message_style: 'confirmation-modal-dialog-message',
+                        source_actor: this.actor,
+                        destroy_on_close: true,
+                        message: 'Delete "%s"?'.format(title)
+                    });
+                    modal.connect('activated',
+                        Lang.bind(this, function(button, type) {
+                            if(type === ConfirmationModalDialog.BUTTON_TYPES.OK) {
+                                this.delete_item(this._list_model, selected_index);
+                            }
+                        })
+                    );
+                    modal.show();
                 })
             );
-            modal.show();
 
             return true;
         }
