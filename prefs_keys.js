@@ -35,3 +35,5 @@ const PREVIEW_WEBPAGES_KEY = 'preview-webpages';
 const EMBEDLY_API_KEY_KEY = 'embedly-api-key';
 const EMBEDLY_API_URL_KEY = 'embedly-api-url';
 const WATCH_DBUS_TIMEOUT_SECONDS_KEY = 'watch-dbus-timeout-seconds';
+const PREVIEW_NOTE_TIMEOUT_MS_KEY = 'preview-note-timeout-ms';
+const PREVIEW_LINK_TIMEOUT_MS_KEY = 'preview-link-timeout-ms';
