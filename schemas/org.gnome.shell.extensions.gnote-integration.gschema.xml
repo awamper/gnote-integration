@@ -157,5 +157,13 @@
         <default>4</default>
     </key>
 
+    <key type="i" name="preview-note-timeout-ms">
+        <default>200</default>
+    </key>
+
+    <key type="i" name="preview-link-timeout-ms">
+        <default>500</default>
+    </key>
+
   </schema>
 </schemalist>

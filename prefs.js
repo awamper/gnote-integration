@@ -861,6 +861,24 @@ const PrefsWidget = new GObject.Class({
         notebook.append_page(other_page, new Gtk.Label({
             label: 'Other'
         }));
+        other_page.add_spin(
+            'Note preview timeout(ms):',
+            PrefsKeys.PREVIEW_NOTE_TIMEOUT_MS_KEY,
+            {
+                lower: 200,
+                upper: 1000,
+                step_increment: 10
+            }
+        );
+        other_page.add_spin(
+            'Link preview timeout(ms):',
+            PrefsKeys.PREVIEW_LINK_TIMEOUT_MS_KEY,
+            {
+                lower: 200,
+                upper: 1000,
+                step_increment: 10
+            }
+        );
 
         let result = {
             label: page_label,

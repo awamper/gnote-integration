@@ -265,7 +265,20 @@ const GnoteIntegration = new Lang.Class({
                     Mainloop.source_remove(TIMEOUT_IDS.LINK_PREVIEW);
                 }
 
-                TIMEOUT_IDS.LINK_PREVIEW = Mainloop.timeout_add(500,
+                let timeout;
+
+                if(url_data.type === GnoteNote.LINK_TYPES.NOTE) {
+                    timeout = Utils.SETTINGS.get_int(
+                        PrefsKeys.PREVIEW_NOTE_TIMEOUT_MS_KEY
+                    );
+                }
+                else {
+                    timeout = Utils.SETTINGS.get_int(
+                        PrefsKeys.PREVIEW_LINK_TIMEOUT_MS_KEY
+                    );
+                }
+
+                TIMEOUT_IDS.LINK_PREVIEW = Mainloop.timeout_add(timeout,
                     Lang.bind(this, function() {
                         if(url_data.type === GnoteNote.LINK_TYPES.NOTE) {
                             Utils.get_client().find_note(url_data.url,
