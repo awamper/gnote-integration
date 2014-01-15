@@ -288,7 +288,7 @@ const DialogNoteView = new Lang.Class({
     },
 
     set_title: function(title) {
-        this._title_label.set_text(title + '\n');
+        this._title_label.clutter_text.set_markup(title + '\n');
     },
 
     show: function(animation) {
