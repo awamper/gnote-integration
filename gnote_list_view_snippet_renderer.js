@@ -23,7 +23,7 @@ const GnoteListViewSnippetRenderer = new Lang.Class({
     },
 
     on_note_parsed: function() {
-        this.title_label.set_text(this.note.title);
+        this.title_label.clutter_text.set_markup(this.note.title);
         this.date_label.create_date = this.note.create_date;
         this.date_label.update_date = this.note.update_date;
 
