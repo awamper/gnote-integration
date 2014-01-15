@@ -35,7 +35,7 @@ const NoteContentView = new Lang.Class({
         });
         this.actor.set_pivot_point(0.5, 0.5);
 
-        if(this.params.change_cursor_on_links) {
+        if(this.params.change_cursor_on_links || this.params.track_links_hover) {
             this.actor.connect('leave-event',
                 Lang.bind(this, function() {
                     global.screen.set_cursor(Meta.Cursor.DEFAULT);
@@ -64,7 +64,7 @@ const NoteContentView = new Lang.Class({
             Pango.EllipsizeMode.NONE
         );
 
-        if(this.params.change_cursor_on_links) {
+        if(this.params.change_cursor_on_links || this.params.track_links_hover) {
             this._contents_label.connect(
                 'motion-event',
                 Lang.bind(this, this._on_motion_event)
