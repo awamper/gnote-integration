@@ -4,7 +4,7 @@ const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Clutter = imports.gi.Clutter;
 const Main = imports.ui.main;
-const Animation = imports.ui.animation;
+const Panel = imports.ui.panel;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
@@ -29,7 +29,7 @@ const StatusBox = new Lang.Class({
         this._label = new St.Label({
             text: 'Loading...'
         });
-        this._spinner = new Animation.AnimatedIcon(
+        this._spinner = new Panel.AnimatedIcon(
             global.datadir + '/theme/process-working.svg',
             24
         );
