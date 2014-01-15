@@ -120,7 +120,11 @@ const LinkPreviewDialog = new Lang.Class({
     _get_uri_for_note_link: function(link) {
         let uri, type;
 
-        if(this._is_url(link)) {
+        if(Utils.get_client().is_valid_uri(link)) {
+            uri = link;
+            type = URI_TYPES.NOTE;
+        }
+        else if(this._is_url(link)) {
             type = URI_TYPES.URL;
 
             if(link.indexOf(':') === -1) {
@@ -134,10 +138,6 @@ const LinkPreviewDialog = new Lang.Class({
             link = Utils.expand_path(link);
             uri = 'file://' + link;
             type = URI_TYPES.PATH;
-        }
-        else if(Utils.get_client().is_valid_uri(link)) {
-            uri = link;
-            type = URI_TYPES.NOTE;
         }
         else {
             uri = link;
