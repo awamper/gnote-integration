@@ -68,7 +68,7 @@ const LinkPreviewDialog = new Lang.Class({
         this._box.add_child(this._status_box.actor);
         this._previewer = null;
         this.actor.add_child(this._box);
-        this.actor.z_position = 1;
+        this.actor.z_position = 0.1;
 
         this.connect('hided', Lang.bind(this, this.clear));
     },
