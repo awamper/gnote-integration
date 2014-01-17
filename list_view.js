@@ -1,6 +1,7 @@
 const St = imports.gi.St;
 const Lang = imports.lang;
 const Signals = imports.signals;
+const Clutter = imports.gi.Clutter;
 const Mainloop = imports.mainloop;
 const Params = imports.misc.params;
 const Tweener = imports.ui.tweener;
@@ -237,7 +238,8 @@ const ListView = new Lang.Class({
             shortcut_style: '',
             overlay_scrollbars: true,
             renderer: null,
-            model: null
+            model: null,
+            can_drag: false
         });
 
         this.actor = new St.ScrollView({
@@ -266,6 +268,7 @@ const ListView = new Lang.Class({
         this._displays = [];
         this._renderer = null;
         this._model = null;
+        this._block_button_release = false;
 
         if(this.params.renderer !== null) {
             this.set_renderer(this.params.renderer);
@@ -337,12 +340,48 @@ const ListView = new Lang.Class({
         );
         display.connect("button-release-event",
             Lang.bind(this, function(o, e) {
+                if(this._block_button_release) {
+                    this._block_button_release = false;
+                    return false;
+                }
+
                 let button = e.get_button();
                 this.unset_active(display);
                 let index = this._displays.indexOf(display);
                 this.emit("clicked", button, display, this.model, index);
+                return true;
             })
         );
+
+        if(this.params.can_drag) this._add_drag_action(display);
+    },
+
+    _add_drag_action: function(display) {
+        let drag_action = new Clutter.DragAction();
+        drag_action.x_drag_threshold = 20;
+        drag_action.y_drag_threshold = 20;
+        drag_action.connect('drag-begin', Lang.bind(this, function() {
+            let index = this._displays.indexOf(display);
+
+            if(index !== -1) {
+                this._block_button_release = true;
+                this.unset_active(display);
+                this.unselect_all();
+                this.emit('drag-begin', drag_action, index);
+            }
+        }));
+        drag_action.connect('drag-end', Lang.bind(this, function() {
+            let index = this._displays.indexOf(display);
+
+            if(index !== -1) {
+                this.emit('drag-end', drag_action, index);
+            }
+        }));
+        drag_action.connect('drag-progress', Lang.bind(this, function() {
+            this.emit('drag-progress', drag_action);
+            return false;
+        }));
+        display.add_action(drag_action);
     },
 
     _add_shortcut_emblem_to_display: function(display) {
