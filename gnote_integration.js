@@ -39,7 +39,8 @@ const CONNECTION_IDS = {
     DESKTOP_NOTES: 0,
     ENABLED_NOTES: 0,
     ALL_NOTES_RENDERER: 0,
-    SEARCH_NOTES_RENDERER: 0
+    SEARCH_NOTES_RENDERER: 0,
+    DESKTOP_NOTES_MODAL_HIDING: 0
 };
 
 const GnoteIntegration = new Lang.Class({
@@ -264,9 +265,22 @@ const GnoteIntegration = new Lang.Class({
             })
         );
         note.start_parsing();
+        CONNECTION_IDS.DESKTOP_NOTES_MODAL_HIDING =
+            Shared.desktop_notes.connect(
+                'modal-hiding',
+                Lang.bind(this, function() {
+                    if(this._drag_container !== null) {
+                        this._drag_container.destroy();
+                        this._drag_container = null;
+                    }
+                })
+            );
     },
 
     _on_item_drag_end: function(list_view, action_data, item_index) {
+        Shared.desktop_notes.disconnect(
+            CONNECTION_IDS.DESKTOP_NOTES_MODAL_HIDING
+        );
         this.set_opacity(255);
         Shared.desktop_notes.hide_modal();
         Shared.desktop_notes.set_notes_opacity(255);

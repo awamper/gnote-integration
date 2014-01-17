@@ -3,6 +3,7 @@ const Lang = imports.lang;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
 const Clutter = imports.gi.Clutter;
+const Signals = imports.signals;
 const Tweener = imports.ui.tweener;
 const Params = imports.misc.params;
 const Main = imports.ui.main;
@@ -630,6 +631,7 @@ const DesktopNotes = new Lang.Class({
             return;
         }
 
+        this.emit('modal-showing');
         this.actor.opacity = 0;
         this._is_modal = true;
         this.set_background_color(0, 0, 0, 0.5);
@@ -638,13 +640,17 @@ const DesktopNotes = new Lang.Class({
         Tweener.addTween(this.actor, {
             opacity: 255,
             time: ANIMATION_TIMES.SHOW_MODAL,
-            transition: 'easeOutQuad'
+            transition: 'easeOutQuad',
+            onComplete: Lang.bind(this, function() {
+                this.emit('modal-shown');
+            })
         });
     },
 
     hide_modal: function() {
         if(!this._is_modal) return;
 
+        this.emit('modal-hiding');
         Tweener.removeTweens(this.actor);
         Tweener.addTween(this.actor, {
             opacity: 0,
@@ -657,6 +663,7 @@ const DesktopNotes = new Lang.Class({
                 Main.uiGroup.remove_child(this.actor);
                 this._background_actor.add_child(this.actor);
                 this._is_modal = false;
+                this.emit('modal-hidden');
             })
         });
     },
@@ -680,6 +687,7 @@ const DesktopNotes = new Lang.Class({
         this._background_actor.destroy();
     }
 });
+Signals.addSignalMethods(DesktopNotes.prototype);
 
 let desktop_notes = null;
 
