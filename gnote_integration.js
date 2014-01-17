@@ -25,6 +25,7 @@ const Constants = Me.imports.constants;
 const Shared = Me.imports.shared;
 const ConfirmationModalDialog = Me.imports.confirmation_modal_dialog;
 const LinkPreviewDialog = Me.imports.link_preview_dialog;
+const DesktopNoteContainer = Me.imports.desktop_note_container;
 
 const TIMEOUT_TIMES = {
     SEARCH: 400
@@ -93,7 +94,8 @@ const GnoteIntegration = new Lang.Class({
         this._list_view = new ListView.ListView({
             scrollview_style: 'gnote-list-view-scrollbox',
             box_style: 'gnote-list-view-box',
-            shortcut_style: 'gnote-shortcut-label'
+            shortcut_style: 'gnote-shortcut-label',
+            can_drag: true
         });
         this._list_view.set_model(this._list_model);
         this._list_view.set_renderer(this._get_user_renderer(
@@ -102,6 +104,18 @@ const GnoteIntegration = new Lang.Class({
         this._list_view.connect(
             "clicked",
             Lang.bind(this, this._on_item_clicked)
+        );
+        this._list_view.connect(
+            'drag-begin',
+            Lang.bind(this, this._on_item_drag_begin)
+        );
+        this._list_view.connect(
+            'drag-end',
+            Lang.bind(this, this._on_item_drag_end)
+        );
+        this._list_view.connect(
+            'drag-progress',
+            Lang.bind(this, this._on_item_drag_progress)
         );
 
         this._items_counter = new ListView.ItemsCounter(this._list_model);
@@ -186,6 +200,7 @@ const GnoteIntegration = new Lang.Class({
 
         this._loading_message_id = 0;
         this._notes_changed_trigger = true;
+        this._drag_container = null;
 
         CONNECTION_IDS.DESKTOP_NOTES = Utils.SETTINGS.connect(
             'changed::' + PrefsKeys.ENABLE_DESKTOP_NOTES_KEY,
@@ -226,6 +241,57 @@ const GnoteIntegration = new Lang.Class({
                 this.activate_item(model, index);
                 break;
         }
+    },
+
+    _on_item_drag_begin: function(list_view, drag_action, item_index) {
+        let uri = this._list_model.get(item_index);
+        let note = new GnoteNote.GnoteNote(uri);
+        note.properties = Shared.desktop_notes.get_note_properties(uri);
+        note.connect(
+            "notify::parsed",
+            Lang.bind(this, function() {
+                this.set_opacity(0);
+                Shared.desktop_notes.show_modal();
+                Shared.desktop_notes.set_notes_opacity(150);
+
+                this._drag_container =
+                    new DesktopNoteContainer.DesktopNoteContainer(
+                        Shared.desktop_notes,
+                        note
+                    );
+                this._drag_container.actor.show();
+                Main.uiGroup.add_child(this._drag_container.actor);
+            })
+        );
+        note.start_parsing();
+    },
+
+    _on_item_drag_end: function(list_view, drag_action, item_index) {
+        this.set_opacity(255);
+        Shared.desktop_notes.hide_modal();
+        Shared.desktop_notes.set_notes_opacity(255);
+
+        if(this._drag_container !== null) {
+            let properties = {
+                x: this._drag_container.actor.x,
+                y: this._drag_container.actor.y
+            };
+            Shared.desktop_notes.add_note(
+                this._list_model.get(item_index),
+                properties
+            );
+            this._drag_container.destroy();
+            this._drag_container = null;
+        }
+    },
+
+    _on_item_drag_progress: function(list_view, drag_action, item_index) {
+        if(this._drag_container === null) return false;
+
+        let position = drag_action.get_motion_coords();
+        this._drag_container.actor.x = position[0];
+        this._drag_container.actor.y = position[1];
+        return true;
     },
 
     _on_items_changed: function() {
@@ -680,6 +746,10 @@ const GnoteIntegration = new Lang.Class({
         if(index !== -1) {
             this.delete_item(this._list_model, index);
         }
+    },
+
+    set_opacity: function(opacity) {
+        this.actor.opacity = opacity;
     },
 
     show: function(animation) {
