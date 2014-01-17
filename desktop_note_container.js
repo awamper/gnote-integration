@@ -305,7 +305,7 @@ const DesktopNoteContainer = new Lang.Class({
 
         this._is_modal = false;
         this._note_drag_action = null;
-        this._note_drag_action_handle_clone = null;
+        this._actor_clone = null;
         this._add_note_drag_action();
     },
 
@@ -479,22 +479,37 @@ const DesktopNoteContainer = new Lang.Class({
             this._set_note_drag_area();
         }
 
-        this._note_drag_action_handle_clone = new Clutter.Clone({
+        this.actor.opacity = 100;
+        this._actor_clone = new Clutter.Clone({
             source: this.actor,
-            opacity: 100,
             x: this.actor.x,
             y: this.actor.y
         });
-        this.actor.get_parent().add_child(this._note_drag_action_handle_clone);
+        this.actor.get_parent().insert_child_below(
+            this._actor_clone,
+            this.actor
+        );
     },
 
     _on_drag_end: function(action, actor, x, y, mods) {
+        this.actor.opacity = 0;
         let position = this.actor.get_position();
         this.update_properties({
             x: Math.round(position[0]),
             y: Math.round(position[1])
         });
-        this._note_drag_action_handle_clone.destroy();
+
+        Tweener.removeTweens(this._actor_clone);
+        Tweener.addTween(this._actor_clone, {
+            time: 0.5,
+            transition: 'easeOutExpo',
+            x: position[0],
+            y: position[1],
+            onComplete: Lang.bind(this, function() {
+                this.actor.opacity = 255;
+                this._actor_clone.destroy();
+            })
+        });
     },
 
     reset_drag_area: function() {
@@ -605,8 +620,8 @@ const DesktopNoteContainer = new Lang.Class({
     },
 
     destroy: function() {
-        if(this._note_drag_action_handle_clone) {
-            this._note_drag_action_handle_clone.destroy();
+        if(this._actor_clone) {
+            this._actor_clone.destroy();
         }
 
         this._note_content_view.destroy();
