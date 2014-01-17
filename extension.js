@@ -261,6 +261,7 @@ const GnoteIntegrationButton = new Lang.Class({
 
     _onButtonPress: function(actor, event) {
         let button = event.get_button();
+        Shared.desktop_notes.hide_modal();
 
         switch(button) {
             case Clutter.BUTTON_SECONDARY:
