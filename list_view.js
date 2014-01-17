@@ -360,27 +360,53 @@ const ListView = new Lang.Class({
         let drag_action = new Clutter.DragAction();
         drag_action.x_drag_threshold = 20;
         drag_action.y_drag_threshold = 20;
-        drag_action.connect('drag-begin', Lang.bind(this, function() {
-            let index = this._displays.indexOf(display);
+        drag_action.connect('drag-begin',
+            Lang.bind(this, function(action, actor, event_x, event_y, mods) {
+                let index = this._displays.indexOf(display);
 
-            if(index !== -1) {
-                this._block_button_release = true;
-                this.unset_active(display);
-                this.unselect_all();
-                this.emit('drag-begin', drag_action, index);
-            }
-        }));
-        drag_action.connect('drag-end', Lang.bind(this, function() {
-            let index = this._displays.indexOf(display);
+                if(index !== -1) {
+                    this._block_button_release = true;
+                    this.unset_active(display);
+                    this.unselect_all();
+                    let action_data = {
+                        action: action,
+                        actor: actor,
+                        event_x: event_x,
+                        event_y: event_y,
+                        modifiers: mods
+                    };
+                    this.emit('drag-begin', action_data, index);
+                }
+            })
+        );
+        drag_action.connect('drag-end',
+            Lang.bind(this, function(action, actor, event_x, event_y, mods) {
+                let index = this._displays.indexOf(display);
 
-            if(index !== -1) {
-                this.emit('drag-end', drag_action, index);
-            }
-        }));
-        drag_action.connect('drag-progress', Lang.bind(this, function() {
-            this.emit('drag-progress', drag_action);
-            return false;
-        }));
+                if(index !== -1) {
+                    let action_data = {
+                        action: action,
+                        actor: actor,
+                        event_x: event_x,
+                        event_y: event_y,
+                        modifiers: mods
+                    };
+                    this.emit('drag-end', action_data, index);
+                }
+            })
+        );
+        drag_action.connect('drag-progress',
+            Lang.bind(this, function(action, actor, delta_x, delta_y) {
+                let action_data = {
+                    action: action,
+                    actor: actor,
+                    delta_x: delta_x,
+                    delta_y: delta_y
+                };
+                this.emit('drag-progress', action_data);
+                return false;
+            })
+        );
         display.add_action(drag_action);
     },
 

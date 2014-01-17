@@ -243,7 +243,7 @@ const GnoteIntegration = new Lang.Class({
         }
     },
 
-    _on_item_drag_begin: function(list_view, drag_action, item_index) {
+    _on_item_drag_begin: function(list_view, action_data, item_index) {
         let uri = this._list_model.get(item_index);
         let note = new GnoteNote.GnoteNote(uri);
         note.properties = Shared.desktop_notes.get_note_properties(uri);
@@ -266,7 +266,7 @@ const GnoteIntegration = new Lang.Class({
         note.start_parsing();
     },
 
-    _on_item_drag_end: function(list_view, drag_action, item_index) {
+    _on_item_drag_end: function(list_view, action_data, item_index) {
         this.set_opacity(255);
         Shared.desktop_notes.hide_modal();
         Shared.desktop_notes.set_notes_opacity(255);
@@ -285,10 +285,10 @@ const GnoteIntegration = new Lang.Class({
         }
     },
 
-    _on_item_drag_progress: function(list_view, drag_action, item_index) {
+    _on_item_drag_progress: function(list_view, action_data) {
         if(this._drag_container === null) return false;
 
-        let position = drag_action.get_motion_coords();
+        let position = action_data.action.get_motion_coords();
         this._drag_container.actor.x = position[0];
         this._drag_container.actor.y = position[1];
         return true;
