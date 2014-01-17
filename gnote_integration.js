@@ -328,6 +328,8 @@ const GnoteIntegration = new Lang.Class({
         );
         this._note_view.connect('url-clicked',
             Lang.bind(this, function(o, uri) {
+                this.remove_preview_timeout();
+                this._link_preview_dialog.hide();
                 Utils.open_uri(uri);
                 this._note_view.hide(false);
                 this.hide(false);
@@ -335,6 +337,8 @@ const GnoteIntegration = new Lang.Class({
         );
         this._note_view.connect('note-clicked',
             Lang.bind(this, function(o, title) {
+                this.remove_preview_timeout();
+                this._link_preview_dialog.hide();
                 Utils.get_client().find_note(title,
                     Lang.bind(this, function(uri) {
                         if(!uri) return;
@@ -346,10 +350,7 @@ const GnoteIntegration = new Lang.Class({
         );
         this._note_view.connect('link-enter',
             Lang.bind(this, function(o, url_data) {
-                if(TIMEOUT_IDS.LINK_PREVIEW !== 0) {
-                    Mainloop.source_remove(TIMEOUT_IDS.LINK_PREVIEW);
-                }
-
+                this.remove_preview_timeout();
                 let timeout;
 
                 if(url_data.type === GnoteNote.LINK_TYPES.NOTE) {
@@ -382,10 +383,7 @@ const GnoteIntegration = new Lang.Class({
         );
         this._note_view.connect('link-leave',
             Lang.bind(this, function(o) {
-                if(TIMEOUT_IDS.LINK_PREVIEW !== 0) {
-                    Mainloop.source_remove(TIMEOUT_IDS.LINK_PREVIEW);
-                }
-
+                this.remove_preview_timeout();
                 this._link_preview_dialog.hide();
             })
         );
@@ -704,6 +702,13 @@ const GnoteIntegration = new Lang.Class({
         if(CONNECTION_IDS.SEARCH_NOTES_RENDERER > 0) {
             Utils.SETTINGS.disconnect(CONNECTION_IDS.SEARCH_NOTES_RENDERER);
             CONNECTION_IDS.SEARCH_NOTES_RENDERER = 0;
+        }
+    },
+
+    remove_preview_timeout: function() {
+        if(TIMEOUT_IDS.LINK_PREVIEW !== 0) {
+            Mainloop.source_remove(TIMEOUT_IDS.LINK_PREVIEW);
+            TIMEOUT_IDS.LINK_PREVIEW = 0;
         }
     },
 
