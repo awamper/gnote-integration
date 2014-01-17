@@ -246,6 +246,7 @@ const GnoteIntegration = new Lang.Class({
 
     _on_item_drag_begin: function(list_view, action_data, item_index) {
         let uri = this._list_model.get(item_index);
+        if(Shared.desktop_notes.is_note_on_desktop(uri)) return;
         let note = new GnoteNote.GnoteNote(uri);
         note.properties = Shared.desktop_notes.get_note_properties(uri);
         note.connect(
@@ -278,9 +279,13 @@ const GnoteIntegration = new Lang.Class({
     },
 
     _on_item_drag_end: function(list_view, action_data, item_index) {
-        Shared.desktop_notes.disconnect(
-            CONNECTION_IDS.DESKTOP_NOTES_MODAL_HIDING
-        );
+        if(CONNECTION_IDS.DESKTOP_NOTES_MODAL_HIDING > 0) {
+            Shared.desktop_notes.disconnect(
+                CONNECTION_IDS.DESKTOP_NOTES_MODAL_HIDING
+            );
+            CONNECTION_IDS.DESKTOP_NOTES_MODAL_HIDING = 0;
+        }
+
         this.set_opacity(255);
         Shared.desktop_notes.hide_modal();
         Shared.desktop_notes.set_notes_opacity(255);
