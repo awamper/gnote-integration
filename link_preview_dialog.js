@@ -156,6 +156,7 @@ const LinkPreviewDialog = new Lang.Class({
             }
             catch(e) {
                 log('LinkPreviewDialog:_preview_file(): %s'.format(e));
+                this._show_message(e.message);
                 return;
             }
 
@@ -168,25 +169,39 @@ const LinkPreviewDialog = new Lang.Class({
                 && Utils.SETTINGS.get_boolean(PrefsKeys.PREVIEW_IMAGES_KEY)
             ) {
                 let size = info.get_size();
+                let max_local_size = Utils.SETTINGS.get_int(
+                    PrefsKeys.PREVIEW_MAX_LOCAL_SIZE_KB_KEY
+                ) * 1024;
+                let max_remote_size = Utils.SETTINGS.get_int(
+                    PrefsKeys.PREVIEW_MAX_NET_SIZE_KB_KEY
+                ) * 1024;
                 let dont_preview_local =
                     uri_type === URI_TYPES.PATH
-                    && Utils.SETTINGS.get_int(
-                        PrefsKeys.PREVIEW_MAX_LOCAL_SIZE_KB_KEY
-                    ) !== 0
-                    && size > Utils.SETTINGS.get_int(
-                        PrefsKeys.PREVIEW_MAX_LOCAL_SIZE_KB_KEY
-                    ) * 1024;
+                    && max_local_size !== 0
+                    && size > max_local_size;
                 let dont_preview_net =
                     uri_type === URI_TYPES.URL
-                    && Utils.SETTINGS.get_int(
-                        PrefsKeys.PREVIEW_MAX_NET_SIZE_KB_KEY
-                    ) !== 0
-                    && size > Utils.SETTINGS.get_int(
-                        PrefsKeys.PREVIEW_MAX_NET_SIZE_KB_KEY
-                    ) * 1024;
-                if(dont_preview_local) return;
-                else if(dont_preview_net) return;
-                else previewer = LinkPreviewers.ImagePreviewer;
+                    && max_remote_size !== 0
+                    && size > max_remote_size;
+
+                if(dont_preview_local || dont_preview_net) {
+                    this._show_message(
+                        'The size of the image(%s) is '.format(
+                            GLib.format_size(size)
+                        ) +
+                        'larger than the limit(%s)'.format(
+                            GLib.format_size(
+                                dont_preview_local
+                                ? max_local_size
+                                : max_remote_size
+                            )
+                        )
+                    );
+                    return;
+                }
+                else {
+                    previewer = LinkPreviewers.ImagePreviewer;
+                }
             }
             else if(
                 content_type === 'text/html'
@@ -204,7 +219,8 @@ const LinkPreviewDialog = new Lang.Class({
                 previewer = LinkPreviewers.ImagePreviewer;
             }
             else {
-                previewer = LinkPreviewers.NoPreviewer;
+                this._show_message('No preview');
+                return;
             }
 
             this._show_previewer(uri, previewer);
@@ -218,6 +234,25 @@ const LinkPreviewDialog = new Lang.Class({
             null,
             Lang.bind(this, on_query_complete)
         );
+    },
+
+    _show_message: function(message) {
+        this.clear();
+        this._previewer = new LinkPreviewers.MessagePreviewer(message, {
+            max_width: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_WIDTH_KEY),
+            max_height: Utils.SETTINGS.get_int(PrefsKeys.PREVIEW_MAX_HEIGHT_KEY)
+        });
+        this.show();
+        this._previewer.load(Lang.bind(this, function(ok) {
+            if(ok !== true) {
+                this.hide();
+                return;
+            }
+
+            this._status_box.hide();
+            this._box.add_child(this._previewer.actor);
+            this._reposition();
+        }));
     },
 
     _show_previewer: function(uri, previewer) {
@@ -245,6 +280,9 @@ const LinkPreviewDialog = new Lang.Class({
         link = link.trim();
         let [uri, type] = this._get_uri_for_note_link(link);
 
+        this.show();
+        this._status_box.show();
+
         if(
             type === URI_TYPES.NOTE
             && Utils.SETTINGS.get_boolean(PrefsKeys.PREVIEW_NOTES_KEY)
@@ -252,14 +290,14 @@ const LinkPreviewDialog = new Lang.Class({
             this._show_previewer(uri, LinkPreviewers.NotePreviewer);
         }
         else if(type === URI_TYPES.UNDEFINED) {
-            this._show_previewer(uri, LinkPreviewers.NoPreviewer);
+            this._show_message('No preview');
         }
         else if(type !== URI_TYPES.NOTE) {
             if(
                 Utils.SETTINGS.get_boolean(PrefsKeys.PREVIEW_ONLY_LOCAL_KEY)
                 && type === URI_TYPES.URL
             ) {
-                this._show_previewer(uri, LinkPreviewers.NoPreviewer);
+                this._show_message('Preview is disabled for remote images');
             }
             else {
                 this._preview_file(uri, type);

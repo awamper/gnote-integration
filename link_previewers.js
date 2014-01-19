@@ -34,23 +34,6 @@ const LinkPreviewerBase = new Lang.Class({
     }
 });
 
-const NoPreviewer = new Lang.Class({
-    Name: 'NoPreviewer',
-    Extends: LinkPreviewerBase,
-
-    _init: function(uri, params) {
-        this.parent(uri, params);
-    },
-
-    load: function(on_loaded) {
-        let label = new St.Label({
-            text: 'No preview'
-        });
-        this.actor.add_child(label);
-        on_loaded(true);
-    }
-});
-
 const NotePreviewer = new Lang.Class({
     Name: 'NotePreviewer',
     Extends: LinkPreviewerBase,
@@ -253,5 +236,23 @@ const WebpagePreviewer = new Lang.Class({
                 }
             })
         );
+    }
+});
+
+const MessagePreviewer = new Lang.Class({
+    Name: 'MessagePreviewer',
+    Extends: LinkPreviewerBase,
+
+    _init: function(message, params) {
+        this.parent(null, params);
+        this._message = message;
+    },
+
+    load: function(on_loaded) {
+        let label = new St.Label({
+            text: this._message
+        });
+        this.actor.add_child(label);
+        on_loaded(true);
     }
 });
