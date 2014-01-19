@@ -1,6 +1,8 @@
 ## Gnote/Tomboy Integration
 Integration Gnote or Tomboy with gnome-shell
-  
+
+By default works with Gnote, you can switch to Tomboy in settings.
+
 ##### Search notes(Left-click on panel button or \<Super\>G): 
 * Start typing to search  
 * Left-click(or \<Enter\>) - view note  
@@ -13,13 +15,15 @@ Integration Gnote or Tomboy with gnome-shell
 ##### Note view:  
 * \<Escape\> or \<BackSpace\> - close  
 * \<Enter\> - open in editor
+* Hover the mouse over a link to see the preview
 
 ##### Desktop notes:
 * Drag by title to set position  
 * Drag by lower right corner to resize
 * Scroll with pressed right button - previous/next page
+* Hover the mouse over a link to see the preview
 
-##### Menu/Pinned notes(Right-click on panel button or \<Super\>\<Shift\>G:
+##### Menu/Pinned notes(Right-click on panel button or \<Super\>\<Shift\>G):
 * Click title - open note  
 * Click icon - unpin note  
 * Start typing to create named note
