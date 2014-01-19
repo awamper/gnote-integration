@@ -3,7 +3,9 @@ const Lang = imports.lang;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
 const Clutter = imports.gi.Clutter;
+const Signals = imports.signals;
 const Tweener = imports.ui.tweener;
+const Params = imports.misc.params;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -294,8 +296,10 @@ const DesktopNotes = new Lang.Class({
         }
     },
 
-    _show_note: function(note, animation) {
-        let properties = this.get_note_properties(note.uri);
+    _show_note: function(note, animation, properties) {
+        let exists_properties = this.get_note_properties(note.uri);
+        properties = Params.parse(properties, exists_properties);
+        this.update_note_properties(note.uri, properties);
         note.properties = properties;
         let note_container = new DesktopNoteContainer.DesktopNoteContainer(
             this,
@@ -314,7 +318,7 @@ const DesktopNotes = new Lang.Class({
         this.indicate_pages();
     },
 
-    _load_note: function(uri) {
+    _load_note: function(uri, properties) {
         if(!Utils.get_client().is_valid_uri(uri)) {
             return;
         }
@@ -323,7 +327,7 @@ const DesktopNotes = new Lang.Class({
         note.connect(
             "notify::parsed",
             Lang.bind(this, function() {
-                this._show_note(note);
+                this._show_note(note, false, properties);
             })
         );
 
@@ -428,7 +432,7 @@ const DesktopNotes = new Lang.Class({
         }
     },
 
-    add_note: function(uri) {
+    add_note: function(uri, properties) {
         if(this.is_note_on_desktop(uri)) {
             log('Note "%s" already on desktop'.format(uri));
             return;
@@ -439,7 +443,7 @@ const DesktopNotes = new Lang.Class({
             PrefsKeys.ENABLED_DESKTOP_NOTES_KEY,
             this._enabled_notes
         );
-        this._load_note(uri);
+        this._load_note(uri, properties);
     },
 
     update_note: function(uri) {
@@ -568,6 +572,12 @@ const DesktopNotes = new Lang.Class({
         this.actor.set_background_color(color);
     },
 
+    set_notes_opacity: function(opacity) {
+        for(let uri in this._notes) {
+            this._notes[uri].actor.opacity = opacity;
+        }
+    },
+
     show: function() {
         if(this.actor.visible) return;
 
@@ -621,6 +631,7 @@ const DesktopNotes = new Lang.Class({
             return;
         }
 
+        this.emit('modal-showing');
         this.actor.opacity = 0;
         this._is_modal = true;
         this.set_background_color(0, 0, 0, 0.5);
@@ -629,13 +640,17 @@ const DesktopNotes = new Lang.Class({
         Tweener.addTween(this.actor, {
             opacity: 255,
             time: ANIMATION_TIMES.SHOW_MODAL,
-            transition: 'easeOutQuad'
+            transition: 'easeOutQuad',
+            onComplete: Lang.bind(this, function() {
+                this.emit('modal-shown');
+            })
         });
     },
 
     hide_modal: function() {
         if(!this._is_modal) return;
 
+        this.emit('modal-hiding');
         Tweener.removeTweens(this.actor);
         Tweener.addTween(this.actor, {
             opacity: 0,
@@ -648,6 +663,7 @@ const DesktopNotes = new Lang.Class({
                 Main.uiGroup.remove_child(this.actor);
                 this._background_actor.add_child(this.actor);
                 this._is_modal = false;
+                this.emit('modal-hidden');
             })
         });
     },
@@ -671,6 +687,7 @@ const DesktopNotes = new Lang.Class({
         this._background_actor.destroy();
     }
 });
+Signals.addSignalMethods(DesktopNotes.prototype);
 
 let desktop_notes = null;
 
