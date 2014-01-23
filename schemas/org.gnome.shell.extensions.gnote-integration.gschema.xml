@@ -165,5 +165,9 @@
         <default>500</default>
     </key>
 
+    <key type="b" name="case-sensitive-search">
+        <default>false</default>
+    </key>
+
   </schema>
 </schemalist>

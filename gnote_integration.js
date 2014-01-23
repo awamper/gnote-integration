@@ -654,7 +654,8 @@ const GnoteIntegration = new Lang.Class({
 
     _search_notes: function(term) {
         let renderer = this._get_user_renderer(PrefsKeys.SEARCH_NOTES_RENDERER_KEY);
-        Utils.get_client().search_notes(term, false,
+        Utils.get_client().search_notes(term,
+            Utils.SETTINGS.get_boolean(PrefsKeys.CASE_SENSITIVE_SEARCH_KEY),
             Lang.bind(this, function(uris, error) {
                 if(!uris) {
                     Main.notify("Gnote Integration", error);
