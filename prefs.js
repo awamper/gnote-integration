@@ -576,6 +576,11 @@ const PrefsWidget = new GObject.Class({
             'integer'
         );
 
+        page.add_boolean(
+            'Case sensitive search:',
+            PrefsKeys.CASE_SENSITIVE_SEARCH_KEY
+        );
+
         let result = {
             label: page_label,
             page: page
