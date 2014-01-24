@@ -7,6 +7,12 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 const PrefsKeys = Me.imports.prefs_keys;
 const GnoteListViewRendererBase = Me.imports.gnote_list_view_renderer_base;
+const Shared = Me.imports.shared;
+
+const HIGHLIGHT_MARKUP = {
+    OPEN: '<span background="yellow" foreground="black">',
+    CLOSE: '</span>'
+};
 
 const GnoteListViewSnippetRenderer = new Lang.Class({
     Name: "GnoteListViewSnippet",
@@ -18,22 +24,59 @@ const GnoteListViewSnippetRenderer = new Lang.Class({
 
     _prepare_snippet: function(content) {
         let snippet = content.replace(/\s{2,}|\n{1,}/gm, ' ');
-
         return snippet;
     },
 
+    _highlight: function(string, term) {
+        string = string.replace(
+            new RegExp('(' + Utils.preg_quote(term) + ')', 'gi'),
+            Lang.bind(this, function(match) {
+                return '[HIGHLIGHT_START]' + match + '[HIGHLIGHT_STOP]'
+            })
+        );
+        string = Utils.escape_markup(string);
+        string = string.replace(/\[HIGHLIGHT_START\]/g, HIGHLIGHT_MARKUP.OPEN);
+        string = string.replace(/\[HIGHLIGHT_STOP\]/g, HIGHLIGHT_MARKUP.CLOSE);
+
+        return string;
+    },
+
     on_note_parsed: function() {
-        this.title_label.clutter_text.set_markup(this.note.title);
+        let search_term = Shared.gnote_integration.search_text;
+        let title;
+
+        if(!Utils.is_blank(search_term)) {
+            title = this._highlight(this.note.title, search_term);
+        }
+        else {
+            title = Utils.escape_markup(this.note.title);
+        }
+
+        this.title_label.clutter_text.set_markup(title);
         this.date_label.create_date = this.note.create_date;
         this.date_label.update_date = this.note.update_date;
 
         let max_length = Utils.SETTINGS.get_int(
             PrefsKeys.MAX_SNIPPET_LENGTH_KEY
         );
-        let snippet = this.note.content.slice(0, max_length);
-        snippet = this._prepare_snippet(snippet);
+        let snippet = this._prepare_snippet(this.note.content);
+
+        if(!Utils.is_blank(search_term)) {
+            snippet = this._highlight(snippet, search_term);
+            let start_index = snippet.indexOf(HIGHLIGHT_MARKUP.OPEN);
+
+            if(start_index !== -1 && start_index > max_length) {
+                let rest = snippet.length - start_index;
+                if(rest < max_length) start_index -= max_length - rest;
+                snippet = "..." + snippet.slice(start_index);
+            }
+        }
+        else {
+            snippet = Utils.escape_markup(snippet);
+        }
+
         this.snippet_label.clutter_text.set_max_length(max_length);
-        this.snippet_label.set_text(snippet);
+        this.snippet_label.clutter_text.set_markup(snippet);
     },
 
     get_snippet: function() {
