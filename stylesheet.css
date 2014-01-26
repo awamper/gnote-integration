@@ -526,3 +526,16 @@
     color: white;
     transition-duration: 200ms;
 }
+
+.gnote-integration-tooltip-label {
+    font-weight: bold;
+    font-size: 15px;
+    color: white;
+}
+
+.gnote-integration-tooltip-box {
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 0, 0, 1);
+    border-radius: 6px;
+}
