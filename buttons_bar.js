@@ -9,6 +9,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 const PopupDialog = Me.imports.popup_dialog;
+const Tooltips = Me.imports.tooltips;
 
 const ConfirmationDialog = new Lang.Class({
     Name: "ConfirmationDialog",
@@ -167,6 +168,12 @@ const ButtonsBarButton = new Lang.Class({
             }
         }
 
+        if(!Utils.is_blank(this._tip_text)) {
+            Tooltips.get_manager().add_tooltip(this._button, {
+                text: this._tip_text
+            });
+        }
+
         this._button.connect(
             'enter-event',
             Lang.bind(this, this._on_enter_event)
@@ -182,12 +189,6 @@ const ButtonsBarButton = new Lang.Class({
     },
 
     _on_enter_event: function(object, event) {
-        if(this.params.statusbar && !Utils.is_blank(this._tip_text)) {
-            this._statusbar_message_id = this.params.statusbar.add_message({
-                text: this._tip_text
-            });
-        }
-
         if(this._icon && this._label) {
             this._label.opacity = 0;
             this._label.show();
@@ -201,10 +202,6 @@ const ButtonsBarButton = new Lang.Class({
     },
 
     _on_leave_event: function(object, event) {
-        if(this.params.statusbar && !Utils.is_blank(this._tip_text)) {
-            this.params.statusbar.remove_message(this._statusbar_message_id);
-        }
-
         if(this._icon && this._label) {
             Tweener.addTween(this._label, {
                 time: 0.3,
