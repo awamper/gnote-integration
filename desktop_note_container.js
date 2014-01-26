@@ -20,6 +20,7 @@ const DesktopNoteView = Me.imports.desktop_note_view;
 const LinkPreviewDialog = Me.imports.link_preview_dialog;
 const GnoteNote = Me.imports.gnote_note;
 const Shared = Me.imports.shared;
+const Tooltips = Me.imports.tooltips;
 
 const MIN_WIDTH = 150;
 const MIN_HEIGHT = 130;
@@ -45,7 +46,8 @@ const DesktopNoteButtonBase = new Lang.Class({
             gicon: null,
             style_class: '',
             min_opacity: 100,
-            max_opacity: 255
+            max_opacity: 255,
+            tooltip: ''
         });
 
         if(!this.params.container instanceof DesktopNoteContainer) {
@@ -68,6 +70,12 @@ const DesktopNoteButtonBase = new Lang.Class({
         }
         else {
             throw new Error('icon_name and gicon are both null');
+        }
+
+        if(!Utils.is_blank(this.params.tooltip)) {
+            Tooltips.get_manager().add_tooltip(this.actor, {
+                text: this.params.tooltip
+            });
         }
 
         this.actor.connect('enter-event', Lang.bind(this, function() {
@@ -120,7 +128,8 @@ const DesktopNoteCloseButton = new Lang.Class({
         this.parent({
             container: desktop_note_container,
             style_class: 'desktop-note-close-icon',
-            icon_name: Utils.ICONS.DESKTOP_NOTE_CLOSE
+            icon_name: Utils.ICONS.DESKTOP_NOTE_CLOSE,
+            tooltip: 'Remove the note from the desktop'
         });
 
         this.actor.connect('button-release-event', Lang.bind(this, function(o, e) {
