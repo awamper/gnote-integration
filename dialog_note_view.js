@@ -12,6 +12,7 @@ const PrefsKeys = Me.imports.prefs_keys;
 const NoteContentView = Me.imports.note_content_view;
 const Shared = Me.imports.shared;
 const ConfirmationModalDialog = Me.imports.confirmation_modal_dialog;
+const Tooltips = Me.imports.tooltips;
 
 const CONNECTION_IDS = {
     CONTENT_SIZE: 0,
@@ -39,6 +40,9 @@ const DialogNoteViewToolbar = new Lang.Class({
         this.search_all_btn = new St.Button({
             style_class: 'dialog-note-view-toolbar-button'
         });
+        Tooltips.get_manager().add_tooltip(this.search_all_btn, {
+            text: 'Back to search (<Esc>)'
+        });
         this.search_all_btn.add_actor(seach_all_icon);
 
         let copy_icon = new St.Icon({
@@ -47,6 +51,9 @@ const DialogNoteViewToolbar = new Lang.Class({
         });
         this.copy_btn = new St.Button({
             style_class: 'dialog-note-view-toolbar-button'
+        });
+        Tooltips.get_manager().add_tooltip(this.copy_btn, {
+            text: 'Copy note content to clipboard'
         });
         this.copy_btn.add_actor(copy_icon);
 
@@ -57,6 +64,9 @@ const DialogNoteViewToolbar = new Lang.Class({
         this.open_btn = new St.Button({
             style_class: 'dialog-note-view-toolbar-button'
         });
+        Tooltips.get_manager().add_tooltip(this.open_btn, {
+            text: 'Edit note (<Enter>)'
+        });
         this.open_btn.add_actor(open_icon);
 
         let delete_icon = new St.Icon({
@@ -65,6 +75,9 @@ const DialogNoteViewToolbar = new Lang.Class({
         });
         this.delete_btn = new St.Button({
             style_class: 'dialog-note-view-toolbar-button'
+        });
+        Tooltips.get_manager().add_tooltip(this.delete_btn, {
+            text: 'Delete note (<Delete>)'
         });
         this.delete_btn.add_actor(delete_icon);
 
