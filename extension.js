@@ -157,6 +157,7 @@ const GnoteIntegrationButton = new Lang.Class({
                 item.connect('activate',
                     Lang.bind(this, function(item) {
                         Utils.get_client().display_note(item.uri);
+                        this._gnote.hide(false);
                     })
                 );
                 item.connect('icon-clicked',
@@ -198,6 +199,7 @@ const GnoteIntegrationButton = new Lang.Class({
             Lang.bind(this, function(object, note_name) {
                 if(!note_name) return;
                 this._create_new_note(note_name, null, true);
+                this._gnote.hide(false);
             })
         );
         this.menu.addMenuItem(separator);
@@ -208,6 +210,7 @@ const GnoteIntegrationButton = new Lang.Class({
         this._create_note_from_clipboard_menu_item.label.clutter_text.set_use_markup(true);
         this._create_note_from_clipboard_menu_item.connect('activate',
             Lang.bind(this, function() {
+                this._gnote.hide(false);
                 let clipboard = St.Clipboard.get_default();
                 clipboard.get_text(St.ClipboardType.CLIPBOARD,
                     Lang.bind(this, function(clipboard, text) {
@@ -224,12 +227,14 @@ const GnoteIntegrationButton = new Lang.Class({
         let show_all_menu_item = new PopupMenu.PopupMenuItem('Show all notes');
         show_all_menu_item.connect('activate',
             Lang.bind(this, function() {
+                this._gnote.hide(false);
                 Utils.get_client().display_search();
             })
         );
         let preferences_menu_item = new PopupMenu.PopupMenuItem('Preferences');
         preferences_menu_item.connect('activate',
             Lang.bind(this, function() {
+                this._gnote.hide(false);
                 Utils.launch_extension_prefs(Me.uuid);
             })
         );
