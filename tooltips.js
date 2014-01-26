@@ -148,6 +148,11 @@ const TooltipsManager = new Lang.Class({
         if(manager_data === undefined) return;
 
         let manager_data = actor._tooltips_manager_data;
+
+        if(manager_data.tooltip_instance !== null) {
+            manager_data.tooltip_instance.destroy();
+        }
+
         this._add_timeout(actor,
             Lang.bind(this, function() {
                 let params = {
