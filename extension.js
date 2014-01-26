@@ -18,6 +18,7 @@ const Utils = Me.imports.utils;
 const PrefsKeys = Me.imports.prefs_keys;
 const DesktopNotes = Me.imports.desktop_notes;
 const Shared = Me.imports.shared;
+const Tooltips = Me.imports.tooltips;
 
 const SIGNAL_IDS = {
     ENABLE_SHORTCUTS: 0,
@@ -393,6 +394,7 @@ const GnoteIntegrationButton = new Lang.Class({
 
     destroy: function() {
         Shared.gnote_button = null;
+        Tooltips.get_manager().destroy();
         this.remove_keybindings();
         this.disable_desktop_notes();
         this._gnote.destroy();
