@@ -10,7 +10,6 @@ const GnoteToolbar = new Lang.Class({
 
     _init: function(gnote_integration) {
         this._gnote_integration = gnote_integration;
-        this._statusbar = this._gnote_integration._statusbar;
 
         this._buttons_bar = new ButtonsBar.ButtonsBar();
         this._init_gnote_button();
@@ -23,7 +22,6 @@ const GnoteToolbar = new Lang.Class({
             label_text: '',
             tip_text: 'Open editor',
             button_style_class: 'gnote-button',
-            statusbar: this._statusbar,
             action: Lang.bind(this, function() {
                 let search_text = this._gnote_integration.search_text;
 
@@ -49,7 +47,6 @@ const GnoteToolbar = new Lang.Class({
             label_text: '',
             tip_text: 'Preferences',
             button_style_class: 'gnote-button',
-            statusbar: this._statusbar,
             action: Lang.bind(this, function() {
                 Utils.launch_extension_prefs(Me.uuid);
                 this._gnote_integration.hide(false);

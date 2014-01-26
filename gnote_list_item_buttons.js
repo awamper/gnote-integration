@@ -23,7 +23,6 @@ const GnoteListItemButtons = new Lang.Class({
         }
 
         this._gnote_integration = Shared.gnote_integration;
-        this._statusbar = this._gnote_integration.statusbar;
 
         this._buttons_bar = new ButtonsBar.ButtonsBar({
             style_class: 'gnote-snippet-buttons-box'
@@ -42,7 +41,6 @@ const GnoteListItemButtons = new Lang.Class({
             label_text: '',
             tip_text: 'Copy note to clipboard',
             button_style_class: 'gnote-snippet-buttons-bar-button',
-            statusbar: this._statusbar,
             confirmation_dialog: false,
             action: Lang.bind(this, function() {
                 function on_copied(result) {
@@ -68,7 +66,6 @@ const GnoteListItemButtons = new Lang.Class({
             label_text: '',
             tip_text: 'Pin note',
             button_style_class: 'gnote-snippet-buttons-bar-toggle-button',
-            statusbar: this._statusbar,
             toggle_mode: true,
             action: Lang.bind(this, function() {
                 let checked = this._pin_btn.get_checked();
@@ -100,7 +97,6 @@ const GnoteListItemButtons = new Lang.Class({
             label_text: '',
             tip_text: 'Show on desktop',
             button_style_class: 'gnote-snippet-buttons-bar-toggle-button',
-            statusbar: this._statusbar,
             toggle_mode: true,
             action: Lang.bind(this, function() {
                 let checked = this._show_on_desktop_btn.get_checked();
@@ -130,7 +126,6 @@ const GnoteListItemButtons = new Lang.Class({
             label_text: '',
             tip_text: 'Delete note',
             button_style_class: 'gnote-snippet-buttons-bar-button',
-            statusbar: this._statusbar,
             confirmation_dialog: true,
             action: Lang.bind(this, function() {
                 this._gnote_integration.delete_note(this._uri);
