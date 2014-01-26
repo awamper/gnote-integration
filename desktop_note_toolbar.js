@@ -8,6 +8,7 @@ const Utils = Me.imports.utils;
 const ButtonsBar = Me.imports.buttons_bar;
 const NoteColorChooser = Me.imports.note_color_chooser;
 const NotePageChooser = Me.imports.note_page_chooser;
+const Tooltips = Me.imports.tooltips;
 
 const DesktopNoteToolbar = new Lang.Class({
     Name: "DesktopNoteToolbar",
@@ -56,6 +57,7 @@ const DesktopNoteToolbar = new Lang.Class({
             icon_name: Utils.ICONS.COPY,
             icon_style: 'desktop-note-toolbar-icon',
             button_style_class: 'desktop-note-toolbar-button',
+            tip_text: 'Copy note content to clipboard',
             action: Lang.bind(this, function() {
                 function on_copied(result) {
                     if(result) Main.notify('Copied to clipboard');
@@ -78,6 +80,7 @@ const DesktopNoteToolbar = new Lang.Class({
             icon_name: Utils.ICONS.PAGE,
             icon_style: 'desktop-note-toolbar-icon',
             button_style_class: 'desktop-note-toolbar-button',
+            tip_text: 'Change page',
             action: Lang.bind(this, function() {
                 this._page_chooser.selected =
                     this._note_container.note.properties.page;
@@ -93,6 +96,7 @@ const DesktopNoteToolbar = new Lang.Class({
             icon_name: Utils.ICONS.NOTE_COLOR,
             icon_style: 'desktop-note-toolbar-icon',
             button_style_class: 'desktop-note-toolbar-button',
+            tip_text: 'Change color',
             action: Lang.bind(this, function() {
                 this._color_chooser.show();
             })
@@ -106,6 +110,7 @@ const DesktopNoteToolbar = new Lang.Class({
             icon_name: Utils.ICONS.EDIT,
             icon_style: 'desktop-note-toolbar-icon',
             button_style_class: 'desktop-note-toolbar-button',
+            tip_text: 'Edit note',
             action: Lang.bind(this, function() {
                 this._note_container.desktop_notes.hide_modal();
                 Utils.get_client().display_note(this._note_container.uri);
