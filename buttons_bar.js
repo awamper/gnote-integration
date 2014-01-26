@@ -102,7 +102,6 @@ const ButtonsBarButton = new Lang.Class({
             reactive: true,
             toggle_mode: false,
             icon_style: 'gnote-buttons-bar-icon',
-            statusbar: false,
             action: false,
             confirmation_dialog: false,
             confirmation_dialog_label: "Are you sure?"
