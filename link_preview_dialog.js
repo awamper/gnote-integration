@@ -87,18 +87,22 @@ const LinkPreviewDialog = new Lang.Class({
         let cursor_indent = 10;
         let margin = 20;
 
+        let monitor = Main.layoutManager.currentMonitor;
+        let available_width =
+            (monitor.width + monitor.x) - x - cursor_indent - margin;
+        let available_height =
+            (monitor.height + monitor.y) - y - cursor_indent - margin;
+
         let offset_x = 10;
         let offset_y = 10;
 
-        let monitor = Main.layoutManager.primaryMonitor;
-        let available_width = monitor.width - x - cursor_indent - margin;
-        let available_height = monitor.height - y - cursor_indent - margin;
-
         if(this.actor.width > available_width) {
-            offset_x = monitor.width - (this.actor.width + x + margin);
+            offset_x =
+                (monitor.width + monitor.x) - (this.actor.width + x + margin);
         }
         if(this.actor.height > available_height) {
-            offset_y = monitor.height - (this.actor.height + y + margin);
+            offset_y =
+                (monitor.height + monitor.y) - (this.actor.height + y + margin);
         }
 
         let dialog_x = x + cursor_indent + offset_x;
