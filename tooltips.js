@@ -91,19 +91,21 @@ const TooltipsManager = new Lang.Class({
         let offset_x = 0;
         let offset_y = 10;
 
-        let monitor = Main.layoutManager.primaryMonitor;
-        let available_width = monitor.width - x - cursor_indent - margin;
-        let available_height = monitor.height - y - cursor_indent - margin;
+        let monitor = Main.layoutManager.currentMonitor;
+        let available_width =
+            (monitor.width + monitor.x) - x - cursor_indent - margin;
+        let available_height =
+            (monitor.height + monitor.y) - y - cursor_indent - margin;
 
         if(manager_data.tooltip_instance.actor.width > available_width) {
-            offset_x = monitor.width - (
+            offset_x = (monitor.width + monitor.x) - (
                 manager_data.tooltip_instance.actor.width
                 + x
                 + margin
             );
         }
         if(manager_data.tooltip_instance.actor.height > available_height) {
-            offset_y = monitor.height - (
+            offset_y = (monitor.height + monitor.y) - (
                 manager_data.tooltip_instance.actor.height
                 + y
                 + margin

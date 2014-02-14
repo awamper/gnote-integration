@@ -96,15 +96,20 @@ const Dialog = new Lang.Class({
     },
 
     resize: function() {
-        let primary = Main.layoutManager.primaryMonitor;
-        let available_height = primary.height - Main.panel.actor.height;
-        let my_width = primary.width / 100 * this.params.width_percents;
+        let monitor = Main.layoutManager.currentMonitor;
+        let is_primary = monitor.index === Main.layoutManager.primaryIndex;
+
+        let available_height = monitor.height;
+        if(is_primary) available_height -= Main.panel.actor.height;
+
+        let my_width = monitor.width / 100 * this.params.width_percents;
         let my_height = available_height / 100 * this.params.height_percents;
 
-        this.actor.x = primary.width - my_width;
-        this._hidden_y = this.actor.get_parent().height - my_height;
+        this._hidden_y = monitor.y - my_height;
         this._target_y = this._hidden_y + my_height;
+        if(is_primary) this._target_y += Main.panel.actor.height;
 
+        this.actor.x = (monitor.width + monitor.x) - my_width;
         this.actor.y = this._hidden_y;
         this.actor.width = my_width;
         this.actor.height = my_height;
