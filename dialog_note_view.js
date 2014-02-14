@@ -111,7 +111,9 @@ const DialogNoteView = new Lang.Class({
 
         this._toolbar = new DialogNoteViewToolbar();
         this._toolbar.search_all_btn.connect('clicked',
-            Lang.bind(this, this.hide)
+            Lang.bind(this, function() {
+                this.hide();
+            })
         );
         this._toolbar.open_btn.connect('clicked',
             Lang.bind(this, this._open_note)
@@ -314,6 +316,7 @@ const DialogNoteView = new Lang.Class({
 
         if(!animation) {
             this._replaced_actor.hide();
+            this.actor.set_scale(1, 1);
             this.actor.opacity = 255;
             this.actor.show();
             this.grab_key_focus();
@@ -380,6 +383,7 @@ const DialogNoteView = new Lang.Class({
 
         this._replaced_actor.opacity = 0;
         this._replaced_actor.set_scale(MIN_SCALE, MIN_SCALE);
+        this._replaced_actor.show();
         Tweener.removeTweens(this._replaced_actor);
         Tweener.addTween(this._replaced_actor, {
             time: ANIMATION_TIMES.BOX / St.get_slow_down_factor(),
