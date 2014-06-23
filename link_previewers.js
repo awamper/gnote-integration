@@ -12,6 +12,8 @@ const PrefsKeys = Me.imports.prefs_keys;
 const NotePreviewerContentView = Me.imports.note_previewer_content_view;
 const GnoteNote = Me.imports.gnote_note;
 
+const SCALE_FACTOR = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+
 const LinkPreviewerBase = new Lang.Class({
     Name: 'LinkPreviewerBase',
 
@@ -88,7 +90,8 @@ const ImagePreviewer = new Lang.Class({
         let image = texture_cache.load_uri_async(
             this.uri,
             this.params.max_width,
-            this.params.max_height
+            this.params.max_height,
+            SCALE_FACTOR
         );
         image.connect("size-change",
             Lang.bind(this, function() {
@@ -144,7 +147,8 @@ const WebpagePreviewerView = new Lang.Class({
             let image = texture_cache.load_uri_async(
                 image_info.url,
                 this._image_max_width,
-                this._image_max_height
+                this._image_max_height,
+                SCALE_FACTOR
             );
             image.connect("size-change",
                 Lang.bind(this, function(o, e) {

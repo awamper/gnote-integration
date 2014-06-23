@@ -2,7 +2,6 @@
   "description": "Integration Gnote or Tomboy with gnome-shell\n\nBy default works with Gnote, you can switch to Tomboy in settings.\n\nSearch notes(Left-click on panel button or <Super>G):\n- Start typing to search\n- Left-click(or <Enter>) - view note\n- Right-click(or <Ctrl><Enter>) - open in edior\n- <Delete> - delete\n- <Up>/<Down> - navigation\n- <Escape> - close dialog\n- <Ctrl> + 1-9 - shortcut for first 9 notes\nNote view:\n- <Escape> or <BackSpace> - close\n- <Enter> - open in editor\n- Hover the mouse over a link to see the preview\nDesktop notes:\n- Drag by title to set position\n- Drag by lower right corner to resize\n- Scroll with pressed right button - previous/next page\n- Hover the mouse over a link to see the preview\nMenu/Pinned notes(Right-click on panel button or <Super><Shift>G):\n- Click title - open note\n- Click icon - unpin note\n- Start typing to create named note",
   "name": "Gnote/Tomboy Integration",
   "shell-version": [
-    "3.11.90",
     "3.12"
   ],
   "url": "https://github.com/awamper/gnote-integration",
