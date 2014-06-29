@@ -24,7 +24,7 @@ const ANIMATION_TIMES = {
     BOX: 0.5
 };
 
-const MIN_SCALE = 0.2;
+const MIN_SCALE = 0.8;
 
 const DialogNoteViewToolbar = new Lang.Class({
     Name: 'DialogNoteViewToolbar',
