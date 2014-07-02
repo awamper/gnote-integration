@@ -93,7 +93,7 @@ function open_uri(path) {
 
     Gio.app_info_launch_default_for_uri(
         uri,
-        global.create_app_launch_context()
+        global.create_app_launch_context(0, -1)
     );
 }
 
