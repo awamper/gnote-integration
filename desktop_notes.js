@@ -64,7 +64,8 @@ const DesktopNotes = new Lang.Class({
 
         this.actor = new St.Table({
             homogeneous: false,
-            reactive: true
+            reactive: true,
+            visible: false
         });
         this.actor.connect(
             'key-release-event',
@@ -131,14 +132,14 @@ const DesktopNotes = new Lang.Class({
         // this._background_actor = new Meta.BackgroundActor();
         // this._background_actor.add_child(this.actor);
 
-        IDS.OVERVIEW_SHOWING = Main.overview.connect(
-            "showing",
-            Lang.bind(this, this._on_overview_showing)
-        );
-        IDS.OVERVIEW_HIDDEN = Main.overview.connect(
-            "hidden",
-            Lang.bind(this, this._on_overview_hiding)
-        );
+        // IDS.OVERVIEW_SHOWING = Main.overview.connect(
+        //     "showing",
+        //     Lang.bind(this, this._on_overview_showing)
+        // );
+        // IDS.OVERVIEW_HIDDEN = Main.overview.connect(
+        //     "hidden",
+        //     Lang.bind(this, this._on_overview_hiding)
+        // );
         IDS.MONITORS_CHANGED = global.screen.connect(
             'monitors-changed',
             Lang.bind(this, this._resize)
@@ -186,7 +187,7 @@ const DesktopNotes = new Lang.Class({
         this._is_modal = false;
         this._current_page_index = 0;
         this._notes = {};
-        this._resize();
+        // this._resize();
         this._load_notes();
         this.block_modal_close = false;
 
@@ -623,19 +624,21 @@ const DesktopNotes = new Lang.Class({
         if(this._is_modal) return;
 
         // this._background_actor.remove_child(this.actor);
-        Main.uiGroup.add_child(this.actor);
+        // Main.uiGroup.add_child(this.actor);
         let push_result = Main.pushModal(this.actor, {
             keybindingMode: Shell.KeyBindingMode.NORMAL
         });
 
         if(!push_result) {
-            Main.uiGroup.remove_child(this.actor);
+            // Main.uiGroup.remove_child(this.actor);
             // this._background_actor.add_child(this.actor);
             return;
         }
 
         this.emit('modal-showing');
+        this._resize();
         this.actor.opacity = 0;
+        this.actor.show();
         this._is_modal = true;
         this.set_background_color(0, 0, 0, 0.8);
 
@@ -663,7 +666,8 @@ const DesktopNotes = new Lang.Class({
                 this.set_background_color(0, 0, 0, 0);
                 this.actor.opacity = 255;
                 Main.popModal(this.actor);
-                Main.uiGroup.remove_child(this.actor);
+                this.actor.hide();
+                // Main.uiGroup.remove_child(this.actor);
                 // this._background_actor.add_child(this.actor);
                 this._is_modal = false;
                 this.emit('modal-hidden');
@@ -674,6 +678,7 @@ const DesktopNotes = new Lang.Class({
     enable: function() {
         // let background_group = this._find_background_group();
         // background_group.add_child(this._background_actor);
+        Main.uiGroup.add_child(this.actor);
         this._add_keybindings();
         this._cleanup_enabled_notes();
     },
