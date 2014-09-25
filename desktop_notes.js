@@ -126,8 +126,8 @@ const DesktopNotes = new Lang.Class({
             y_align: St.Align.END
         });
 
-        this._background_actor = new Meta.BackgroundActor();
-        this._background_actor.add_child(this.actor);
+        // this._background_actor = new Meta.BackgroundActor();
+        // this._background_actor.add_child(this.actor);
 
         IDS.OVERVIEW_SHOWING = Main.overview.connect(
             "showing",
@@ -619,7 +619,7 @@ const DesktopNotes = new Lang.Class({
     show_modal: function() {
         if(this._is_modal) return;
 
-        this._background_actor.remove_child(this.actor);
+        // this._background_actor.remove_child(this.actor);
         Main.uiGroup.add_child(this.actor);
         let push_result = Main.pushModal(this.actor, {
             keybindingMode: Shell.KeyBindingMode.NORMAL
@@ -627,14 +627,14 @@ const DesktopNotes = new Lang.Class({
 
         if(!push_result) {
             Main.uiGroup.remove_child(this.actor);
-            this._background_actor.add_child(this.actor);
+            // this._background_actor.add_child(this.actor);
             return;
         }
 
         this.emit('modal-showing');
         this.actor.opacity = 0;
         this._is_modal = true;
-        this.set_background_color(0, 0, 0, 0.5);
+        this.set_background_color(0, 0, 0, 0.8);
 
         Tweener.removeTweens(this.actor);
         Tweener.addTween(this.actor, {
@@ -661,7 +661,7 @@ const DesktopNotes = new Lang.Class({
                 this.actor.opacity = 255;
                 Main.popModal(this.actor);
                 Main.uiGroup.remove_child(this.actor);
-                this._background_actor.add_child(this.actor);
+                // this._background_actor.add_child(this.actor);
                 this._is_modal = false;
                 this.emit('modal-hidden');
             })
@@ -669,8 +669,8 @@ const DesktopNotes = new Lang.Class({
     },
 
     enable: function() {
-        let background_group = this._find_background_group();
-        background_group.add_child(this._background_actor);
+        // let background_group = this._find_background_group();
+        // background_group.add_child(this._background_actor);
         this._add_keybindings();
         this._cleanup_enabled_notes();
     },
@@ -684,7 +684,7 @@ const DesktopNotes = new Lang.Class({
     destroy: function() {
         Shared.desktop_notes = null;
         this._destroy_all_notes();
-        this._background_actor.destroy();
+        // this._background_actor.destroy();
     }
 });
 Signals.addSignalMethods(DesktopNotes.prototype);
