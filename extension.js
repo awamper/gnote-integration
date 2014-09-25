@@ -265,7 +265,11 @@ const GnoteIntegrationButton = new Lang.Class({
         }
     },
 
-    _onButtonPress: function(actor, event) {
+    _onEvent: function(actor, event) {
+        if(event.type() !== Clutter.EventType.BUTTON_RELEASE) {
+            return Clutter.EVENT_PROPAGATE;
+        }
+
         let button = event.get_button();
 
         if(Shared.desktop_notes) Shared.desktop_notes.hide_modal();
@@ -293,7 +297,7 @@ const GnoteIntegrationButton = new Lang.Class({
                 break;
         }
 
-        return true;
+        return Clutter.EVENT_STOP;
     },
 
     _onSourceKeyPress: function(actor, event) {
