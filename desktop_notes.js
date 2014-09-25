@@ -189,6 +189,7 @@ const DesktopNotes = new Lang.Class({
         this._notes = {};
         // this._resize();
         this._load_notes();
+        this._modal_first_time = true;
         this.block_modal_close = false;
 
         Shared.desktop_notes = this;
@@ -313,7 +314,10 @@ const DesktopNotes = new Lang.Class({
         this._box.add_child(note_container.actor);
         this._notes[note.uri] = note_container;
 
-        if(note_container.note.properties.page === this._current_page_index) {
+        if(
+            note_container.note.properties.page === this._current_page_index
+            && this.actor.visible
+        ) {
             note_container.show(animation);
         }
 
@@ -417,11 +421,11 @@ const DesktopNotes = new Lang.Class({
         }
     },
 
-    show_page: function(page_index) {
+    show_page: function(page_index, force) {
         let max_pages = Utils.SETTINGS.get_int(PrefsKeys.DESKTOP_NOTES_MAX_PAGES);
 
         if(page_index < 0 || page_index > (max_pages - 1)) return;
-        if(page_index === this._current_page_index) return;
+        if(force !== true && page_index === this._current_page_index) return;
 
         this._current_page_index = page_index;
         this._page_indicators.set_current_page(this._current_page_index);
@@ -649,6 +653,11 @@ const DesktopNotes = new Lang.Class({
             transition: 'easeOutQuad',
             onComplete: Lang.bind(this, function() {
                 this.emit('modal-shown');
+
+                if(this._modal_first_time) {
+                    this.show_page(this._current_page_index, true);
+                    this._modal_first_time = false;
+                }
             })
         });
     },
