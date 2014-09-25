@@ -38,3 +38,4 @@ const WATCH_DBUS_TIMEOUT_SECONDS_KEY = 'watch-dbus-timeout-seconds';
 const PREVIEW_NOTE_TIMEOUT_MS_KEY = 'preview-note-timeout-ms';
 const PREVIEW_LINK_TIMEOUT_MS_KEY = 'preview-link-timeout-ms';
 const CASE_SENSITIVE_SEARCH_KEY = 'case-sensitive-search';
+const ENABLE_TOOLTIPS_KEY = 'enable-tooltips';

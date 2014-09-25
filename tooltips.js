@@ -6,12 +6,18 @@ const Params = imports.misc.params;
 const Signals = imports.signals;
 const Tweener = imports.ui.tweener;
 const Main = imports.ui.main;
+const ExtensionUtils = imports.misc.extensionUtils;
+
+const Me = ExtensionUtils.getCurrentExtension();
+const Utils = Me.imports.utils;
+const PrefsKeys = Me.imports.prefs_keys;
 
 const Tooltip = new Lang.Class({
     Name: 'Tooltip',
 
     _init: function(text, params) {
         this.params = Params.parse(params, {
+            timeout_hide: 0,
             box_style_class: '',
             label_style_class: ''
         });
@@ -37,7 +43,15 @@ const Tooltip = new Lang.Class({
         Tweener.addTween(this.actor, {
             time: 0.5,
             transition: 'easeOutQuad',
-            opacity: 255
+            opacity: 255,
+            onComplete: Lang.bind(this, function() {
+                if(this.params.timeout_hide > 0) {
+                    Mainloop.timeout_add(
+                        this.params.timeout_hide,
+                        Lang.bind(this, this.hide)
+                    );
+                }
+            })
         })
     },
 
@@ -73,6 +87,7 @@ const TooltipsManager = new Lang.Class({
             tooltip_instance: null,
             timeout: 700,
             timeout_id: 0,
+            timeout_hide: 3000,
             box_style_class: 'gnote-integration-tooltip-box',
             label_style_class: 'gnote-integration-tooltip-label'
         };
@@ -146,8 +161,22 @@ const TooltipsManager = new Lang.Class({
     },
 
     _on_actor_enter: function(actor) {
+        if(!Utils.SETTINGS.get_boolean(PrefsKeys.ENABLE_TOOLTIPS_KEY)) return;
+        this._add_timeout(actor, Lang.bind(this, this._show_tooltip, actor));
+    },
+
+    _on_actor_leave: function(actor) {
+        this._remove_timeout(actor);
+        this._hide_tooltip(actor);
+    },
+
+    _on_actor_destroy: function(actor) {
+        this.remove_tooltip(actor);
+    },
+
+    _show_tooltip: function(actor) {
         let manager_data = actor._tooltips_manager_data;
-        if(manager_data === undefined) return;
+        if(manager_data === undefined) return GLib.SOURCE_REMOVE;
 
         let manager_data = actor._tooltips_manager_data;
 
@@ -155,35 +184,30 @@ const TooltipsManager = new Lang.Class({
             manager_data.tooltip_instance.destroy();
         }
 
-        this._add_timeout(actor,
-            Lang.bind(this, function() {
-                let params = {
-                    box_style_class: manager_data.box_style_class,
-                    label_style_class: manager_data.label_style_class
-                }
-                manager_data.tooltip_instance = new manager_data.tooltip(
-                    manager_data.text,
-                    params
-                );
-                Main.uiGroup.add_child(manager_data.tooltip_instance.actor);
-                manager_data.tooltip_instance.show();
-                this._adjust_tooltip_position(actor);
-            })
+        manager_data.timeout_id = 0;
+        let params = {
+            timeout_hide: manager_data.timeout_hide,
+            box_style_class: manager_data.box_style_class,
+            label_style_class: manager_data.label_style_class
+        }
+        manager_data.tooltip_instance = new manager_data.tooltip(
+            manager_data.text,
+            params
         );
+        Main.uiGroup.add_child(manager_data.tooltip_instance.actor);
+        manager_data.tooltip_instance.show();
+        this._adjust_tooltip_position(actor);
+
+        return GLib.SOURCE_REMOVE;
     },
 
-    _on_actor_leave: function(actor) {
-        this._remove_timeout(actor);
+    _hide_tooltip: function(actor) {
         let manager_data = actor._tooltips_manager_data;
 
         if(manager_data !== undefined && manager_data.tooltip_instance !== null) {
             manager_data.tooltip_instance.hide(true);
             manager_data.tooltip_instance = null;
         }
-    },
-
-    _on_actor_destroy: function(actor) {
-        this.remove_tooltip(actor);
     },
 
     _connect_actor_signals: function(actor) {
