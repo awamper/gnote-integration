@@ -95,11 +95,11 @@ const DesktopNoteButtonBase = new Lang.Class({
             });
         }));
 
-        this.params.container.connect('showed',
-            Lang.bind(this, this.on_container_showed)
+        this.params.container.connect('shown',
+            Lang.bind(this, this.on_container_shown)
         );
         this.params.container.connect('resized',
-            Lang.bind(this, this.on_container_showed)
+            Lang.bind(this, this.on_container_shown)
         );
         this.params.container.actor.add_child(this.actor);
     },
@@ -108,10 +108,10 @@ const DesktopNoteButtonBase = new Lang.Class({
         throw new Error('not implemented');
     },
 
-    on_container_showed: function() {
+    on_container_shown: function() {
         this.actor.opacity = this.params.min_opacity;
-        this.reposition();
         this.actor.show();
+        this.reposition();
     },
 
     destroy: function() {
@@ -270,7 +270,7 @@ const DesktopNoteResizeButton = new Lang.Class({
             - margin;
     },
 
-    on_container_showed: function() {
+    on_container_shown: function() {
         this.parent();
         if(!this.actor.has_actions()) this._add_drag_action();
     },
@@ -594,7 +594,7 @@ const DesktopNoteContainer = new Lang.Class({
             this.actor.scale_x = 1;
             this.actor.scale_y = 1;
             this.actor.show();
-            this.emit('showed');
+            this.emit('shown');
         }
         else {
             this.actor.opacity = 0;
@@ -610,7 +610,7 @@ const DesktopNoteContainer = new Lang.Class({
                 scale_y: 1,
                 opacity: 255,
                 onComplete: Lang.bind(this, function() {
-                    this.emit('showed');
+                    this.emit('shown');
                 })
             });
         }
@@ -630,7 +630,7 @@ const DesktopNoteContainer = new Lang.Class({
             opacity: 0,
             onComplete: Lang.bind(this, function() {
                 this.actor.hide();
-                this.emit('hided');
+                this.emit('hidden');
                 if(typeof on_complete === 'function') on_complete()
             })
         });
