@@ -6,6 +6,7 @@ const Params = imports.misc.params;
 const Signals = imports.signals;
 const Tweener = imports.ui.tweener;
 const Main = imports.ui.main;
+const GLib = imports.gi.GLib;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
