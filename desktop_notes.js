@@ -76,6 +76,8 @@ const DesktopNotes = new Lang.Class({
         );
         this.actor.connect('button-release-event',
             Lang.bind(this, function(o, e) {
+                if(this.block_modal_close) return;
+
                 let button = e.get_button();
                 if(button !== Clutter.BUTTON_PRIMARY || !this._is_modal) return;
 
@@ -186,6 +188,7 @@ const DesktopNotes = new Lang.Class({
         this._notes = {};
         this._resize();
         this._load_notes();
+        this.block_modal_close = false;
 
         Shared.desktop_notes = this;
     },

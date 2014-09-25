@@ -562,6 +562,8 @@ const DesktopNoteContainer = new Lang.Class({
     },
 
     resize: function(width, height) {
+        Shared.desktop_notes.block_modal_close = true;
+
         Tweener.removeTweens(this.table);
         Tweener.addTween(this.table, {
             time: ANIMATION_TIMES.RESIZE,
@@ -569,6 +571,7 @@ const DesktopNoteContainer = new Lang.Class({
             width: width,
             height: height,
             onComplete: Lang.bind(this, function() {
+                Shared.desktop_notes.block_modal_close = false;
                 this.emit('resized');
             })
         });
