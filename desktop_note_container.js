@@ -568,8 +568,8 @@ const DesktopNoteContainer = new Lang.Class({
         Tweener.addTween(this.table, {
             time: ANIMATION_TIMES.RESIZE,
             transition: 'easeOutQuad',
-            width: width,
-            height: height,
+            width: Math.floor(width),
+            height: Math.floor(height),
             onComplete: Lang.bind(this, function() {
                 Shared.desktop_notes.block_modal_close = false;
                 this.emit('resized');
