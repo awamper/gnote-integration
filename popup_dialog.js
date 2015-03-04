@@ -73,7 +73,7 @@ const PopupDialog = new Lang.Class({
 
         if(this.params.modal) {
             Main.pushModal(this.actor, {
-                keybindingMode: Shell.KeyBindingMode.NORMAL
+                actionMode: Shell.ActionMode.NORMAL
             });
         }
 

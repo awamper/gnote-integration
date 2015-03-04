@@ -4,6 +4,7 @@ const Pango = imports.gi.Pango;
 const Params = imports.misc.params;
 const Main = imports.ui.main;
 const Soup = imports.gi.Soup;
+const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
@@ -86,9 +87,10 @@ const ImagePreviewer = new Lang.Class({
     },
 
     load: function(on_loaded) {
+        let image_file = Gio.file_new_for_uri(this.uri);
         let texture_cache = St.TextureCache.get_default();
-        let image = texture_cache.load_uri_async(
-            this.uri,
+        let image = texture_cache.load_file_async(
+            image_file,
             this.params.max_width,
             this.params.max_height,
             SCALE_FACTOR
@@ -143,9 +145,10 @@ const WebpagePreviewerView = new Lang.Class({
             });
             this.actor.add_child(image_dummy);
 
+            let image_file = Gio.file_new_for_uri(image_file.url);
             let texture_cache = St.TextureCache.get_default();
-            let image = texture_cache.load_uri_async(
-                image_info.url,
+            let image = texture_cache.load_file_async(
+                image_file,
                 this._image_max_width,
                 this._image_max_height,
                 SCALE_FACTOR

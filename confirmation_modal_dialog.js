@@ -190,7 +190,7 @@ const ConfirmationModalDialog = new Lang.Class({
         if(this.actor.visible) return;
 
         let result = Main.pushModal(this.actor, {
-            keybindingMode: Shell.KeyBindingMode.NORMAL
+            actionMode: Shell.ActionMode.NORMAL
         });
         if(!result) return;
 

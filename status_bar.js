@@ -4,6 +4,7 @@ const Animation = imports.ui.animation;
 const Tweener = imports.ui.tweener;
 const Mainloop = imports.mainloop;
 const Params = imports.misc.params;
+const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
@@ -89,10 +90,10 @@ const StatusBar = new Lang.Class({
         });
         this._message_label = new St.Label();
         this._message_label.get_clutter_text().use_markup = true;
-        this._spinner = new Animation.AnimatedIcon(
-            global.datadir + '/theme/process-working.svg',
-            24
+        let spinner_icon = Gio.File.new_for_uri(
+            'resource:///org/gnome/shell/theme/process-working.svg'
         );
+        this._spinner = new Animation.AnimatedIcon(spinner_icon, 24);
 
         this.actor.add(this._spinner.actor);
         this.actor.add(this._message_label);

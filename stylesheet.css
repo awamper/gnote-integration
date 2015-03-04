@@ -226,6 +226,11 @@
     border: 1px solid #9C9C9C;
 }
 
+.dialog-note-view-box StEntry {
+    background-color: rgba(0, 0, 0, 0);
+    border: 0px;
+}
+
 .dialog-note-view-box StScrollView.vfade {
     -st-vfade-offset: 60px;
 }
@@ -291,6 +296,11 @@
     box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.6);
 }
 
+.gnote-entry-menu-item StEntry {
+    background-color: rgba(0, 0, 0, 0);
+    border: 0px;
+}
+
 .gnote-pinned-note-icon-inactive {
     padding-right: 4px;
     padding-top: 2px;
@@ -348,6 +358,11 @@
     padding-right: 10px;
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+.desktop-note-container StEntry {
+    background-color: rgba(0, 0, 0, 0);
+    border: 0px;
 }
 
 .desktop-note-toolbar-box {

@@ -113,7 +113,7 @@ const DesktopNoteView = new Lang.Class({
 
         this.contents_label.clutter_text.set_editable(true);
         let result = Main.pushModal(this._container.actor, {
-            keybindingMode: Shell.KeyBindingMode.NORMAL
+            actionMode: Shell.ActionMode.NORMAL
         });
 
         if(result) this._container.is_modal = true;

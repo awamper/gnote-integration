@@ -314,11 +314,8 @@ const DesktopNotes = new Lang.Class({
         this._box.add_child(note_container.actor);
         this._notes[note.uri] = note_container;
 
-        if(
-            note_container.note.properties.page === this._current_page_index
-            && this.actor.visible
-        ) {
-            note_container.show(animation);
+        if(note_container.note.properties.page === this._current_page_index) {
+            note_container.show(this.actor.visible === true ? animation : false);
         }
 
         note_container.actor.x = note_container.note.properties.x;
@@ -354,9 +351,9 @@ const DesktopNotes = new Lang.Class({
             PrefsKeys.SHOW_DESKTOP_NOTES_SHORTCUT_KEY,
             Utils.SETTINGS,
             Meta.KeyBindingFlags.NONE,
-            Shell.KeyBindingMode.NORMAL |
-            Shell.KeyBindingMode.MESSAGE_TRAY |
-            Shell.KeyBindingMode.OVERVIEW,
+            Shell.ActionMode.NORMAL |
+            Shell.ActionMode.MESSAGE_TRAY |
+            Shell.ActionMode.OVERVIEW,
             Lang.bind(this, this.toggle_modal)
         );
     },
@@ -630,7 +627,7 @@ const DesktopNotes = new Lang.Class({
         // this._background_actor.remove_child(this.actor);
         // Main.uiGroup.add_child(this.actor);
         let push_result = Main.pushModal(this.actor, {
-            keybindingMode: Shell.KeyBindingMode.NORMAL
+            actionMode: Shell.ActionMode.NORMAL
         });
 
         if(!push_result) {

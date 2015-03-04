@@ -29,10 +29,11 @@ const StatusBox = new Lang.Class({
         this._label = new St.Label({
             text: 'Loading...'
         });
-        this._spinner = new Animation.AnimatedIcon(
-            global.datadir + '/theme/process-working.svg',
-            24
+
+        let spinner_icon = Gio.File.new_for_uri(
+            'resource:///org/gnome/shell/theme/process-working.svg'
         );
+        this._spinner = new Animation.AnimatedIcon(spinner_icon, 24);
 
         this.actor.add_child(this._spinner.actor);
         this.actor.add_child(this._label);

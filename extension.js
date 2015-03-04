@@ -50,6 +50,7 @@ const GnoteEntryMenuItem = new Lang.Class({
         this.entry = new St.Entry({
             hint_text: this._hint_text
         });
+
         this.entry.set_primary_icon(primary_icon);
         this.entry.clutter_text.connect('activate', Lang.bind(this, this.activate));
         this.actor.add_child(this.entry);
@@ -384,9 +385,9 @@ const GnoteIntegrationButton = new Lang.Class({
             PrefsKeys.SHOW_DIALOG_SHORTCUT_KEY,
             Utils.SETTINGS,
             Meta.KeyBindingFlags.NONE,
-            Shell.KeyBindingMode.NORMAL |
-            Shell.KeyBindingMode.MESSAGE_TRAY |
-            Shell.KeyBindingMode.OVERVIEW,
+            Shell.ActionMode.NORMAL |
+            Shell.ActionMode.MESSAGE_TRAY |
+            Shell.ActionMode.OVERVIEW,
             Lang.bind(this, function() {
                 this._gnote.toggle();
             })
@@ -395,9 +396,9 @@ const GnoteIntegrationButton = new Lang.Class({
             PrefsKeys.SHOW_MENU_SHORTCUT_KEY,
             Utils.SETTINGS,
             Meta.KeyBindingFlags.NONE,
-            Shell.KeyBindingMode.NORMAL |
-            Shell.KeyBindingMode.MESSAGE_TRAY |
-            Shell.KeyBindingMode.OVERVIEW,
+            Shell.ActionMode.NORMAL |
+            Shell.ActionMode.MESSAGE_TRAY |
+            Shell.ActionMode.OVERVIEW,
             Lang.bind(this, function() {
                 this.menu.toggle();
             })
