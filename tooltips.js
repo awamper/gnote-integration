@@ -179,7 +179,7 @@ const TooltipsManager = new Lang.Class({
         let manager_data = actor._tooltips_manager_data;
         if(manager_data === undefined) return GLib.SOURCE_REMOVE;
 
-        let manager_data = actor._tooltips_manager_data;
+        manager_data = actor._tooltips_manager_data;
 
         if(manager_data.tooltip_instance !== null) {
             manager_data.tooltip_instance.destroy();
