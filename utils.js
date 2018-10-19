@@ -195,7 +195,7 @@ function get_lang_code() {
         return result;
     }
 
-    let result = lang.split('_')[0];
+    result = lang.split('_')[0];
     return result;
 }
 
