@@ -158,7 +158,7 @@ const GnoteIntegrationButton = new Lang.Class({
         else {
             let pinned_titles = [];
 
-            for each(let uri in pinned_uris) {
+            for(let uri in pinned_uris) {
                 if(Utils.is_blank(uri)) continue;
 
                 let item = new GnotePinnedNoteMenuItem(uri);
