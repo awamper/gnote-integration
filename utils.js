@@ -189,13 +189,12 @@ function label_transition(label_actor, new_text, animation_time) {
 
 function get_lang_code() {
     let lang = GLib.environ_getenv(GLib.get_environ(), 'LANG');
-    let result = 'en';
 
     if(lang === null) {
-        return result;
+        return 'en';
     }
 
-    result = lang.split('_')[0];
+    let result = lang.split('_')[0];
     return result;
 }
 
