@@ -9,7 +9,7 @@ const Panel = imports.ui.panel;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Clutter = imports.gi.Clutter;
-const Tweener = imports.ui.tweener;
+const Tweener = imports.tweener.tweener;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();
@@ -158,7 +158,7 @@ const GnoteIntegrationButton = new Lang.Class({
         else {
             let pinned_titles = [];
 
-            for each(let uri in pinned_uris) {
+            for(let uri in pinned_uris) {
                 if(Utils.is_blank(uri)) continue;
 
                 let item = new GnotePinnedNoteMenuItem(uri);

@@ -3,7 +3,7 @@ const St = imports.gi.St;
 const Lang = imports.lang;
 const Clutter = imports.gi.Clutter;
 const Signals = imports.signals;
-const Tweener = imports.ui.tweener;
+const Tweener = imports.tweener.tweener;
 
 const INDICATORS_BASE_TIME = 0.25;
 const INDICATORS_ANIMATION_DELAY = 0.125;

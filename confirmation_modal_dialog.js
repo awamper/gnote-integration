@@ -4,7 +4,7 @@ const Shell = imports.gi.Shell;
 const Clutter = imports.gi.Clutter;
 const Signals = imports.signals;
 const Params = imports.misc.params;
-const Tweener = imports.ui.tweener;
+const Tweener = imports.tweener.tweener;
 const Main = imports.ui.main;
 
 const ANIMATION_TIMES = {
