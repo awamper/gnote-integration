@@ -5,7 +5,7 @@ const Clutter = imports.gi.Clutter;
 const Pango = imports.gi.Pango;
 const Signals = imports.signals;
 const Params = imports.misc.params;
-const Tweener = imports.ui.tweener;
+const Tweener = imports.tweener.tweener;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();

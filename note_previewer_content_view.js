@@ -1,7 +1,7 @@
 const St = imports.gi.St;
 const Lang = imports.lang;
 const Clutter = imports.gi.Clutter;
-const Tweener = imports.ui.tweener;
+const Tweener = imports.tweener.tweener;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const Me = ExtensionUtils.getCurrentExtension();

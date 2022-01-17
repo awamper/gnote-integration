@@ -3,7 +3,7 @@ const Lang = imports.lang;
 const Pango = imports.gi.Pango;
 const Clutter = imports.gi.Clutter;
 const Meta = imports.gi.Meta;
-const Tweener = imports.ui.tweener;
+const Tweener = imports.tweener.tweener;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 

@@ -171,7 +171,7 @@ function get_unichar(keyval) {
 }
 
 function label_transition(label_actor, new_text, animation_time) {
-    const Tweener = imports.ui.tweener;
+    const Tweener = imports.tweener.tweener;
     Tweener.addTween(label_actor, {
         time: animation_time,
         transition: "easeOutQuad",

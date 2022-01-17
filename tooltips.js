@@ -4,7 +4,7 @@ const Mainloop = imports.mainloop;
 const Clutter = imports.gi.Clutter;
 const Params = imports.misc.params;
 const Signals = imports.signals;
-const Tweener = imports.ui.tweener;
+const Tweener = imports.tweener.tweener;
 const Main = imports.ui.main;
 const GLib = imports.gi.GLib;
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -179,7 +179,7 @@ const TooltipsManager = new Lang.Class({
         let manager_data = actor._tooltips_manager_data;
         if(manager_data === undefined) return GLib.SOURCE_REMOVE;
 
-        manager_data = actor._tooltips_manager_data;
+        let manager_data = actor._tooltips_manager_data;
 
         if(manager_data.tooltip_instance !== null) {
             manager_data.tooltip_instance.destroy();
